@@ -44,7 +44,7 @@ Scheduled and manual tasks use `USER_EXTENSION`. The extension:
 
 Neither integration nor acceptance tests insert LinkedIn posts directly. The production acceptance suite queues work through the API and waits for the already-installed extension in the existing Chrome profile to claim, capture, expand, and upload the results.
 
-Production acceptance does not launch another browser. `npm run test:e2e` queues a temporary registration through the public API and waits for version `0.5.7` or later of the already installed Web Store extension in the existing Chrome profile to claim and upload it. GitHub Actions can initiate and poll this test, but the actual LinkedIn browsing remains inside that real signed-in Chrome session.
+Production acceptance does not launch another browser. `npm run test:e2e` queues a temporary registration through the public API and waits for version `0.5.7` or later of the already loaded extension in the existing Chrome profile to claim and upload it. GitHub Actions can initiate and poll this test, but the actual LinkedIn browsing remains inside that real signed-in Chrome session.
 
 The Chrome profile identity, extension app owner, and result owner are separate:
 
@@ -53,3 +53,17 @@ The Chrome profile identity, extension app owner, and result owner are separate:
 - Result owner: Barada, retained on every task, run, post, match, batch, and delivery.
 
 The status endpoint exposes the active runner grant, non-secret device metadata, recent extension runs, durable run events, and effective comment persona so this path can be verified without reading browser storage.
+
+## Unpacked ZIP deployment
+
+The production `shivesh@getmason.io` Chrome profile loads the trusted extension directly from:
+
+```text
+/Users/shivesh/Social-Automation/dist-extension/para-linkedin-connector
+```
+
+Build both the unpacked folder and handoff ZIP with `npm run extension:zip`. In `chrome://extensions`, enable Developer mode, load that folder once, and use Reload for later builds. Chrome loads an unpacked directory rather than the ZIP itself, so extract a downloaded archive before selecting it.
+
+The committed manifest public key fixes the extension ID at `memidhnoiniadgfomefhmcahjcekkddd`. Reloading the same unpacked extension is treated as an update and retains `chrome.storage.local`, including the existing device token. Do not remove the extension before an update: Chrome clears local extension storage on removal and the device must then be paired again.
+
+The Chrome Web Store is an optional distribution and automatic-update channel. It is not required for shared-owner grants, task claiming, collection, matching, or production acceptance.

@@ -61,7 +61,7 @@ Webhook secret rotation returns the new value once and increments `webhook_secre
 
 - Apply Prisma migrations before serving traffic.
 - Require Node, Python, migration/contract, extension package/contract, and docs CI jobs.
-- Publish version `0.5.7` to the existing Web Store item and confirm the installed Chrome profile updates without re-pairing.
+- Build version `0.5.7`, reload the existing unpacked connector in the `shivesh@getmason.io` Chrome profile, and confirm its heartbeat reports the new version without re-pairing.
 - Run the real-extension workflow after production deployment while the existing Chrome profile is online.
 - Keep Render `autoDeployTrigger: checksPass`.
 - Verify FastAPI readiness can reach the private TypeScript service.
