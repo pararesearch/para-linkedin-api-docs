@@ -1,0 +1,51 @@
+---
+title: "Errors, idempotency, and limits"
+description: "Handle consistent failures and safely retry control-plane requests."
+---
+
+All public errors use one envelope:
+
+```json
+{
+  "error": {
+    "code": "registration_not_active",
+    "message": "Activate the registration before running it",
+    "request_id": "90e38a6a-2bb1-44a4-a135-ebdf9b25f8e8",
+    "details": null
+  }
+}
+```
+
+Include the returned `request_id` in support and log searches.
+
+## Idempotency
+
+Creates and state-changing actions require `Idempotency-Key`, 8 to 200 characters. Reusing a key with the same owner, operation, and request returns the stored result. Reusing it with a different request is rejected.
+
+Good keys are stable for one intended operation:
+
+```text
+create:mason-founder-workflows:v1
+activate:registration-id:v1
+run:registration-id:2026-07-28
+replay:delivery-id:after-receiver-fix
+```
+
+Idempotency does not make two different keys equivalent. Persist the key before sending a retryable request.
+
+## Status codes
+
+| Status | Meaning |
+| --- | --- |
+| `400` | Missing or malformed idempotency header |
+| `401` | Missing, invalid, expired, or revoked credential |
+| `403` | Credential lacks the required scope |
+| `404` | Resource is absent or belongs to another owner |
+| `409` | Lifecycle conflict, duplicate external ID, or idempotency conflict |
+| `422` | Invalid payload, webhook, topics, timezone, or delivery time |
+| `429` | Per-key rate limit exceeded |
+| `503` | Core API or required migration is unavailable |
+
+## Rate limits
+
+The default user-key limit is 120 requests per minute per credential. It is configured with `LINKEDIN_API_RATE_LIMIT_PER_MINUTE`. The current limiter is process local, so production should keep a fixed API replica count or move this counter to shared Redis before horizontal autoscaling.

@@ -1,0 +1,68 @@
+---
+title: "Operations runbook"
+description: "Provision Barada, validate pairing, and recover delivery failures."
+---
+
+## Provision Barada
+
+Run against the target environment once:
+
+```bash
+npm run provision:barada
+```
+
+The script provisions or locates:
+
+- `Barada Sahu`
+- `barada@getmason.io`
+- forced-change temporary dashboard password
+- owner API key
+- Akhil extension runner grant
+- Akhil effective comment-persona mapping
+
+Capture one-time credentials from the secure operator terminal and deliver them through an approved secret-sharing channel. They are not recoverable from PostgreSQL or logs.
+
+Do not create a registration during account provisioning. Verify zero Barada requirements, search tasks, and runs before handoff.
+
+## Verify extension pairing
+
+Confirm an active grant from Akhil's owner ID to Barada's owner ID for `linkedin`, then confirm the existing Akhil extension device is online. Do not pair a second Barada device.
+
+After Barada activates a registration, request one manual run and search logs by its request ID. Expect `task.queued`, `extension.claimed`, `posts.persisted`, and matching events in order.
+
+For the complete live smoke, configure the production GitHub environment secrets and dispatch `LinkedIn Real Chrome Extension Smoke`, or run:
+
+```bash
+LINKEDIN_PUBLIC_API_URL=https://api.example.com \
+LINKEDIN_BARADA_API_KEY=... \
+LINKEDIN_REAL_E2E_WEBHOOK_URL=https://receiver.example.com/linkedin \
+npm run test:e2e
+```
+
+The script never opens Chromium and never inserts post rows. It waits for the installed extension ID `memidhnoiniadgfomefhmcahjcekkddd`, archives its temporary registration afterward, and writes redacted evidence under `real-extension-e2e/artifacts/`.
+
+The production workflow also sets `LINKEDIN_REAL_E2E_REQUIRE_RECEIVER_INSPECTION=true`. It fails unless the receiver inspection endpoint returns the raw callback and headers needed to verify the HMAC and exact polling-payload equivalence.
+
+Its dedicated receiver must reset per webhook ID and respond `500`, `429` with `Retry-After: 300`, exceed the 10-second timeout, then return `200`. The workflow allows 60 minutes so the real retry schedule is exercised rather than shortened for the test.
+
+## Recover a webhook
+
+1. Read the delivery and attempt history.
+2. Check response status, timeout, SSRF validation, and the receiver's signature verification.
+3. Correct the receiver.
+4. Replay only when status is `DEAD_LETTER`.
+5. Reconcile the immutable batch through polling.
+
+## Rotate secrets
+
+Webhook secret rotation returns the new value once and increments `webhook_secret_version`. API-key rotation returns a new plaintext key and revokes the selected old key. Update consumers before discarding either one-time response.
+
+## Rollout checks
+
+- Apply Prisma migrations before serving traffic.
+- Require Node, Python, migration/contract, extension package/contract, and docs CI jobs.
+- Publish version `0.5.7` to the existing Web Store item and confirm the installed Chrome profile updates without re-pairing.
+- Run the real-extension workflow after production deployment while the existing Chrome profile is online.
+- Keep Render `autoDeployTrigger: checksPass`.
+- Verify FastAPI readiness can reach the private TypeScript service.
+- Confirm Akhil and Deep primary registrations still drive legacy dashboard and digest paths.

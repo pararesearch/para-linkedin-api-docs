@@ -1,0 +1,31 @@
+---
+title: "Result polling"
+description: "Read the same immutable batches used for webhook delivery."
+---
+
+Polling is the recovery and reconciliation path for webhook consumers. The stored `payload` is the source of truth, and webhook delivery sends that payload without rebuilding relevance or drafts.
+
+```bash
+curl "$PARA_LINKEDIN_API/v1/linkedin/registrations/REGISTRATION_ID/batches?limit=25" \
+  --header "Authorization: Bearer $PARA_LINKEDIN_API_KEY"
+```
+
+Use `next_cursor` to continue. Read one batch:
+
+```bash
+curl \
+  "$PARA_LINKEDIN_API/v1/linkedin/registrations/REGISTRATION_ID/batches/BATCH_ID" \
+  --header "Authorization: Bearer $PARA_LINKEDIN_API_KEY"
+```
+
+## Reconciliation strategy
+
+1. Store `payload.id` as the event id.
+2. Deduplicate webhook requests by `X-Webhook-Id`.
+3. Periodically list batches newer than the last processed delivery date.
+4. Fetch any missing batch and process its stored `payload`.
+5. Treat an empty `data.posts` list as completed processing, not as an absent batch.
+
+Each batch includes `delivery_date`, matching revision, source run IDs, payload hash, status, summary counts, result items, and its webhook delivery when configured.
+
+The canonical E2E test compares the receiver's raw webhook body with `JSON.stringify` of the polled payload and fails unless they are byte equivalent.

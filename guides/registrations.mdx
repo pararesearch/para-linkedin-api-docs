@@ -1,0 +1,48 @@
+---
+title: "Registration lifecycle"
+description: "Manage several independent topic registrations per owner."
+---
+
+Each registration is an independent research stream. Topic or context changes increment `matching_revision`, update its scoped requirement, and reevaluate new work without mutating previously delivered batches.
+
+## States
+
+| State | Behavior |
+| --- | --- |
+| `DRAFT` | Editable; creates no tasks |
+| `ACTIVE` | Scheduled tasks and daily batches are enabled |
+| `PAUSED` | Existing history remains; no new task or webhook work |
+| `ARCHIVED` | Soft deleted; hidden by default and cannot run |
+
+Activation requires at least one topic and a valid HTTPS webhook. Restoring an archived registration returns it to `PAUSED`; activate it explicitly when ready.
+
+## CRUD
+
+```bash
+# List
+curl "$PARA_LINKEDIN_API/v1/linkedin/registrations?limit=50" \
+  -H "Authorization: Bearer $PARA_LINKEDIN_API_KEY"
+
+# Read
+curl "$PARA_LINKEDIN_API/v1/linkedin/registrations/REGISTRATION_ID" \
+  -H "Authorization: Bearer $PARA_LINKEDIN_API_KEY"
+
+# Edit relevance context
+curl -X PATCH "$PARA_LINKEDIN_API/v1/linkedin/registrations/REGISTRATION_ID" \
+  -H "Authorization: Bearer $PARA_LINKEDIN_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"topics":["AI operations"],"context":"Prioritize specific operating playbooks."}'
+
+# Archive
+curl -X DELETE "$PARA_LINKEDIN_API/v1/linkedin/registrations/REGISTRATION_ID" \
+  -H "Authorization: Bearer $PARA_LINKEDIN_API_KEY" \
+  -H "Idempotency-Key: archive-registration-v1"
+```
+
+List endpoints use opaque cursors. Pass `next_cursor` back as `cursor`; do not parse or derive meaning from it. Use `include_archived=true` when listing registrations that may need restoration.
+
+## Scheduling
+
+Search cadence is configured in minutes, from 60 through 10,080. Daily delivery defaults to `17:00` in `Asia/Kolkata`. The scheduler considers registration due times fairly across owners while preserving the global one-extension-run rule.
+
+If the service is unavailable at delivery time, the next scheduler tick creates the missing local-date batch. The unique `(registration_id, delivery_date)` constraint prevents duplicate daily snapshots.

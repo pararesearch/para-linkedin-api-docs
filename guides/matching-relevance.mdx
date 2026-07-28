@@ -1,0 +1,36 @@
+---
+title: "Matching and relevance"
+description: "How expanded posts become the final selected and drafted result set."
+---
+
+Collection and matching are separate. The Chrome extension first opens LinkedIn search in the paired signed-in profile, scrolls results, expands truncated post text, captures visible media and engagement text, and uploads the run. The server never manufactures LinkedIn post rows for scheduled work.
+
+## Selection pipeline
+
+1. **Initial relevance:** The model compares full captured post content and author context with the registration requirement. It stores status, score, labels, reason, model, raw response metadata, and requirement revision.
+2. **Cross-query deduplication:** Repeated URLs collected by different search variants are consolidated within the registration.
+3. **Parallel enrichment:** Author profile URLs are resolved and cached. The stored profile can include name, headline, location, follower count, about text, experience, education, topics, sources, freshness notes, and processing status.
+4. **Final rerank:** The enriched post is scored again with weighted post relevance, profile relevance, geography, followers, and comment opportunity components.
+5. **Author and historical deduplication:** The final list avoids repeated authors and excludes post URLs already emitted in an earlier batch for this registration.
+6. **Draft generation:** Qualifying rows receive a comment draft when enabled.
+7. **Final limit:** The registration's `result_limit` is applied and the exact set is stored as immutable result items.
+
+An empty qualifying set is successful and produces a ready batch with `"posts": []`.
+
+## Registration isolation
+
+The same LinkedIn post may be relevant to two registrations and appear in both. Dedupe history is registration scoped, and every requirement lookup uses both `owner_user_id` and `requirement_id`.
+
+Editing topics, context, inclusion/exclusion terms, explicit queries, thresholds, or author preferences increments the registration's matching revision. Historical batches keep the revision and score details used when they were produced.
+
+## Barada's comment voice
+
+Barada's topics, context, filters, thresholds, and search variants determine relevance. Comment generation resolves a separate effective persona owner:
+
+```text
+Barada registration -> Barada relevance requirement
+Barada account persona mapping -> Akhil owner
+Akhil profile + voice summary + approved/retrieved examples -> draft prompt
+```
+
+This preserves Akhil's established tone while keeping Barada's research intent independent. E2E tests inspect the mocked comment-generation request and require both Akhil's voice summary and a retrieved Akhil example.

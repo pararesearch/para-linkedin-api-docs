@@ -1,0 +1,21 @@
+---
+title: "Dashboard workflow"
+description: "Manage credentials, registrations, and results without direct API calls."
+---
+
+The dashboard continues to authenticate with its existing JWT session.
+
+## First login
+
+1. Sign in with the temporary password returned during provisioning.
+2. The dashboard routes directly to the required password-change form.
+3. Set a permanent password.
+4. Open the LinkedIn workspace.
+
+## Registrations
+
+The registration selector allows a user to create and switch between several research streams. The editor exposes topics, context, explicit queries, inclusion and exclusion terms, scheduling, score thresholds, result limit, webhook URL, and draft settings.
+
+Lifecycle controls support activate, pause, archive, restore, and run now. The results area is filtered to the selected registration and shows batch status, final posts, scoring details, author enrichment, and drafts.
+
+For Barada, the effective draft persona is shown as Akhil while the registration editor remains Barada scoped. Akhil and Deep's preexisting dashboard and digest behavior continue through their primary registrations.

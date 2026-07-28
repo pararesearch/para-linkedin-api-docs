@@ -1,0 +1,72 @@
+---
+title: "Quickstart"
+description: "Create, activate, run, and inspect a LinkedIn registration."
+---
+
+Set the deployed API origin and the one-time API key returned during provisioning.
+
+```bash
+export PARA_LINKEDIN_API="https://api.example.com"
+export PARA_LINKEDIN_API_KEY="li_api_..."
+```
+
+## Create a registration
+
+```bash
+curl --request POST "$PARA_LINKEDIN_API/v1/linkedin/registrations" \
+  --header "Authorization: Bearer $PARA_LINKEDIN_API_KEY" \
+  --header "Content-Type: application/json" \
+  --header "Idempotency-Key: barada-founder-workflows-v1" \
+  --data '{
+    "name": "Founder workflow discussions",
+    "external_id": "mason-founder-workflows",
+    "topics": ["founder workflows", "AI operations", "go-to-market"],
+    "context": "Prioritize practical operating lessons from startup founders.",
+    "include_terms": ["workflow", "customer context"],
+    "exclude_terms": ["job opening", "event promotion"],
+    "explicit_queries": ["founder workflow design"],
+    "delivery_time": "17:00",
+    "timezone": "Asia/Kolkata",
+    "first_pass_min_score": 0.45,
+    "final_min_score": 0.55,
+    "result_limit": 20,
+    "draft_enabled": true,
+    "webhook_url": "https://hooks.example.com/linkedin"
+  }'
+```
+
+The response contains `registration` and a `webhook_secret`. Store the secret immediately; it is returned only when the webhook is created or rotated.
+
+## Activate it
+
+```bash
+curl --request POST \
+  "$PARA_LINKEDIN_API/v1/linkedin/registrations/REGISTRATION_ID/activate" \
+  --header "Authorization: Bearer $PARA_LINKEDIN_API_KEY" \
+  --header "Idempotency-Key: activate-founder-workflows-v1"
+```
+
+Activation validates the HTTPS webhook, creates or updates the scoped requirement, and makes its extension tasks eligible for scheduling.
+
+## Request a run
+
+```bash
+curl --request POST \
+  "$PARA_LINKEDIN_API/v1/linkedin/registrations/REGISTRATION_ID/run" \
+  --header "Authorization: Bearer $PARA_LINKEDIN_API_KEY" \
+  --header "Idempotency-Key: run-founder-workflows-2026-07-28"
+```
+
+This returns `202 Accepted`. The existing shared Chrome extension claims the work asynchronously.
+
+## Check status and results
+
+```bash
+curl "$PARA_LINKEDIN_API/v1/linkedin/registrations/REGISTRATION_ID/status" \
+  --header "Authorization: Bearer $PARA_LINKEDIN_API_KEY"
+
+curl "$PARA_LINKEDIN_API/v1/linkedin/registrations/REGISTRATION_ID/batches?limit=10" \
+  --header "Authorization: Bearer $PARA_LINKEDIN_API_KEY"
+```
+
+See [result polling](/guides/result-polling) for immutable payload semantics and [webhooks](/guides/webhooks) for signature verification.

@@ -1,0 +1,55 @@
+---
+title: "Shared Chrome extension"
+description: "How one paired Akhil browser profile executes owner-scoped Barada tasks."
+---
+
+Production uses the Chrome extension already installed and paired in the profile that runs Akhil and Deep's tasks. Barada does not need another extension installation or LinkedIn session.
+
+## DB grant model
+
+An `extension_owner_grants` row links:
+
+```text
+runner_owner_user_id = Akhil
+target_owner_user_id = Barada
+platform = linkedin
+status = ACTIVE
+```
+
+The extension authenticates with its existing device token. Claim selection derives the permitted target owners from active DB grants and then fairly considers their queued registrations. Each claimed run still retains Barada's `owner_user_id`, registration, requirement, request ID, and result ownership.
+
+Provisioning Barada through the admin API can create this grant by passing:
+
+```json
+{
+  "email": "barada@getmason.io",
+  "display_name": "Barada Sahu",
+  "linkedin_extension_runner_email": "akhil@get-para.com",
+  "linkedin_comment_persona_owner_email": "akhil@get-para.com"
+}
+```
+
+The migration also backfills active Akhil-to-Akhil, Akhil-to-Deep, and Akhil-to-Barada grants when those users already exist.
+
+## Extension-only collection
+
+Scheduled and manual tasks use `USER_EXTENSION`. The extension:
+
+- heartbeats from the installed Chrome profile;
+- claims one permitted run under the global safety lock;
+- opens LinkedIn search in the signed-in session;
+- expands and captures fixture or live post content;
+- uploads results with `X-Request-ID`;
+- marks the run complete and persists durable run events.
+
+Neither integration nor acceptance tests insert LinkedIn posts directly. The production acceptance suite queues work through the API and waits for the already-installed extension in the existing Chrome profile to claim, capture, expand, and upload the results.
+
+Production acceptance does not launch another browser. `npm run test:e2e` queues a temporary registration through the public API and waits for version `0.5.7` or later of the already installed Web Store extension in the existing Chrome profile to claim and upload it. GitHub Actions can initiate and poll this test, but the actual LinkedIn browsing remains inside that real signed-in Chrome session.
+
+The Chrome profile identity, extension app owner, and result owner are separate:
+
+- Chrome profile: `shivesh@getmason.io`, where the extension and LinkedIn session already run.
+- Extension runner owner: Akhil's application user and paired device.
+- Result owner: Barada, retained on every task, run, post, match, batch, and delivery.
+
+The status endpoint exposes the active runner grant, non-secret device metadata, recent extension runs, durable run events, and effective comment persona so this path can be verified without reading browser storage.

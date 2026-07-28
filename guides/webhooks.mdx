@@ -1,0 +1,144 @@
+---
+title: "Daily webhooks"
+description: "Verify, deduplicate, retry, and replay final result callbacks."
+---
+
+The daily event is `linkedin.relevant_posts.daily.v1`. It is sent only after the final stored batch is ready.
+
+## Headers
+
+| Header | Meaning |
+| --- | --- |
+| `X-Webhook-Id` | Stable event UUID |
+| `X-Webhook-Timestamp` | Unix timestamp in seconds |
+| `X-Webhook-Signature` | `v1=` plus the HMAC-SHA256 hex digest |
+| `Idempotency-Key` | Same stable event UUID |
+| `X-Request-ID` | Correlation ID inherited from the source run |
+
+Compute the expected digest over:
+
+```text
+timestamp + "." + raw_request_body
+```
+
+Always verify the raw bytes before parsing JSON. Compare digests in constant time and reject stale timestamps according to your tolerance.
+
+```python
+import hashlib
+import hmac
+
+
+def verify_webhook(raw_body: bytes, timestamp: str, signature: str, secret: str) -> bool:
+    signed = timestamp.encode() + b"." + raw_body
+    expected = "v1=" + hmac.new(
+        secret.encode(),
+        signed,
+        hashlib.sha256,
+    ).hexdigest()
+    return hmac.compare_digest(expected, signature)
+```
+
+## Sample payload
+
+```json
+{
+  "id": "80b841f5-f416-4e9e-9e0f-b2b8462fc822",
+  "request_id": "90e38a6a-2bb1-44a4-a135-ebdf9b25f8e8",
+  "event": "linkedin.relevant_posts.daily.v1",
+  "occurred_at": "2026-07-28T12:00:00.000Z",
+  "data": {
+    "registration": {
+      "id": "reg_123",
+      "external_id": "mason-founder-workflows",
+      "name": "Founder workflow discussions",
+      "matching_revision": 2
+    },
+    "delivery_date": "2026-07-28",
+    "window": {
+      "start": "2026-07-27T00:00:00.000Z",
+      "end": "2026-07-28T12:00:00.000Z",
+      "timezone": "Asia/Kolkata"
+    },
+    "posts": [
+      {
+        "rank": 1,
+        "post": {
+          "id": "post_123",
+          "url": "https://www.linkedin.com/feed/update/urn:li:activity:7411000000000000001/",
+          "profile_url": "https://www.linkedin.com/in/maya-founder/",
+          "profile_name": "Maya Founder",
+          "author_headline": "Founder",
+          "content": "The full expanded post content is preserved here.",
+          "media": {
+            "images": [
+              {
+                "url": "https://media.licdn.com/example.jpg"
+              }
+            ]
+          },
+          "relative_time": "2h",
+          "engagement_text": "128 reactions, 19 comments",
+          "source_type": "SEARCH",
+          "source_query": "founder workflow design",
+          "search_url": "https://www.linkedin.com/search/results/content/",
+          "topic_matches": ["founder workflows"],
+          "warnings": [],
+          "scraped_at": "2026-07-28T10:15:00.000Z"
+        },
+        "author_enrichment": {
+          "status": "COMPLETED",
+          "processor": "parallel",
+          "matched_profile_url": "https://www.linkedin.com/in/maya-founder/",
+          "full_name": "Maya Founder",
+          "headline": "Founder",
+          "location": "Bengaluru, India",
+          "followers_count": 12400,
+          "about": "Builds workflow software.",
+          "public_source_urls": ["https://www.linkedin.com/in/maya-founder/"]
+        },
+        "relevance": {
+          "requirement_revision": 2,
+          "initial": {
+            "status": "MATCH",
+            "score": 0.94,
+            "labels": ["workflow", "founder"],
+            "reason": "Specific operating lesson.",
+            "model": "configured-model",
+            "evaluated_at": "2026-07-28T10:16:00.000Z"
+          },
+          "final": {
+            "status": "MATCH",
+            "score": 0.87,
+            "labels": ["high-intent"],
+            "reason": "Strong topic and profile fit.",
+            "model": "configured-model",
+            "components": {
+              "post_relevance": 0.94,
+              "profile_relevance": 0.89,
+              "geography_relevance": 0.8,
+              "followers": 0.72,
+              "comment_opportunity": 0.9
+            }
+          }
+        },
+        "draft": {
+          "status": "READY",
+          "comment": "The buyer-context detail is the useful part here.",
+          "reason": "Uses the effective Akhil voice.",
+          "model": "configured-comment-model",
+          "persona_owner_user_id": "akhil_owner_id",
+          "persona_hash": "sha256..."
+        }
+      }
+    ]
+  }
+}
+```
+
+## Retries and replay
+
+Any `2xx` succeeds. Failed delivery retries after 1 minute, 5 minutes, 30 minutes, 2 hours, 6 hours, and 24 hours. A bounded `Retry-After` value can move the next attempt within the 1-second to 24-hour range. Requests time out after 10 seconds in production.
+
+After retries are exhausted, the delivery is `DEAD_LETTER`. Inspect its attempt rows and call the replay endpoint with a new idempotency key after correcting the receiver.
+
+Webhook URLs must use HTTPS. URL validation blocks private, loopback, link-local, reserved, multicast, and credential-bearing destinations, and validates every redirect target.

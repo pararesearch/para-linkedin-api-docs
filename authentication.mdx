@@ -1,0 +1,54 @@
+---
+title: "Authentication"
+description: "Use owner-scoped Bearer API keys and manage their lifecycle."
+---
+
+Send a generated API key as a Bearer credential:
+
+```http
+Authorization: Bearer li_api_PREFIX_SECRET
+```
+
+Plaintext keys are returned once. The core stores a SHA-256 hash, a non-secret prefix, scopes, status, optional expiry, and last-used timestamp. Raw authorization headers and key values are excluded from logs.
+
+## Scopes
+
+| Scope | Allows |
+| --- | --- |
+| `registrations:read` | Read registrations and status |
+| `registrations:write` | Create, edit, archive, activate, pause, restore, run, and test webhooks |
+| `batches:read` | List and read immutable result batches |
+| `deliveries:read` | Inspect webhook deliveries and attempts |
+| `deliveries:write` | Replay dead-lettered deliveries |
+| `keys:manage` | Create, rotate, list, and revoke the caller's keys |
+
+Every resource lookup includes the authenticated `owner_user_id`. An identifier belonging to another owner returns `404`, which avoids confirming that the resource exists.
+
+## Create and rotate keys
+
+```bash
+curl --request POST "$PARA_LINKEDIN_API/v1/api-keys" \
+  --header "Authorization: Bearer $PARA_LINKEDIN_API_KEY" \
+  --header "Content-Type: application/json" \
+  --header "Idempotency-Key: create-automation-key-v1" \
+  --data '{
+    "name": "Webhook consumer automation",
+    "scopes": ["registrations:read", "batches:read", "deliveries:read"]
+  }'
+```
+
+Rotation creates the replacement and then revokes the selected credential:
+
+```bash
+curl --request POST "$PARA_LINKEDIN_API/v1/api-keys/CREDENTIAL_ID/rotate" \
+  --header "Authorization: Bearer $PARA_LINKEDIN_API_KEY" \
+  --header "Content-Type: application/json" \
+  --header "Idempotency-Key: rotate-automation-key-2026-07" \
+  --data '{"name":"Webhook consumer automation"}'
+```
+
+Revocation is immediate for subsequent introspection. Keep at least one working `keys:manage` credential during rotation.
+
+## Dashboard credentials
+
+Dashboard login continues to use the TypeScript JWT flow. A provisioned temporary password must be changed before the rest of the dashboard is available. Dashboard passwords and API keys are independent credentials.

@@ -1,0 +1,19 @@
+---
+title: "Changelog"
+description: "Contract and behavior changes for the LinkedIn Registration API."
+---
+
+## 2026-07-28
+
+- Added the FastAPI `/v1` public control plane with generated owner API keys.
+- Added multi-registration CRUD, lifecycle actions, status, batch polling, and delivery replay.
+- Added immutable daily relevant-post batches and signed retryable webhooks.
+- Added requirement revisions and registration-scoped cross-day deduplication.
+- Added DB-backed shared extension grants for Akhil, Deep, and Barada.
+- Added Barada provisioning with Akhil as the effective LinkedIn comment persona.
+- Added correlation IDs, JSON event logs, durable run events, and webhook attempts.
+- Updated the existing Web Store connector to `0.5.7` so the same installed Chrome profile propagates run request IDs without re-pairing.
+- Added unit, API, migration, integration, extension E2E, log-verification, and dashboard coverage.
+- Added generated OpenAPI 3.1 and the Mintlify documentation project.
+
+The public event version remains `linkedin.relevant_posts.daily.v1`.

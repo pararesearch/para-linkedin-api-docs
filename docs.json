@@ -1,0 +1,82 @@
+{
+  "$schema": "https://mintlify.com/docs.json",
+  "theme": "mint",
+  "name": "PARA LinkedIn API",
+  "description": "Register LinkedIn research topics and receive final relevant-post batches.",
+  "colors": {
+    "primary": "#087F5B",
+    "light": "#12B886",
+    "dark": "#075B46"
+  },
+  "navigation": {
+    "tabs": [
+      {
+        "tab": "Guides",
+        "icon": "book-open",
+        "groups": [
+          {
+            "group": "Get started",
+            "pages": [
+              "overview",
+              "quickstart",
+              "authentication"
+            ]
+          },
+          {
+            "group": "Build",
+            "pages": [
+              "guides/registrations",
+              "guides/matching-relevance",
+              "guides/webhooks",
+              "guides/result-polling",
+              "guides/errors-idempotency-rate-limits"
+            ]
+          },
+          {
+            "group": "Product",
+            "pages": [
+              "guides/dashboard",
+              "guides/shared-extension"
+            ]
+          },
+          {
+            "group": "Operate",
+            "pages": [
+              "operations/testing",
+              "operations/observability",
+              "operations/runbook",
+              "changelog"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "API Reference",
+        "icon": "square-terminal",
+        "groups": [
+          {
+            "group": "Reference",
+            "openapi": {
+              "source": "openapi.json",
+              "directory": "api-reference"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "api": {
+    "playground": {
+      "display": "interactive"
+    },
+    "examples": {
+      "languages": [
+        "curl",
+        "python"
+      ]
+    }
+  },
+  "footer": {
+    "socials": {}
+  }
+}

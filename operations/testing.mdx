@@ -1,0 +1,59 @@
+---
+title: "Testing"
+description: "Run unit, migration, integration, extension E2E, and docs validation."
+---
+
+## Validation matrix
+
+```bash
+npm run build
+npm test
+
+cd api
+uv run ruff check .
+uv run mypy .
+uv run pytest
+cd ..
+
+TEST_DATABASE_URL=postgresql://... npm run test:migration
+TEST_DATABASE_URL=postgresql://... npm run test:integration
+
+npm run openapi:check
+npm run docs:validate
+```
+
+## Canonical real-extension E2E
+
+Set `LINKEDIN_PUBLIC_API_URL`, `LINKEDIN_BARADA_API_KEY`, and `LINKEDIN_REAL_E2E_WEBHOOK_URL`, keep the existing Chrome profile online, then run `npm run test:e2e`.
+
+The scenario proves:
+
+1. A temporary Barada registration is created and activated through the public API.
+2. The active DB grant points to Akhil's runner owner.
+3. A recently seen device uses Web Store extension ID `memidhnoiniadgfomefhmcahjcekkddd`.
+4. The real extension claims Barada's `USER_EXTENSION` run.
+5. Durable `claimed_by_extension`, `extension_results_persisted`, and `completed` events exist.
+6. Initial matching completes after the extension upload.
+7. The daily pipeline performs enrichment, reranking, deduplication, and draft generation.
+8. Final drafts identify Akhil as the effective persona owner.
+9. One immutable local-date batch contains the source extension run.
+10. The production receiver returns `500`, `429`, times out, then returns `200`; all four durable attempts share the batch request ID.
+11. Webhook delivery reaches `DELIVERED`.
+12. The production workflow requires a receiver inspection endpoint and verifies both the HMAC and byte equivalence with polling. Ad hoc local smoke runs may omit inspection.
+13. The temporary registration is archived afterward.
+
+GitHub-hosted CI does not have access to the signed-in local Chrome profile. The manual `LinkedIn Real Chrome Extension Smoke` workflow only calls the production API and polls evidence; LinkedIn collection is performed by the existing extension on the real profile.
+
+`npm run test:e2e:synthetic` is an optional isolated fixture harness for extension development. It is not accepted as proof that the production Chrome profile, LinkedIn session, DB grant, or deployed service works.
+
+## Artifacts
+
+The real E2E runner stores redacted evidence under `real-extension-e2e/artifacts/`:
+
+- runner owner and extension device metadata
+- registration and correlated run IDs
+- post, matching, batch, and delivery counts
+- durable extension event observations
+- optional receiver signature-verification result
+
+The workflow uploads this evidence even when the smoke test fails. The production test receiver must reset its forced response sequence per webhook ID. Unit and integration jobs separately cover retry decisions, SSRF rejection, key isolation, migration compatibility, and error contracts.
