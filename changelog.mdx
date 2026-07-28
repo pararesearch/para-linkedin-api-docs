@@ -1,7 +1,19 @@
 ---
 title: "Changelog"
-description: "Contract and behavior changes for the LinkedIn Registration API."
+description: "Contract and behavior changes for the PARA Social Research API."
 ---
+
+## 2026-07-29
+
+- Added owner-scoped `/v1/reddit` registration, status, lifecycle, post, batch, and delivery APIs.
+- Added registration/revision-scoped Reddit provenance, two-stage relevance, cross-day deduplication, immutable daily batches, and signed webhooks.
+- Added extension-only Reddit public author context with a seven-day cache and no Parallel or real-world identity resolution.
+- Added Akhil-persona Reddit reply drafts for Barada; drafts are advisory and never posted automatically.
+- Added database-managed Reddit extension grants and persona assignments without creating a Barada registration or task.
+- Updated the existing direct ZIP/unpacked connector to `0.6.0` while preserving extension ID `memidhnoiniadgfomefhmcahjcekkddd`.
+- Added unit, API, migration, HTTP integration, extension contract, and production real-Chrome smoke verification.
+
+The Reddit public event version is `reddit.relevant_posts.daily.v1`.
 
 ## 2026-07-28
 

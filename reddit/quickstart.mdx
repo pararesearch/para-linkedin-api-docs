@@ -1,0 +1,75 @@
+---
+title: "Reddit quickstart"
+description: "Create, activate, run, and inspect a Reddit research registration."
+---
+
+Use Barada's existing owner API key. Reddit does not require a second key or a separate Chrome installation.
+
+```bash
+export PARA_SOCIAL_API="https://para-linkedin-api.onrender.com"
+export PARA_API_KEY="li_api_..."
+```
+
+## Create a draft registration
+
+```bash
+curl --request POST "$PARA_SOCIAL_API/v1/reddit/registrations" \
+  --header "Authorization: Bearer $PARA_API_KEY" \
+  --header "Content-Type: application/json" \
+  --header "Idempotency-Key: reddit-founder-operations-v1" \
+  --data '{
+    "name": "Founder operations on Reddit",
+    "external_id": "mason-reddit-founder-ops",
+    "topics": ["founder operations", "customer research"],
+    "context": "Prioritize practical workflow pain and specific operating lessons.",
+    "include_terms": ["workflow", "process", "customer"],
+    "exclude_terms": ["meme", "giveaway"],
+    "subreddits": ["startups", "Entrepreneur"],
+    "explicit_queries": ["founder operations workflow"],
+    "post_urls": ["https://www.reddit.com/r/startups/comments/POST_ID/example/"],
+    "subreddit_sorts": ["new", "hot"],
+    "search_sorts": ["new"],
+    "time_range": "month",
+    "comment_limit": 50,
+    "delivery_time": "17:00",
+    "timezone": "Asia/Kolkata",
+    "first_pass_min_score": 0.45,
+    "final_min_score": 0.55,
+    "result_limit": 20,
+    "draft_enabled": true,
+    "webhook_url": "https://hooks.example.com/reddit"
+  }'
+```
+
+Creation stores configuration only. It creates no collection task. The response returns a one-time `webhook_secret`; retain it for signature verification.
+
+## Activate and run
+
+```bash
+curl --request POST \
+  "$PARA_SOCIAL_API/v1/reddit/registrations/REGISTRATION_ID/activate" \
+  --header "Authorization: Bearer $PARA_API_KEY" \
+  --header "Idempotency-Key: activate-reddit-founder-ops-v1"
+
+curl --request POST \
+  "$PARA_SOCIAL_API/v1/reddit/registrations/REGISTRATION_ID/run" \
+  --header "Authorization: Bearer $PARA_API_KEY" \
+  --header "Idempotency-Key: run-reddit-founder-ops-2026-07-29"
+```
+
+Activation requires at least one topic and a public HTTPS webhook. The queued task is claimed asynchronously by the existing paired Chrome extension.
+
+## Inspect progress and data
+
+```bash
+curl "$PARA_SOCIAL_API/v1/reddit/registrations/REGISTRATION_ID/status" \
+  --header "Authorization: Bearer $PARA_API_KEY"
+
+curl "$PARA_SOCIAL_API/v1/reddit/registrations/REGISTRATION_ID/posts?limit=20" \
+  --header "Authorization: Bearer $PARA_API_KEY"
+
+curl "$PARA_SOCIAL_API/v1/reddit/registrations/REGISTRATION_ID/batches?limit=10" \
+  --header "Authorization: Bearer $PARA_API_KEY"
+```
+
+The status response identifies the configured runner owner, exact extension device/version, effective comment persona, recent runs, durable events, and current matching counts.

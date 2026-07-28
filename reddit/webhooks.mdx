@@ -1,0 +1,70 @@
+---
+title: "Reddit webhooks"
+description: "Signature verification, retries, dead letters, testing, and replay."
+---
+
+Daily callbacks use event `reddit.relevant_posts.daily.v1`. The sender includes:
+
+```http
+X-Webhook-Id: EVENT_ID
+X-Webhook-Timestamp: 1785324600
+X-Webhook-Signature: v1=HEX_HMAC_SHA256
+Idempotency-Key: EVENT_ID
+X-Request-ID: REQUEST_ID
+```
+
+The signature input is the ASCII timestamp, a period, and the exact raw request body:
+
+```text
+TIMESTAMP.RAW_JSON_BODY
+```
+
+## Python verifier
+
+```python
+import hashlib
+import hmac
+import time
+
+
+def verify(headers: dict[str, str], raw_body: bytes, secret: str) -> bool:
+    timestamp = headers["x-webhook-timestamp"]
+    if abs(time.time() - int(timestamp)) > 300:
+        return False
+    signed = timestamp.encode("ascii") + b"." + raw_body
+    expected = "v1=" + hmac.new(
+        secret.encode("utf-8"),
+        signed,
+        hashlib.sha256,
+    ).hexdigest()
+    return hmac.compare_digest(expected, headers["x-webhook-signature"])
+```
+
+Verify against the raw bytes before JSON parsing. Deduplicate by `X-Webhook-Id` or `Idempotency-Key`.
+
+## Delivery behavior
+
+Any `2xx` response succeeds. The timeout is 10 seconds. Failed delivery retries after 1 minute, 5 minutes, 30 minutes, 2 hours, 6 hours, and 24 hours. A bounded `Retry-After` response may move the next attempt later. Exhausted deliveries become `DEAD_LETTER` and retain every attempt.
+
+Webhook URLs must use public HTTPS destinations. Private, loopback, link-local, and unsafe redirect targets are rejected and revalidated during delivery.
+
+## Test, rotate, and replay
+
+```bash
+curl --request POST \
+  "$PARA_SOCIAL_API/v1/reddit/registrations/REGISTRATION_ID/webhook/test" \
+  --header "Authorization: Bearer $PARA_API_KEY" \
+  --header "Idempotency-Key: test-reddit-webhook-v1"
+
+curl --request POST \
+  "$PARA_SOCIAL_API/v1/reddit/registrations/REGISTRATION_ID/webhook/rotate-secret" \
+  --header "Authorization: Bearer $PARA_API_KEY" \
+  --header "Idempotency-Key: rotate-reddit-webhook-2026-07"
+
+curl --request POST \
+  "$PARA_SOCIAL_API/v1/reddit/registrations/REGISTRATION_ID/deliveries/DELIVERY_ID/replay" \
+  --header "Authorization: Bearer $PARA_API_KEY" \
+  --header "Idempotency-Key: replay-reddit-delivery-v1"
+```
+
+The plaintext signing secret is returned only when a webhook is created or rotated. API responses, logs, CI artifacts, and documentation never contain Barada's API key or retained webhook secret.

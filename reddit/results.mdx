@@ -1,0 +1,106 @@
+---
+title: "Reddit results"
+description: "Immutable batches, full post data, source provenance, comments, and polling."
+---
+
+At most one immutable result batch is created for each registration and local delivery date. Downtime catch-up creates the missed batch, and a completed day with no qualifying result contains an empty `posts` array.
+
+## Batch payload
+
+The stored `reddit.relevant_posts.daily.v1` payload contains:
+
+```json
+{
+  "id": "EVENT_ID",
+  "request_id": "REQUEST_ID",
+  "event": "reddit.relevant_posts.daily.v1",
+  "occurred_at": "2026-07-29T11:30:00.000Z",
+  "data": {
+    "registration": {
+      "id": "REGISTRATION_ID",
+      "external_id": "mason-reddit-founder-ops",
+      "name": "Founder operations on Reddit",
+      "matching_revision": 2
+    },
+    "delivery_date": "2026-07-29",
+    "window": {
+      "start": "2026-07-28T11:30:00.000Z",
+      "end": "2026-07-29T11:30:00.000Z",
+      "timezone": "Asia/Kolkata"
+    },
+    "posts": [
+      {
+        "rank": 1,
+        "post": {
+          "id": "DATABASE_POST_ID",
+          "reddit_id": "REDDIT_ID",
+          "fullname": "t3_REDDIT_ID",
+          "url": "https://www.reddit.com/r/startups/comments/REDDIT_ID/example/",
+          "title": "Example title",
+          "content": "Expanded selftext captured by the extension",
+          "subreddit": "startups",
+          "media": null,
+          "engagement": {
+            "score": 38,
+            "ups": 38,
+            "upvote_ratio": 0.93,
+            "comment_count": 17
+          },
+          "sources": [
+            {
+              "sourceType": "POST_URL",
+              "sourceValue": "https://www.reddit.com/r/startups/comments/REDDIT_ID/example/"
+            }
+          ],
+          "top_comments": []
+        },
+        "author_enrichment": {
+          "username": "public_username",
+          "profile_url": "https://www.reddit.com/user/public_username/",
+          "total_karma": 4200,
+          "source": "reddit_extension"
+        },
+        "relevance": {
+          "requirement_revision": 2,
+          "initial": {
+            "status": "MATCH",
+            "score": 0.82,
+            "model": "gpt-5.5"
+          },
+          "final": {
+            "status": "MATCH",
+            "score": 0.76,
+            "components": {
+              "semantic": 0.82,
+              "topic_subreddit": 0.9,
+              "recency": 0.8,
+              "comment_opportunity": 0.7,
+              "engagement": 0.6,
+              "author_context": 0.5
+            }
+          }
+        },
+        "draft": {
+          "status": "READY",
+          "comment": "Advisory reply text",
+          "persona_hash": "PERSONA_HASH",
+          "auto_posted": false
+        }
+      }
+    ]
+  }
+}
+```
+
+The actual post object also preserves permalink, external URL, author URL, flair, capture warnings/time, source provenance, and up to ten top comments. The relevance object includes complete labels, reasons, timestamps, scoring weights, and weight hash.
+
+## Polling
+
+```bash
+curl "$PARA_SOCIAL_API/v1/reddit/registrations/REGISTRATION_ID/batches/BATCH_ID" \
+  --header "Authorization: Bearer $PARA_API_KEY"
+```
+
+`payload` is the exact stored object serialized for the webhook. The delivery signs that stored representation rather than recomputing relevance.
+
+Use `/posts` for current owner-scoped matched posts. Use `/posts/{post_id}?comments_limit=100&comments_cursor=CURSOR` to page through every captured comment; daily batches intentionally include only the top comments.

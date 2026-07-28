@@ -1,0 +1,40 @@
+---
+title: "Reddit registrations"
+description: "Configuration, lifecycle, revisions, and owner isolation."
+---
+
+Each registration is an independent research stream. All configuration, tasks, observations, matches, batches, posts, and deliveries are scoped by `owner_user_id + registration_id`; matching history also records the revision.
+
+## Configuration
+
+| Group | Fields |
+| --- | --- |
+| Identity | `name`, `external_id` |
+| Relevance | `topics`, `context`, `include_terms`, `exclude_terms` |
+| Sources | `subreddits`, `explicit_queries`, `post_urls`, `subreddit_sorts`, `search_sorts`, `time_range` |
+| Capture | `page_limit`, `comment_limit`, `comment_depth`, `max_posts_with_comments` |
+| Schedule | `cadence_minutes`, `delivery_time`, `timezone` |
+| Selection | `first_pass_min_score`, `final_min_score`, `result_limit` |
+| Delivery | `webhook_url` |
+| Draft | `draft_enabled`, `draft_style_prompt`, `draft_max_words` |
+
+`post_urls` accept only public `reddit.com` URLs. Collection can combine every configured source in one run. Each observed source remains attached to the canonical post instead of being overwritten by later discovery.
+
+## Lifecycle
+
+| State | Behavior |
+| --- | --- |
+| `DRAFT` | Configuration exists; no collection task exists |
+| `ACTIVE` | Extension work and daily batching are eligible |
+| `PAUSED` | Unclaimed work is cancelled and scheduling stops |
+| `ARCHIVED` | Future work stops; historical posts and batches remain readable |
+
+Use `POST /activate`, `/pause`, `/restore`, and `/run` for transitions and manual collection. `DELETE` archives. Restore returns an archived registration to the non-running `PAUSED` state so it can be reviewed before activation.
+
+## Revisions
+
+Editing matching or source configuration increments `matching_revision`. New matches are evaluated under the new revision, while previously delivered batches remain immutable. A post delivered in an earlier revision is still excluded from later daily batches for that registration.
+
+## Cursor pagination
+
+List endpoints accept `limit` and `cursor` and return `next_cursor`. Resource lookups belonging to another owner return `404`. Create and action requests support `Idempotency-Key`; repeating the same operation with the same owner, route, and body returns its stored response.

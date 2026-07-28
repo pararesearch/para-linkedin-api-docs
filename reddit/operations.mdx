@@ -1,0 +1,50 @@
+---
+title: "Reddit operations"
+description: "Deployment order, health checks, observability, and incident response."
+---
+
+## Rollout order
+
+1. Apply the additive Prisma migration and deploy the TypeScript core.
+2. Confirm `/api/health/ready` reports the Reddit registration migration.
+3. Deploy FastAPI and confirm `/health/ready`.
+4. Build the direct ZIP and reload the existing real Chrome extension.
+5. Wait for extension ID `memidhnoiniadgfomefhmcahjcekkddd` to heartbeat at version `0.6.0` or newer.
+6. Verify the Akhil-to-Barada Reddit grant, Barada-to-Akhil persona assignment, and Render owner allowlist.
+7. Run the production real-extension smoke and retain its redacted evidence.
+
+Render uses `checksPass`, with `npx prisma migrate deploy` as the core pre-deploy command. The migration backfills Akhil and Deep's existing configurations as primary registrations and intentionally leaves Barada with no Reddit registration or task.
+
+## Correlation and logs
+
+`X-Request-ID` flows through FastAPI, the private TypeScript call, registration task, extension claim and upload, stored run events, result batch, and webhook attempt. JSON logs and durable rows identify owner, registration, requirement/config, task, run, batch, delivery, device, duration, counts, attempt, outcome, and error code.
+
+The important Reddit stages are:
+
+```text
+api.request
+registration.created
+task.queued
+extension.claimed
+posts.persisted
+match.initial.completed
+reddit.author_profile.completed
+rerank.completed
+draft.completed
+batch.ready
+webhook.attempt
+webhook.delivered
+webhook.dead_letter
+```
+
+Logs exclude authorization headers, API keys, temporary passwords, webhook secrets, complete post bodies, and raw model responses.
+
+## Triage
+
+- No task after creation: expected while the registration is `DRAFT`; activate it.
+- Activation rejected: add a topic and a public HTTPS webhook.
+- No extension claim: inspect `/status` for runner grant, heartbeat age, exact extension ID, and version.
+- Author context missing: inspect the separate author-profile run; its cached snapshot remains valid for seven days.
+- Empty batch: valid completion when no final result clears the configured threshold.
+- Webhook delayed: inspect `/deliveries` and its attempts, then replay a dead-letter after fixing the receiver.
+- Suspected duplicate: compare registration ID, delivery date, post URL, and revision. Database uniqueness prevents duplicate daily batches and duplicate delivered post URLs within one registration.

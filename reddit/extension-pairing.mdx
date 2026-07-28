@@ -1,0 +1,40 @@
+---
+title: "Reddit extension pairing"
+description: "Database grants, Akhil's persona, and direct-ZIP updates for the existing Chrome profile."
+---
+
+Reddit research uses the already paired extension in the real Chrome profile where Akhil and Deep's work runs.
+
+| Property | Required value |
+| --- | --- |
+| Extension ID | `memidhnoiniadgfomefhmcahjcekkddd` |
+| Minimum Reddit registration version | `0.6.0` |
+| Runner owner for Barada | `akhil@get-para.com` |
+| Comment persona for Barada | Akhil |
+
+Pairing is database controlled through platform-qualified extension grants. Barada's Reddit owner record is granted to Akhil's runner owner, and Barada's Reddit comment-persona owner points to Akhil. Neither assignment creates a registration or task.
+
+Administrators can list/create/revoke platform grants and update platform persona assignments through the admin API. User keys cannot alter these assignments.
+
+## Direct ZIP update
+
+The Chrome Web Store is not required for this deployment:
+
+```bash
+npm run extension:zip
+```
+
+The artifacts are:
+
+```text
+dist-extension/para-linkedin-connector/
+dist-extension/para-linkedin-connector.zip
+```
+
+On `chrome://extensions`, click **Reload** for the existing extension. If Chrome requests a directory, select the unpacked directory above. Do not remove the card first: removal clears the paired device token from `chrome.storage.local`.
+
+The public `key` in `manifest.json` preserves the existing extension ID. The production smoke test refuses to run until the exact paired device reports a recent heartbeat and version `0.6.0` or newer.
+
+## Collection boundary
+
+Discovery and public author-profile tasks are claimed only by this extension and uploaded over the existing extension API. The E2E workflow never launches Playwright, Chromium, a persistent synthetic context, or a fixture uploader. Participation actions remain separate dashboard tasks with explicit confirmation.

@@ -1,20 +1,20 @@
 ---
-title: "Quickstart"
+title: "LinkedIn quickstart"
 description: "Create, activate, run, and inspect a LinkedIn registration."
 ---
 
 Set the deployed API origin and the one-time API key returned during provisioning.
 
 ```bash
-export PARA_LINKEDIN_API="https://para-linkedin-api.onrender.com"
-export PARA_LINKEDIN_API_KEY="li_api_..."
+export PARA_SOCIAL_API="https://para-linkedin-api.onrender.com"
+export PARA_API_KEY="li_api_..."
 ```
 
 ## Create a registration
 
 ```bash
-curl --request POST "$PARA_LINKEDIN_API/v1/linkedin/registrations" \
-  --header "Authorization: Bearer $PARA_LINKEDIN_API_KEY" \
+curl --request POST "$PARA_SOCIAL_API/v1/linkedin/registrations" \
+  --header "Authorization: Bearer $PARA_API_KEY" \
   --header "Content-Type: application/json" \
   --header "Idempotency-Key: barada-founder-workflows-v1" \
   --data '{
@@ -41,8 +41,8 @@ The response contains `registration` and a `webhook_secret`. Store the secret im
 
 ```bash
 curl --request POST \
-  "$PARA_LINKEDIN_API/v1/linkedin/registrations/REGISTRATION_ID/activate" \
-  --header "Authorization: Bearer $PARA_LINKEDIN_API_KEY" \
+  "$PARA_SOCIAL_API/v1/linkedin/registrations/REGISTRATION_ID/activate" \
+  --header "Authorization: Bearer $PARA_API_KEY" \
   --header "Idempotency-Key: activate-founder-workflows-v1"
 ```
 
@@ -52,8 +52,8 @@ Activation validates the HTTPS webhook, creates or updates the scoped requiremen
 
 ```bash
 curl --request POST \
-  "$PARA_LINKEDIN_API/v1/linkedin/registrations/REGISTRATION_ID/run" \
-  --header "Authorization: Bearer $PARA_LINKEDIN_API_KEY" \
+  "$PARA_SOCIAL_API/v1/linkedin/registrations/REGISTRATION_ID/run" \
+  --header "Authorization: Bearer $PARA_API_KEY" \
   --header "Idempotency-Key: run-founder-workflows-2026-07-28"
 ```
 
@@ -62,11 +62,11 @@ This returns `202 Accepted`. The existing shared Chrome extension claims the wor
 ## Check status and results
 
 ```bash
-curl "$PARA_LINKEDIN_API/v1/linkedin/registrations/REGISTRATION_ID/status" \
-  --header "Authorization: Bearer $PARA_LINKEDIN_API_KEY"
+curl "$PARA_SOCIAL_API/v1/linkedin/registrations/REGISTRATION_ID/status" \
+  --header "Authorization: Bearer $PARA_API_KEY"
 
-curl "$PARA_LINKEDIN_API/v1/linkedin/registrations/REGISTRATION_ID/batches?limit=10" \
-  --header "Authorization: Bearer $PARA_LINKEDIN_API_KEY"
+curl "$PARA_SOCIAL_API/v1/linkedin/registrations/REGISTRATION_ID/batches?limit=10" \
+  --header "Authorization: Bearer $PARA_API_KEY"
 ```
 
 See [result polling](/guides/result-polling) for immutable payload semantics and [webhooks](/guides/webhooks) for signature verification.

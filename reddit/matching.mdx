@@ -1,0 +1,42 @@
+---
+title: "Reddit matching"
+description: "Initial relevance, extension-only author context, final scoring, and drafts."
+---
+
+## Initial relevance
+
+The first stage evaluates the registration's topics, free-form context, include/exclude terms, subreddit context, full title and selftext, and captured top comments. The result stores:
+
+- status, normalized score, labels, and human-readable reason
+- model identifier or `keyword-fallback`
+- matching revision and evaluation time
+- evidence comment IDs used by the decision
+
+If the model is unavailable or returns unusable output, deterministic keyword matching applies the same include/exclude semantics. Excluded terms force a non-match.
+
+## Public author context
+
+Initially relevant authors receive a separate `AUTHOR_PROFILE` task. The same real Chrome extension captures only public Reddit fields: username, profile URL, account age, link/comment karma, total karma, and visible recent activity. Profiles are cached for seven days.
+
+Reddit author handling does not call Parallel, scrape private data, or attempt to resolve a username to a real-world identity.
+
+## Final scoring
+
+The final score uses a versioned weight configuration:
+
+| Component | Weight |
+| --- | ---: |
+| Semantic relevance | 45% |
+| Topic and subreddit fit | 15% |
+| Recency | 10% |
+| Comment opportunity | 15% |
+| Engagement | 10% |
+| Public author context | 5% |
+
+Every result stores component scores, final labels/reason, model or fallback, weight object, weight hash, revision, and evaluation timestamp. Posts are deduplicated across queries before scoring and against all prior delivered items for that registration. Another registration may legitimately receive the same post.
+
+## Reply drafts
+
+When enabled, a relevant result receives an advisory Reddit reply draft using Barada's registration context and Akhil's configured comment persona, voice, and persona hash. The payload always includes `auto_posted: false`.
+
+Posting, commenting, and voting are separate dashboard participation workflows. They require explicit confirmation and are never triggered by the registration API or daily webhook.

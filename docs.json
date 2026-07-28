@@ -1,8 +1,8 @@
 {
   "$schema": "https://mintlify.com/docs.json",
   "theme": "mint",
-  "name": "PARA LinkedIn API",
-  "description": "Register LinkedIn research topics and receive final relevant-post batches.",
+  "name": "PARA Social Research API",
+  "description": "Register LinkedIn and Reddit research topics and receive final relevant-post batches.",
   "colors": {
     "primary": "#087F5B",
     "light": "#12B886",
@@ -18,17 +18,33 @@
             "group": "Get started",
             "pages": [
               "overview",
-              "quickstart",
               "authentication"
             ]
           },
           {
-            "group": "Build",
+            "group": "LinkedIn",
             "pages": [
+              "quickstart",
               "guides/registrations",
               "guides/matching-relevance",
               "guides/webhooks",
-              "guides/result-polling",
+              "guides/result-polling"
+            ]
+          },
+          {
+            "group": "Reddit",
+            "pages": [
+              "reddit/quickstart",
+              "reddit/registrations",
+              "reddit/matching",
+              "reddit/results",
+              "reddit/webhooks",
+              "reddit/extension-pairing"
+            ]
+          },
+          {
+            "group": "Platform",
+            "pages": [
               "guides/errors-idempotency-rate-limits"
             ]
           },
@@ -43,7 +59,9 @@
             "group": "Operate",
             "pages": [
               "operations/testing",
+              "reddit/testing",
               "operations/observability",
+              "reddit/operations",
               "operations/runbook",
               "changelog"
             ]

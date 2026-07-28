@@ -3,7 +3,7 @@ title: "Authentication"
 description: "Use owner-scoped Bearer API keys and manage their lifecycle."
 ---
 
-Send a generated API key as a Bearer credential:
+Send the generated owner API key as a Bearer credential. The same key and generic scopes authorize both LinkedIn and Reddit resources owned by that user.
 
 ```http
 Authorization: Bearer li_api_PREFIX_SECRET
@@ -27,8 +27,8 @@ Every resource lookup includes the authenticated `owner_user_id`. An identifier 
 ## Create and rotate keys
 
 ```bash
-curl --request POST "$PARA_LINKEDIN_API/v1/api-keys" \
-  --header "Authorization: Bearer $PARA_LINKEDIN_API_KEY" \
+curl --request POST "$PARA_SOCIAL_API/v1/api-keys" \
+  --header "Authorization: Bearer $PARA_API_KEY" \
   --header "Content-Type: application/json" \
   --header "Idempotency-Key: create-automation-key-v1" \
   --data '{
@@ -40,8 +40,8 @@ curl --request POST "$PARA_LINKEDIN_API/v1/api-keys" \
 Rotation creates the replacement and then revokes the selected credential:
 
 ```bash
-curl --request POST "$PARA_LINKEDIN_API/v1/api-keys/CREDENTIAL_ID/rotate" \
-  --header "Authorization: Bearer $PARA_LINKEDIN_API_KEY" \
+curl --request POST "$PARA_SOCIAL_API/v1/api-keys/CREDENTIAL_ID/rotate" \
+  --header "Authorization: Bearer $PARA_API_KEY" \
   --header "Content-Type: application/json" \
   --header "Idempotency-Key: rotate-automation-key-2026-07" \
   --data '{"name":"Webhook consumer automation"}'

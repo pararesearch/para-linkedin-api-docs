@@ -161,6 +161,54 @@
         "title": "ApiKeyListResponse",
         "type": "object"
       },
+      "CommentPersonaAssignmentView": {
+        "additionalProperties": true,
+        "properties": {
+          "owner_user_id": {
+            "title": "Owner User Id",
+            "type": "string"
+          },
+          "persona_owner_user_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Persona Owner User Id"
+          },
+          "platform": {
+            "title": "Platform",
+            "type": "string"
+          }
+        },
+        "required": [
+          "owner_user_id",
+          "platform"
+        ],
+        "title": "CommentPersonaAssignmentView",
+        "type": "object"
+      },
+      "CommentPersonaSet": {
+        "additionalProperties": false,
+        "properties": {
+          "persona_owner_email": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Persona Owner Email"
+          }
+        },
+        "title": "CommentPersonaSet",
+        "type": "object"
+      },
       "CommentPersonaView": {
         "additionalProperties": true,
         "properties": {
@@ -419,9 +467,69 @@
         "title": "ExtensionDeviceView",
         "type": "object"
       },
+      "ExtensionGrantCreate": {
+        "additionalProperties": false,
+        "properties": {
+          "platform": {
+            "pattern": "^(linkedin|reddit|x)$",
+            "title": "Platform",
+            "type": "string"
+          },
+          "runner_owner_email": {
+            "title": "Runner Owner Email",
+            "type": "string"
+          }
+        },
+        "required": [
+          "runner_owner_email",
+          "platform"
+        ],
+        "title": "ExtensionGrantCreate",
+        "type": "object"
+      },
+      "ExtensionGrantListResponse": {
+        "additionalProperties": true,
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/ExtensionGrantView"
+            },
+            "title": "Items",
+            "type": "array"
+          }
+        },
+        "required": [
+          "items"
+        ],
+        "title": "ExtensionGrantListResponse",
+        "type": "object"
+      },
       "ExtensionGrantView": {
         "additionalProperties": true,
         "properties": {
+          "created_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Created At"
+          },
+          "id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Id"
+          },
           "platform": {
             "title": "Platform",
             "type": "string"
@@ -437,6 +545,18 @@
           "target_owner_user_id": {
             "title": "Target Owner User Id",
             "type": "string"
+          },
+          "updated_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Updated At"
           }
         },
         "required": [
@@ -540,6 +660,1022 @@
           "email"
         ],
         "title": "OwnerIdentityView",
+        "type": "object"
+      },
+      "RedditDailyWebhookPayload": {
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/DailyWebhookData"
+          },
+          "event": {
+            "default": "reddit.relevant_posts.daily.v1",
+            "title": "Event",
+            "type": "string"
+          },
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "occurred_at": {
+            "format": "date-time",
+            "title": "Occurred At",
+            "type": "string"
+          },
+          "request_id": {
+            "title": "Request Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "request_id",
+          "occurred_at",
+          "data"
+        ],
+        "title": "RedditDailyWebhookPayload",
+        "type": "object"
+      },
+      "RedditPostDetailResponse": {
+        "additionalProperties": true,
+        "properties": {
+          "comments_next_cursor": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Comments Next Cursor"
+          }
+        },
+        "title": "RedditPostDetailResponse",
+        "type": "object"
+      },
+      "RedditPostListResponse": {
+        "additionalProperties": true,
+        "properties": {
+          "items": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "title": "Items",
+            "type": "array"
+          },
+          "next_cursor": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Next Cursor"
+          }
+        },
+        "required": [
+          "items"
+        ],
+        "title": "RedditPostListResponse",
+        "type": "object"
+      },
+      "RedditRegistrationCreate": {
+        "additionalProperties": false,
+        "properties": {
+          "cadence_minutes": {
+            "default": 720,
+            "maximum": 43200.0,
+            "minimum": 60.0,
+            "title": "Cadence Minutes",
+            "type": "integer"
+          },
+          "comment_depth": {
+            "default": 8,
+            "maximum": 12.0,
+            "minimum": 1.0,
+            "title": "Comment Depth",
+            "type": "integer"
+          },
+          "comment_limit": {
+            "default": 50,
+            "maximum": 500.0,
+            "minimum": 0.0,
+            "title": "Comment Limit",
+            "type": "integer"
+          },
+          "context": {
+            "default": "",
+            "maxLength": 5000,
+            "title": "Context",
+            "type": "string"
+          },
+          "delivery_time": {
+            "default": "17:00",
+            "pattern": "^(?:[01]\\d|2[0-3]):[0-5]\\d$",
+            "title": "Delivery Time",
+            "type": "string"
+          },
+          "draft_enabled": {
+            "default": true,
+            "title": "Draft Enabled",
+            "type": "boolean"
+          },
+          "draft_max_words": {
+            "default": 60,
+            "maximum": 300.0,
+            "minimum": 10.0,
+            "title": "Draft Max Words",
+            "type": "integer"
+          },
+          "draft_style_prompt": {
+            "anyOf": [
+              {
+                "maxLength": 2000,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Draft Style Prompt"
+          },
+          "exclude_terms": {
+            "items": {
+              "type": "string"
+            },
+            "maxItems": 50,
+            "title": "Exclude Terms",
+            "type": "array"
+          },
+          "explicit_queries": {
+            "items": {
+              "type": "string"
+            },
+            "maxItems": 30,
+            "title": "Explicit Queries",
+            "type": "array"
+          },
+          "external_id": {
+            "anyOf": [
+              {
+                "maxLength": 160,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "External Id"
+          },
+          "final_min_score": {
+            "default": 0.55,
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "title": "Final Min Score",
+            "type": "number"
+          },
+          "first_pass_min_score": {
+            "default": 0.45,
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "title": "First Pass Min Score",
+            "type": "number"
+          },
+          "include_terms": {
+            "items": {
+              "type": "string"
+            },
+            "maxItems": 50,
+            "title": "Include Terms",
+            "type": "array"
+          },
+          "max_posts_with_comments": {
+            "default": 10,
+            "maximum": 100.0,
+            "minimum": 0.0,
+            "title": "Max Posts With Comments",
+            "type": "integer"
+          },
+          "name": {
+            "maxLength": 160,
+            "minLength": 1,
+            "title": "Name",
+            "type": "string"
+          },
+          "page_limit": {
+            "default": 1,
+            "maximum": 10.0,
+            "minimum": 1.0,
+            "title": "Page Limit",
+            "type": "integer"
+          },
+          "post_urls": {
+            "items": {
+              "format": "uri",
+              "maxLength": 2083,
+              "minLength": 1,
+              "type": "string"
+            },
+            "maxItems": 30,
+            "title": "Post Urls",
+            "type": "array"
+          },
+          "result_limit": {
+            "default": 20,
+            "maximum": 100.0,
+            "minimum": 1.0,
+            "title": "Result Limit",
+            "type": "integer"
+          },
+          "search_sorts": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Search Sorts",
+            "type": "array"
+          },
+          "subreddit_sorts": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Subreddit Sorts",
+            "type": "array"
+          },
+          "subreddits": {
+            "items": {
+              "type": "string"
+            },
+            "maxItems": 60,
+            "title": "Subreddits",
+            "type": "array"
+          },
+          "time_range": {
+            "default": "month",
+            "maxLength": 20,
+            "title": "Time Range",
+            "type": "string"
+          },
+          "timezone": {
+            "default": "Asia/Kolkata",
+            "maxLength": 80,
+            "title": "Timezone",
+            "type": "string"
+          },
+          "topics": {
+            "items": {
+              "type": "string"
+            },
+            "maxItems": 30,
+            "title": "Topics",
+            "type": "array"
+          },
+          "webhook_url": {
+            "anyOf": [
+              {
+                "format": "uri",
+                "maxLength": 2083,
+                "minLength": 1,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Webhook Url"
+          }
+        },
+        "required": [
+          "name"
+        ],
+        "title": "RedditRegistrationCreate",
+        "type": "object"
+      },
+      "RedditRegistrationListResponse": {
+        "additionalProperties": true,
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/RedditRegistrationView"
+            },
+            "title": "Items",
+            "type": "array"
+          },
+          "next_cursor": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Next Cursor"
+          }
+        },
+        "required": [
+          "items"
+        ],
+        "title": "RedditRegistrationListResponse",
+        "type": "object"
+      },
+      "RedditRegistrationMutationResponse": {
+        "additionalProperties": true,
+        "properties": {
+          "registration": {
+            "$ref": "#/components/schemas/RedditRegistrationView"
+          },
+          "webhook_secret": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Webhook Secret"
+          }
+        },
+        "required": [
+          "registration"
+        ],
+        "title": "RedditRegistrationMutationResponse",
+        "type": "object"
+      },
+      "RedditRegistrationPatch": {
+        "additionalProperties": false,
+        "properties": {
+          "cadence_minutes": {
+            "anyOf": [
+              {
+                "maximum": 43200.0,
+                "minimum": 60.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Cadence Minutes"
+          },
+          "comment_depth": {
+            "anyOf": [
+              {
+                "maximum": 12.0,
+                "minimum": 1.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Comment Depth"
+          },
+          "comment_limit": {
+            "anyOf": [
+              {
+                "maximum": 500.0,
+                "minimum": 0.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Comment Limit"
+          },
+          "context": {
+            "anyOf": [
+              {
+                "maxLength": 5000,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Context"
+          },
+          "delivery_time": {
+            "anyOf": [
+              {
+                "pattern": "^(?:[01]\\d|2[0-3]):[0-5]\\d$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Delivery Time"
+          },
+          "draft_enabled": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Draft Enabled"
+          },
+          "draft_max_words": {
+            "anyOf": [
+              {
+                "maximum": 300.0,
+                "minimum": 10.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Draft Max Words"
+          },
+          "draft_style_prompt": {
+            "anyOf": [
+              {
+                "maxLength": 2000,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Draft Style Prompt"
+          },
+          "exclude_terms": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "maxItems": 50,
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Exclude Terms"
+          },
+          "explicit_queries": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "maxItems": 30,
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Explicit Queries"
+          },
+          "external_id": {
+            "anyOf": [
+              {
+                "maxLength": 160,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "External Id"
+          },
+          "final_min_score": {
+            "anyOf": [
+              {
+                "maximum": 1.0,
+                "minimum": 0.0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Final Min Score"
+          },
+          "first_pass_min_score": {
+            "anyOf": [
+              {
+                "maximum": 1.0,
+                "minimum": 0.0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "First Pass Min Score"
+          },
+          "include_terms": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "maxItems": 50,
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Include Terms"
+          },
+          "max_posts_with_comments": {
+            "anyOf": [
+              {
+                "maximum": 100.0,
+                "minimum": 0.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Max Posts With Comments"
+          },
+          "name": {
+            "anyOf": [
+              {
+                "maxLength": 160,
+                "minLength": 1,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Name"
+          },
+          "page_limit": {
+            "anyOf": [
+              {
+                "maximum": 10.0,
+                "minimum": 1.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Page Limit"
+          },
+          "post_urls": {
+            "anyOf": [
+              {
+                "items": {
+                  "format": "uri",
+                  "maxLength": 2083,
+                  "minLength": 1,
+                  "type": "string"
+                },
+                "maxItems": 30,
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Post Urls"
+          },
+          "result_limit": {
+            "anyOf": [
+              {
+                "maximum": 100.0,
+                "minimum": 1.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Result Limit"
+          },
+          "search_sorts": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Search Sorts"
+          },
+          "subreddit_sorts": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Subreddit Sorts"
+          },
+          "subreddits": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "maxItems": 60,
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Subreddits"
+          },
+          "time_range": {
+            "anyOf": [
+              {
+                "maxLength": 20,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Time Range"
+          },
+          "timezone": {
+            "anyOf": [
+              {
+                "maxLength": 80,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Timezone"
+          },
+          "topics": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "maxItems": 30,
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Topics"
+          },
+          "webhook_url": {
+            "anyOf": [
+              {
+                "format": "uri",
+                "maxLength": 2083,
+                "minLength": 1,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Webhook Url"
+          }
+        },
+        "title": "RedditRegistrationPatch",
+        "type": "object"
+      },
+      "RedditRegistrationStatusResponse": {
+        "additionalProperties": true,
+        "properties": {
+          "effective_comment_persona": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/CommentPersonaView"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "extension_runner": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ExtensionRunnerView"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "matching": {
+            "$ref": "#/components/schemas/MatchingStatusView"
+          },
+          "recent_runs": {
+            "items": {
+              "$ref": "#/components/schemas/RegistrationRunView"
+            },
+            "title": "Recent Runs",
+            "type": "array"
+          },
+          "registration": {
+            "$ref": "#/components/schemas/RedditRegistrationView"
+          },
+          "requirement": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/RequirementView"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "registration",
+          "matching",
+          "recent_runs"
+        ],
+        "title": "RedditRegistrationStatusResponse",
+        "type": "object"
+      },
+      "RedditRegistrationView": {
+        "additionalProperties": true,
+        "properties": {
+          "archived_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Archived At"
+          },
+          "cadence_minutes": {
+            "title": "Cadence Minutes",
+            "type": "integer"
+          },
+          "comment_depth": {
+            "title": "Comment Depth",
+            "type": "integer"
+          },
+          "comment_limit": {
+            "title": "Comment Limit",
+            "type": "integer"
+          },
+          "context": {
+            "title": "Context",
+            "type": "string"
+          },
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "delivery_time": {
+            "title": "Delivery Time",
+            "type": "string"
+          },
+          "draft_enabled": {
+            "title": "Draft Enabled",
+            "type": "boolean"
+          },
+          "draft_max_words": {
+            "title": "Draft Max Words",
+            "type": "integer"
+          },
+          "draft_style_prompt": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Draft Style Prompt"
+          },
+          "exclude_terms": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Exclude Terms",
+            "type": "array"
+          },
+          "explicit_queries": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Explicit Queries",
+            "type": "array"
+          },
+          "external_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "External Id"
+          },
+          "final_min_score": {
+            "title": "Final Min Score",
+            "type": "number"
+          },
+          "first_pass_min_score": {
+            "title": "First Pass Min Score",
+            "type": "number"
+          },
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "include_terms": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Include Terms",
+            "type": "array"
+          },
+          "is_primary": {
+            "title": "Is Primary",
+            "type": "boolean"
+          },
+          "last_batch_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Batch At"
+          },
+          "matching_revision": {
+            "title": "Matching Revision",
+            "type": "integer"
+          },
+          "max_posts_with_comments": {
+            "title": "Max Posts With Comments",
+            "type": "integer"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "owner_config_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Owner Config Id"
+          },
+          "owner_user_id": {
+            "title": "Owner User Id",
+            "type": "string"
+          },
+          "page_limit": {
+            "title": "Page Limit",
+            "type": "integer"
+          },
+          "post_urls": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Post Urls",
+            "type": "array"
+          },
+          "result_limit": {
+            "title": "Result Limit",
+            "type": "integer"
+          },
+          "search_sorts": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Search Sorts",
+            "type": "array"
+          },
+          "status": {
+            "title": "Status",
+            "type": "string"
+          },
+          "subreddit_sorts": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Subreddit Sorts",
+            "type": "array"
+          },
+          "subreddits": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Subreddits",
+            "type": "array"
+          },
+          "time_range": {
+            "title": "Time Range",
+            "type": "string"
+          },
+          "timezone": {
+            "title": "Timezone",
+            "type": "string"
+          },
+          "topics": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Topics",
+            "type": "array"
+          },
+          "updated_at": {
+            "format": "date-time",
+            "title": "Updated At",
+            "type": "string"
+          },
+          "webhook_enabled": {
+            "title": "Webhook Enabled",
+            "type": "boolean"
+          },
+          "webhook_secret_version": {
+            "title": "Webhook Secret Version",
+            "type": "integer"
+          },
+          "webhook_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Webhook Url"
+          }
+        },
+        "required": [
+          "id",
+          "owner_user_id",
+          "name",
+          "status",
+          "is_primary",
+          "topics",
+          "context",
+          "include_terms",
+          "exclude_terms",
+          "subreddits",
+          "explicit_queries",
+          "post_urls",
+          "subreddit_sorts",
+          "search_sorts",
+          "time_range",
+          "cadence_minutes",
+          "page_limit",
+          "comment_limit",
+          "comment_depth",
+          "max_posts_with_comments",
+          "delivery_time",
+          "timezone",
+          "first_pass_min_score",
+          "final_min_score",
+          "result_limit",
+          "draft_enabled",
+          "draft_max_words",
+          "webhook_enabled",
+          "webhook_secret_version",
+          "matching_revision",
+          "created_at",
+          "updated_at"
+        ],
+        "title": "RedditRegistrationView",
         "type": "object"
       },
       "RegistrationCreate": {
@@ -2088,6 +3224,28 @@
               }
             ],
             "title": "Linkedin Extension Runner Email"
+          },
+          "reddit_comment_persona_owner_email": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reddit Comment Persona Owner Email"
+          },
+          "reddit_extension_runner_email": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reddit Extension Runner Email"
           }
         },
         "required": [
@@ -2144,6 +3302,13 @@
                 "type": "null"
               }
             ]
+          },
+          "extension_grants": {
+            "items": {
+              "$ref": "#/components/schemas/ExtensionGrantView"
+            },
+            "title": "Extension Grants",
+            "type": "array"
           },
           "temporary_password": {
             "title": "Temporary Password",
@@ -2210,6 +3375,17 @@
           "must_change_password": {
             "title": "Must Change Password",
             "type": "boolean"
+          },
+          "reddit_comment_persona_owner_user_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reddit Comment Persona Owner User Id"
           },
           "updated_at": {
             "anyOf": [
@@ -2558,9 +3734,9 @@
     }
   },
   "info": {
-    "summary": "Register LinkedIn topics and receive final relevant-post webhooks.",
-    "title": "PARA LinkedIn Registration API",
-    "version": "1.0.0"
+    "summary": "Register LinkedIn or Reddit topics and receive final relevant-post webhooks.",
+    "title": "PARA Social Research API",
+    "version": "1.1.0"
   },
   "openapi": "3.1.0",
   "paths": {
@@ -2958,6 +4134,282 @@
           }
         ],
         "summary": "Admin Revoke Key",
+        "tags": [
+          "Admin"
+        ]
+      }
+    },
+    "/v1/admin/users/{owner_user_id}/comment-personas/{platform}": {
+      "put": {
+        "operationId": "admin_set_comment_persona_v1_admin_users__owner_user_id__comment_personas__platform__put",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "owner_user_id",
+            "required": true,
+            "schema": {
+              "title": "Owner User Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "platform",
+            "required": true,
+            "schema": {
+              "title": "Platform",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "Idempotency-Key",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Idempotency-Key"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CommentPersonaSet"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CommentPersonaAssignmentView",
+                  "title": "Response Admin Set Comment Persona V1 Admin Users  Owner User Id  Comment Personas  Platform  Put"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Admin Set Comment Persona",
+        "tags": [
+          "Admin"
+        ]
+      }
+    },
+    "/v1/admin/users/{owner_user_id}/extension-grants": {
+      "get": {
+        "operationId": "admin_list_extension_grants_v1_admin_users__owner_user_id__extension_grants_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "owner_user_id",
+            "required": true,
+            "schema": {
+              "title": "Owner User Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExtensionGrantListResponse",
+                  "title": "Response Admin List Extension Grants V1 Admin Users  Owner User Id  Extension Grants Get"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Admin List Extension Grants",
+        "tags": [
+          "Admin"
+        ]
+      },
+      "post": {
+        "operationId": "admin_create_extension_grant_v1_admin_users__owner_user_id__extension_grants_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "owner_user_id",
+            "required": true,
+            "schema": {
+              "title": "Owner User Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "Idempotency-Key",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Idempotency-Key"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ExtensionGrantCreate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExtensionGrantView",
+                  "title": "Response Admin Create Extension Grant V1 Admin Users  Owner User Id  Extension Grants Post"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Admin Create Extension Grant",
+        "tags": [
+          "Admin"
+        ]
+      }
+    },
+    "/v1/admin/users/{owner_user_id}/extension-grants/{grant_id}": {
+      "delete": {
+        "operationId": "admin_revoke_extension_grant_v1_admin_users__owner_user_id__extension_grants__grant_id__delete",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "owner_user_id",
+            "required": true,
+            "schema": {
+              "title": "Owner User Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "grant_id",
+            "required": true,
+            "schema": {
+              "title": "Grant Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "Idempotency-Key",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Idempotency-Key"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExtensionGrantView",
+                  "title": "Response Admin Revoke Extension Grant V1 Admin Users  Owner User Id  Extension Grants  Grant Id  Delete"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Admin Revoke Extension Grant",
         "tags": [
           "Admin"
         ]
@@ -4331,11 +5783,1265 @@
           "Webhooks"
         ]
       }
+    },
+    "/v1/reddit/registrations": {
+      "get": {
+        "operationId": "list_reddit_registrations_v1_reddit_registrations_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "cursor",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Cursor"
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "default": 50,
+              "maximum": 100,
+              "minimum": 1,
+              "title": "Limit",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "include_archived",
+            "required": false,
+            "schema": {
+              "default": false,
+              "title": "Include Archived",
+              "type": "boolean"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RedditRegistrationListResponse",
+                  "title": "Response List Reddit Registrations V1 Reddit Registrations Get"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "List Reddit Registrations",
+        "tags": [
+          "Reddit Registrations"
+        ]
+      },
+      "post": {
+        "operationId": "create_reddit_registration_v1_reddit_registrations_post",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "Idempotency-Key",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Idempotency-Key"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RedditRegistrationCreate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RedditRegistrationMutationResponse",
+                  "title": "Response Create Reddit Registration V1 Reddit Registrations Post"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Create Reddit Registration",
+        "tags": [
+          "Reddit Registrations"
+        ]
+      }
+    },
+    "/v1/reddit/registrations/{registration_id}": {
+      "delete": {
+        "operationId": "archive_reddit_registration_v1_reddit_registrations__registration_id__delete",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "registration_id",
+            "required": true,
+            "schema": {
+              "title": "Registration Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "Idempotency-Key",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Idempotency-Key"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RedditRegistrationView",
+                  "title": "Response Archive Reddit Registration V1 Reddit Registrations  Registration Id  Delete"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Archive Reddit Registration",
+        "tags": [
+          "Reddit Registrations"
+        ]
+      },
+      "get": {
+        "operationId": "get_reddit_registration_v1_reddit_registrations__registration_id__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "registration_id",
+            "required": true,
+            "schema": {
+              "title": "Registration Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RedditRegistrationView",
+                  "title": "Response Get Reddit Registration V1 Reddit Registrations  Registration Id  Get"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Get Reddit Registration",
+        "tags": [
+          "Reddit Registrations"
+        ]
+      },
+      "patch": {
+        "operationId": "patch_reddit_registration_v1_reddit_registrations__registration_id__patch",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "registration_id",
+            "required": true,
+            "schema": {
+              "title": "Registration Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RedditRegistrationPatch"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RedditRegistrationMutationResponse",
+                  "title": "Response Patch Reddit Registration V1 Reddit Registrations  Registration Id  Patch"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Patch Reddit Registration",
+        "tags": [
+          "Reddit Registrations"
+        ]
+      }
+    },
+    "/v1/reddit/registrations/{registration_id}/activate": {
+      "post": {
+        "operationId": "activate_reddit_registration_v1_reddit_registrations__registration_id__activate_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "registration_id",
+            "required": true,
+            "schema": {
+              "title": "Registration Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "Idempotency-Key",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Idempotency-Key"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RedditRegistrationView",
+                  "title": "Response Activate Reddit Registration V1 Reddit Registrations  Registration Id  Activate Post"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Activate Reddit Registration",
+        "tags": [
+          "Reddit Registrations"
+        ]
+      }
+    },
+    "/v1/reddit/registrations/{registration_id}/batches": {
+      "get": {
+        "operationId": "list_reddit_batches_v1_reddit_registrations__registration_id__batches_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "registration_id",
+            "required": true,
+            "schema": {
+              "title": "Registration Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "cursor",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Cursor"
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "default": 25,
+              "maximum": 100,
+              "minimum": 1,
+              "title": "Limit",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResultBatchListResponse",
+                  "title": "Response List Reddit Batches V1 Reddit Registrations  Registration Id  Batches Get"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "List Reddit Batches",
+        "tags": [
+          "Reddit Results"
+        ]
+      }
+    },
+    "/v1/reddit/registrations/{registration_id}/batches/{batch_id}": {
+      "get": {
+        "operationId": "get_reddit_batch_v1_reddit_registrations__registration_id__batches__batch_id__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "registration_id",
+            "required": true,
+            "schema": {
+              "title": "Registration Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "batch_id",
+            "required": true,
+            "schema": {
+              "title": "Batch Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResultBatchView",
+                  "title": "Response Get Reddit Batch V1 Reddit Registrations  Registration Id  Batches  Batch Id  Get"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Get Reddit Batch",
+        "tags": [
+          "Reddit Results"
+        ]
+      }
+    },
+    "/v1/reddit/registrations/{registration_id}/deliveries": {
+      "get": {
+        "operationId": "list_reddit_deliveries_v1_reddit_registrations__registration_id__deliveries_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "registration_id",
+            "required": true,
+            "schema": {
+              "title": "Registration Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "cursor",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Cursor"
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "default": 25,
+              "maximum": 100,
+              "minimum": 1,
+              "title": "Limit",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WebhookDeliveryListResponse",
+                  "title": "Response List Reddit Deliveries V1 Reddit Registrations  Registration Id  Deliveries Get"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "List Reddit Deliveries",
+        "tags": [
+          "Reddit Webhooks"
+        ]
+      }
+    },
+    "/v1/reddit/registrations/{registration_id}/deliveries/{delivery_id}": {
+      "get": {
+        "operationId": "get_reddit_delivery_v1_reddit_registrations__registration_id__deliveries__delivery_id__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "registration_id",
+            "required": true,
+            "schema": {
+              "title": "Registration Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "delivery_id",
+            "required": true,
+            "schema": {
+              "title": "Delivery Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WebhookDeliveryView",
+                  "title": "Response Get Reddit Delivery V1 Reddit Registrations  Registration Id  Deliveries  Delivery Id  Get"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Get Reddit Delivery",
+        "tags": [
+          "Reddit Webhooks"
+        ]
+      }
+    },
+    "/v1/reddit/registrations/{registration_id}/deliveries/{delivery_id}/replay": {
+      "post": {
+        "operationId": "replay_reddit_delivery_v1_reddit_registrations__registration_id__deliveries__delivery_id__replay_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "registration_id",
+            "required": true,
+            "schema": {
+              "title": "Registration Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "delivery_id",
+            "required": true,
+            "schema": {
+              "title": "Delivery Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "Idempotency-Key",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Idempotency-Key"
+            }
+          }
+        ],
+        "responses": {
+          "202": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WebhookDeliveryView",
+                  "title": "Response Replay Reddit Delivery V1 Reddit Registrations  Registration Id  Deliveries  Delivery Id  Replay Post"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Replay Reddit Delivery",
+        "tags": [
+          "Reddit Webhooks"
+        ]
+      }
+    },
+    "/v1/reddit/registrations/{registration_id}/pause": {
+      "post": {
+        "operationId": "pause_reddit_registration_v1_reddit_registrations__registration_id__pause_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "registration_id",
+            "required": true,
+            "schema": {
+              "title": "Registration Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "Idempotency-Key",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Idempotency-Key"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RedditRegistrationView",
+                  "title": "Response Pause Reddit Registration V1 Reddit Registrations  Registration Id  Pause Post"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Pause Reddit Registration",
+        "tags": [
+          "Reddit Registrations"
+        ]
+      }
+    },
+    "/v1/reddit/registrations/{registration_id}/posts": {
+      "get": {
+        "operationId": "list_reddit_posts_v1_reddit_registrations__registration_id__posts_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "registration_id",
+            "required": true,
+            "schema": {
+              "title": "Registration Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "cursor",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Cursor"
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "default": 25,
+              "maximum": 100,
+              "minimum": 1,
+              "title": "Limit",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "status",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Status"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RedditPostListResponse",
+                  "title": "Response List Reddit Posts V1 Reddit Registrations  Registration Id  Posts Get"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "List Reddit Posts",
+        "tags": [
+          "Reddit Results"
+        ]
+      }
+    },
+    "/v1/reddit/registrations/{registration_id}/posts/{post_id}": {
+      "get": {
+        "operationId": "get_reddit_post_v1_reddit_registrations__registration_id__posts__post_id__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "registration_id",
+            "required": true,
+            "schema": {
+              "title": "Registration Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "post_id",
+            "required": true,
+            "schema": {
+              "title": "Post Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "comments_cursor",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Comments Cursor"
+            }
+          },
+          {
+            "in": "query",
+            "name": "comments_limit",
+            "required": false,
+            "schema": {
+              "default": 100,
+              "maximum": 250,
+              "minimum": 1,
+              "title": "Comments Limit",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RedditPostDetailResponse",
+                  "title": "Response Get Reddit Post V1 Reddit Registrations  Registration Id  Posts  Post Id  Get"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Get Reddit Post",
+        "tags": [
+          "Reddit Results"
+        ]
+      }
+    },
+    "/v1/reddit/registrations/{registration_id}/restore": {
+      "post": {
+        "operationId": "restore_reddit_registration_v1_reddit_registrations__registration_id__restore_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "registration_id",
+            "required": true,
+            "schema": {
+              "title": "Registration Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "Idempotency-Key",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Idempotency-Key"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RedditRegistrationView",
+                  "title": "Response Restore Reddit Registration V1 Reddit Registrations  Registration Id  Restore Post"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Restore Reddit Registration",
+        "tags": [
+          "Reddit Registrations"
+        ]
+      }
+    },
+    "/v1/reddit/registrations/{registration_id}/run": {
+      "post": {
+        "operationId": "run_reddit_registration_v1_reddit_registrations__registration_id__run_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "registration_id",
+            "required": true,
+            "schema": {
+              "title": "Registration Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "Idempotency-Key",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Idempotency-Key"
+            }
+          }
+        ],
+        "responses": {
+          "202": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RegistrationRunListResponse",
+                  "title": "Response Run Reddit Registration V1 Reddit Registrations  Registration Id  Run Post"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Run Reddit Registration",
+        "tags": [
+          "Reddit Registrations"
+        ]
+      }
+    },
+    "/v1/reddit/registrations/{registration_id}/status": {
+      "get": {
+        "operationId": "get_reddit_registration_status_v1_reddit_registrations__registration_id__status_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "registration_id",
+            "required": true,
+            "schema": {
+              "title": "Registration Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RedditRegistrationStatusResponse",
+                  "title": "Response Get Reddit Registration Status V1 Reddit Registrations  Registration Id  Status Get"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Get Reddit Registration Status",
+        "tags": [
+          "Reddit Registrations"
+        ]
+      }
+    },
+    "/v1/reddit/registrations/{registration_id}/webhook/rotate-secret": {
+      "post": {
+        "operationId": "rotate_reddit_webhook_secret_v1_reddit_registrations__registration_id__webhook_rotate_secret_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "registration_id",
+            "required": true,
+            "schema": {
+              "title": "Registration Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "Idempotency-Key",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Idempotency-Key"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RedditRegistrationMutationResponse",
+                  "title": "Response Rotate Reddit Webhook Secret V1 Reddit Registrations  Registration Id  Webhook Rotate Secret Post"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Rotate Reddit Webhook Secret",
+        "tags": [
+          "Reddit Webhooks"
+        ]
+      }
+    },
+    "/v1/reddit/registrations/{registration_id}/webhook/test": {
+      "post": {
+        "operationId": "test_reddit_webhook_v1_reddit_registrations__registration_id__webhook_test_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "registration_id",
+            "required": true,
+            "schema": {
+              "title": "Registration Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "Idempotency-Key",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Idempotency-Key"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WebhookTestResponse",
+                  "title": "Response Test Reddit Webhook V1 Reddit Registrations  Registration Id  Webhook Test Post"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Test Reddit Webhook",
+        "tags": [
+          "Reddit Webhooks"
+        ]
+      }
     }
   },
   "servers": [
     {
-      "description": "PARA LinkedIn production API",
+      "description": "PARA Social Research production API",
       "url": "https://para-linkedin-api.onrender.com"
     }
   ],
@@ -4422,6 +7128,90 @@
           }
         },
         "summary": "Receive final daily relevant LinkedIn posts"
+      }
+    },
+    "reddit.relevant_posts.daily.v1": {
+      "post": {
+        "description": "PARA sends this immutable result batch after real-extension collection, both matching stages, extension-only public author context, deduplication, and optional advisory reply generation complete.",
+        "operationId": "reddit_daily_relevant_posts_webhookreddit_relevant_posts_daily_v1_post",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "X-Webhook-Id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "X-Webhook-Timestamp",
+            "required": true,
+            "schema": {
+              "description": "Unix timestamp in seconds",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "X-Webhook-Signature",
+            "required": true,
+            "schema": {
+              "description": "HMAC-SHA256 signature in the form v1=<hex digest>",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "Idempotency-Key",
+            "required": true,
+            "schema": {
+              "description": "Same value as X-Webhook-Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "X-Request-ID",
+            "required": true,
+            "schema": {
+              "description": "End-to-end correlation ID",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RedditDailyWebhookPayload"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Receive final daily relevant Reddit posts"
       }
     }
   }

@@ -1,0 +1,49 @@
+---
+title: "Reddit testing"
+description: "Local suites, CI evidence, and the production real-extension smoke."
+---
+
+## Required checks
+
+```bash
+npm run build
+npm test
+
+cd api
+uv run ruff check .
+uv run mypy .
+uv run pytest
+
+cd ..
+npm run test:migration
+npm run test:integration
+npm run openapi:check
+npm run extension:zip
+npm run docs:validate
+```
+
+The test layers cover registration ownership and revisions, fair scheduling, observation provenance, relevance fallback and final weights, deduplication, Akhil persona resolution, immutable batches, signatures/retries/SSRF, FastAPI validation and actions, migration compatibility, extension payload compatibility, and real FastAPI-to-TypeScript HTTP boundaries.
+
+## Production real-extension smoke
+
+The canonical smoke is manually dispatched after the core, API, docs, and direct ZIP are deployed:
+
+```bash
+REDDIT_PUBLIC_API_URL="https://para-linkedin-api.onrender.com" \
+REDDIT_BARADA_API_KEY="<secret>" \
+REDDIT_REAL_E2E_WEBHOOK_URL="https://public-receiver.example.com/webhook" \
+REDDIT_REAL_E2E_POST_URL="https://www.reddit.com/r/example/comments/POST_ID/example/" \
+npm run test:e2e:reddit-real-extension
+```
+
+The public post URL is operator maintained so Reddit content changes do not require a code release. The runner:
+
+1. Creates a temporary Barada draft registration and confirms that work begins only after activation.
+2. Verifies Akhil's runner grant, Akhil's built persona, extension ID, version, and recent heartbeat.
+3. Queues through the public API and waits for the installed real Chrome extension.
+4. Requires durable claim, persistence, and completion events with matching request IDs.
+5. Requires expanded post/comments, source observations, both relevance stages, extension-only author context, and an unposted Akhil-voice draft.
+6. Verifies one immutable batch, HMAC delivery, byte-equivalent polling, and the optional `500 -> 429 -> timeout -> 200` history.
+7. Archives the temporary registration in a `finally` path.
+
+The workflow stores only redacted API responses, IDs, logs, webhook bodies, signature results, attempt metadata, and database summaries. It fails on secret leakage, a non-extension collection path, the wrong device, missing correlation stages, duplicate daily batches, or cross-owner data.
