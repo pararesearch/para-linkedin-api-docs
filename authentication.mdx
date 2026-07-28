@@ -11,6 +11,10 @@ Authorization: Bearer li_api_PREFIX_SECRET
 
 Plaintext keys are returned once. The core stores a SHA-256 hash, a non-secret prefix, scopes, status, optional expiry, and last-used timestamp. Raw authorization headers and key values are excluded from logs.
 
+Sensitive idempotency replay responses are AES-GCM encrypted at rest and expire
+after 24 hours. Plaintext API keys, temporary passwords, and webhook secrets are
+never written to the idempotency table or application logs.
+
 ## Scopes
 
 | Scope | Allows |
