@@ -4335,8 +4335,8 @@
   },
   "servers": [
     {
-      "description": "Replace with the deployed PARA LinkedIn API origin",
-      "url": "https://api.example.com"
+      "description": "PARA LinkedIn production API",
+      "url": "https://para-linkedin-api.onrender.com"
     }
   ],
   "webhooks": {
