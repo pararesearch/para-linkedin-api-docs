@@ -9,8 +9,10 @@
     "documentation_openapi": "https://para-linkedin-api.mintlify.site/openapi.json",
     "llms": "https://para-linkedin-api.mintlify.site/llms.txt",
     "llms_full": "https://para-linkedin-api.mintlify.site/llms-full.txt",
-    "skill": "https://para-linkedin-api.mintlify.site/skill.md",
-    "agent_skills_discovery": "https://para-linkedin-api.mintlify.site/.well-known/agent-skills/index.json",
+    "skill": "https://para-linkedin-api.mintlify.app/skill.md",
+    "agent_skills_discovery": "https://para-linkedin-api.mintlify.app/.well-known/agent-skills/index.json",
+    "skills_discovery": "https://para-linkedin-api.mintlify.app/.well-known/skills/index.json",
+    "agent_card": "https://para-linkedin-api.mintlify.app/.well-known/agent-card.json",
     "agent_quickstart": "https://para-linkedin-api.mintlify.site/agents/quickstart.md",
     "agent_handoff": "https://para-linkedin-api.mintlify.site/agents/handoff.md"
   },

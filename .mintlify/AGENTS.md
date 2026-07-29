@@ -10,6 +10,10 @@
 5. `agents/handoff.mdx` defines operator inputs, approvals, checkpoints, and
    completion reporting.
 
+Human-facing documentation uses `para-linkedin-api.mintlify.site`. Mintlify's
+generated skill indexes and A2A agent card use the direct
+`para-linkedin-api.mintlify.app` machine origin.
+
 ## Required behavior
 
 - Keep LinkedIn and Reddit coverage parallel where their contracts match.

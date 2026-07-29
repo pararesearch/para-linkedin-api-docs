@@ -18,9 +18,12 @@ Machine-readable capabilities and safety rules are available in
 the canonical request and response contract.
 
 Mintlify also exposes `/llms-full.txt`, `/.well-known/llms.txt`, an installable
-[`skill.md`](https://para-linkedin-api.mintlify.site/skill.md), agent-skill
-discovery under `/.well-known/agent-skills/`, and a Markdown representation of
-every page by appending `.md`.
+[`skill.md`](https://para-linkedin-api.mintlify.app/skill.md), SHA-256-backed
+[agent-skill discovery](https://para-linkedin-api.mintlify.app/.well-known/agent-skills/index.json),
+an [A2A agent card](https://para-linkedin-api.mintlify.app/.well-known/agent-card.json),
+and a Markdown representation of every page by appending `.md`. Human-facing
+pages use the `.mintlify.site` domain; generated machine discovery uses
+Mintlify's direct `.mintlify.app` origin.
 
 ```mermaid
 flowchart LR
