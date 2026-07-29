@@ -1,0 +1,142 @@
+---
+title: "Agent handoff"
+description: "Operator-to-agent input, approval, checkpoint, and completion contract."
+keywords: ["agent handoff", "checkpoint", "approval", "automation"]
+---
+
+Use this contract when handing a LinkedIn or Reddit API task to an agent. Omitted
+optional fields should remain at server defaults; agents must not guess sensitive
+or business-critical values.
+
+## Operator input
+
+```yaml
+schema_version: "2026-07-29"
+api_origin: "https://para-linkedin-api.onrender.com"
+api_key_env: "PARA_API_KEY"
+platform: "linkedin" # linkedin | reddit
+mode: "run" # inspect | manage | run | recover_delivery
+
+registration:
+  external_id: "customer-pain-research"
+  name: "Customer pain research"
+  topics:
+    - "workflow bottlenecks"
+    - "customer research"
+  context: "Prioritize specific operating problems and firsthand lessons."
+  include_terms: []
+  exclude_terms: []
+  webhook_url: "https://hooks.example.com/para"
+  delivery_time: "17:00"
+  timezone: "Asia/Kolkata"
+
+linkedin:
+  explicit_queries: []
+
+reddit:
+  subreddits: []
+  explicit_queries: []
+  post_urls: []
+
+approvals:
+  create_or_patch: true
+  activate: true
+  run: true
+  archive: false
+  rotate_webhook_secret: false
+  replay_delivery: false
+  manage_api_keys: false
+
+completion:
+  wait_for: "delivery" # queued | run | batch | delivery
+  deadline: "2026-07-30T18:00:00+05:30"
+  accept_empty_batch: true
+```
+
+The operator supplies the actual API key through the named environment variable,
+not in this document.
+
+## Required fields by mode
+
+| Mode | Required input | Allowed result |
+| --- | --- | --- |
+| `inspect` | platform and API key environment name | Read-only inventory and health report |
+| `manage` | stable `external_id`, name, topics, context | Draft registration created or patched |
+| `run` | manage fields, public HTTPS webhook, activation and run approvals | Extension work queued and final batch observed |
+| `recover_delivery` | registration ID or external ID, delivery ID, replay approval | Attempts diagnosed and optional replay requested |
+
+If a required field or approval is missing, stop before the mutation and report
+the exact missing input.
+
+The deadline must account for the registration's configured delivery time. A
+manual run requests collection but does not bypass daily batch scheduling.
+
+## Action policy
+
+| Action | Default agent policy |
+| --- | --- |
+| Health, list, get, status, batch polling, delivery inspection | Allowed |
+| Create, patch, activate, pause, restore, run, webhook test | Allowed only when the handoff mode and approval authorize it |
+| Archive | Requires `approvals.archive: true` |
+| Rotate webhook secret | Requires `approvals.rotate_webhook_secret: true`; return the secret through an approved secret channel only |
+| Replay delivery | Requires `approvals.replay_delivery: true` |
+| Create, rotate, or revoke API keys | Requires `approvals.manage_api_keys: true` |
+| Direct scraping, posting, commenting, voting, or submitting generated drafts | Unsupported |
+
+## Reconciliation rules
+
+1. List non-archived registrations for the selected platform.
+2. Match the exact `external_id`.
+3. If one match exists, patch only fields explicitly present in the handoff.
+4. If no match exists and create is approved, create a draft.
+5. If more than one apparent business match exists, stop. Do not select by name
+   similarity.
+6. Never restore or replace an archived registration unless explicitly directed.
+
+## Persisted checkpoint
+
+An agent should persist this redacted shape after every successful mutation:
+
+```json
+{
+  "schema_version": "2026-07-29",
+  "platform": "reddit",
+  "external_id": "customer-pain-research",
+  "registration_id": "REGISTRATION_ID",
+  "registration_status": "ACTIVE",
+  "request_ids": ["REQUEST_ID"],
+  "idempotency_keys": {
+    "create": "create:reddit:customer-pain-research:v1",
+    "activate": "activate:reddit:customer-pain-research:v1",
+    "run": "run:reddit:customer-pain-research:2026-07-29"
+  },
+  "run_ids": ["RUN_ID"],
+  "batch_id": "BATCH_ID",
+  "delivery_id": "DELIVERY_ID",
+  "counts": {
+    "collected": 0,
+    "initial_matches": 0,
+    "selected": 0
+  },
+  "secrets_recorded": false
+}
+```
+
+Do not put API keys, webhook secrets, authorization headers, temporary passwords,
+or full post bodies in checkpoints.
+
+## Final report
+
+Report:
+
+- platform, external ID, registration ID, and final lifecycle state;
+- mutations performed and their idempotency keys;
+- run, batch, and delivery IDs;
+- collected, matched, selected, and delivered counts;
+- whether the final batch was empty;
+- webhook status or polling fallback;
+- request IDs needed for log correlation;
+- any approval or input still required.
+
+Never include secrets. Link to the relevant agent workflow and OpenAPI operation
+instead of pasting large schemas into the report.

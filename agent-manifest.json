@@ -1,0 +1,157 @@
+{
+  "schema_version": "2026-07-29",
+  "name": "PARA Social Research API",
+  "api_version": "1.1.0",
+  "api_origin": "https://para-linkedin-api.onrender.com",
+  "documentation_origin": "https://para-linkedin-api.mintlify.site",
+  "contracts": {
+    "openapi": "https://para-linkedin-api.onrender.com/openapi.json",
+    "documentation_openapi": "https://para-linkedin-api.mintlify.site/openapi.json",
+    "llms": "https://para-linkedin-api.mintlify.site/llms.txt",
+    "llms_full": "https://para-linkedin-api.mintlify.site/llms-full.txt",
+    "agent_quickstart": "https://para-linkedin-api.mintlify.site/agents/quickstart.md",
+    "agent_handoff": "https://para-linkedin-api.mintlify.site/agents/handoff.md"
+  },
+  "authentication": {
+    "type": "http_bearer",
+    "environment_variable": "PARA_API_KEY",
+    "owner_scoped": true,
+    "plaintext_returned_once": true,
+    "never_log": [
+      "authorization",
+      "api_key",
+      "temporary_password",
+      "webhook_secret"
+    ]
+  },
+  "request_policy": {
+    "request_id_header": "X-Request-ID",
+    "idempotency_header": "Idempotency-Key",
+    "idempotency_required_for": [
+      "create",
+      "archive",
+      "activate",
+      "pause",
+      "restore",
+      "run",
+      "webhook_test",
+      "webhook_secret_rotation",
+      "delivery_replay",
+      "api_key_create",
+      "api_key_rotation",
+      "api_key_revocation"
+    ],
+    "pagination": "cursor",
+    "timestamps": "ISO-8601",
+    "error_envelope": {
+      "path": "error",
+      "fields": [
+        "code",
+        "message",
+        "request_id",
+        "details"
+      ]
+    }
+  },
+  "scopes": {
+    "registrations:read": "Read registrations and status.",
+    "registrations:write": "Create, update, archive, activate, pause, restore, run, and test registration webhooks.",
+    "batches:read": "List and read immutable result batches.",
+    "deliveries:read": "Inspect webhook deliveries and attempts.",
+    "deliveries:write": "Replay failed or dead-lettered deliveries.",
+    "keys:manage": "Create, rotate, list, and revoke the caller's API keys."
+  },
+  "platforms": {
+    "linkedin": {
+      "base_path": "/v1/linkedin",
+      "registration_path": "/v1/linkedin/registrations",
+      "agent_workflow": "https://para-linkedin-api.mintlify.site/agents/linkedin.md",
+      "event": "linkedin.relevant_posts.daily.v1",
+      "collection": "paired_real_chrome_extension",
+      "author_context": "parallel_enrichment",
+      "result_access": [
+        "webhook",
+        "batch_polling"
+      ],
+      "participation_actions": false
+    },
+    "reddit": {
+      "base_path": "/v1/reddit",
+      "registration_path": "/v1/reddit/registrations",
+      "agent_workflow": "https://para-linkedin-api.mintlify.site/agents/reddit.md",
+      "event": "reddit.relevant_posts.daily.v1",
+      "collection": "paired_real_chrome_extension",
+      "author_context": "extension_only_public_profile",
+      "result_access": [
+        "webhook",
+        "batch_polling",
+        "post_detail_polling"
+      ],
+      "participation_actions": false
+    }
+  },
+  "lifecycle": {
+    "states": [
+      "DRAFT",
+      "ACTIVE",
+      "PAUSED",
+      "ARCHIVED"
+    ],
+    "collection_boundary": "activate",
+    "create_queues_work": false,
+    "restore_target_state": "PAUSED",
+    "archive_is_soft_delete": true
+  },
+  "webhooks": {
+    "signature_algorithm": "HMAC-SHA256",
+    "signature_input": "timestamp + '.' + raw_body",
+    "signature_header": "X-Webhook-Signature",
+    "timestamp_header": "X-Webhook-Timestamp",
+    "event_id_header": "X-Webhook-Id",
+    "success_status": "any_2xx",
+    "empty_posts_is_success": true,
+    "retry_delays": [
+      "PT1M",
+      "PT5M",
+      "PT30M",
+      "PT2H",
+      "PT6H",
+      "PT24H"
+    ]
+  },
+  "agent_safety": {
+    "read_only_without_extra_approval": [
+      "health",
+      "list",
+      "get",
+      "status",
+      "batch_polling",
+      "delivery_inspection"
+    ],
+    "requires_task_authorization": [
+      "create",
+      "patch",
+      "activate",
+      "pause",
+      "restore",
+      "run",
+      "webhook_test"
+    ],
+    "requires_explicit_operator_approval": [
+      "archive",
+      "webhook_secret_rotation",
+      "delivery_replay",
+      "api_key_create",
+      "api_key_rotation",
+      "api_key_revocation"
+    ],
+    "unsupported": [
+      "direct_platform_scraping",
+      "synthetic_collection",
+      "posting",
+      "commenting",
+      "voting",
+      "automatic_draft_submission"
+    ]
+  }
+}

@@ -7,6 +7,20 @@ The PARA Social Research API is the public control plane for topic-based LinkedI
 
 The TypeScript core remains the single owner of task scheduling, Chrome-extension execution, PostgreSQL state, matching, reranking, draft generation, immutable result batches, and webhook delivery. FastAPI provides the public versioned contract and owner-scoped API-key authorization.
 
+## Agent entrypoints
+
+Agents should begin with the curated
+[`llms.txt`](https://para-linkedin-api.mintlify.site/llms.txt), then read
+[Agent quickstart](/agents/quickstart) and [Agent handoff](/agents/handoff).
+Machine-readable capabilities and safety rules are available in
+[`agent-manifest.json`](/agent-manifest.json). The
+[live OpenAPI document](https://para-linkedin-api.onrender.com/openapi.json) is
+the canonical request and response contract.
+
+The singular `/llm.txt` path redirects to the canonical `/llms.txt` path for
+compatibility. Mintlify also exposes `/llms-full.txt`, `/.well-known/llms.txt`,
+and a Markdown representation of every page by appending `.md`.
+
 ```mermaid
 flowchart LR
   A["API client or dashboard"] --> B["FastAPI public control plane"]

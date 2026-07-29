@@ -1,0 +1,81 @@
+---
+title: "Webhook consumer workflow"
+description: "Verify, persist, deduplicate, reconcile, and recover LinkedIn and Reddit result callbacks."
+keywords: ["webhook agent", "HMAC", "replay", "polling"]
+---
+
+One consumer can handle both public events:
+
+| Platform | Event |
+| --- | --- |
+| LinkedIn | `linkedin.relevant_posts.daily.v1` |
+| Reddit | `reddit.relevant_posts.daily.v1` |
+
+The body is the exact immutable payload returned by the matching batch polling
+endpoint.
+
+## Verification algorithm
+
+1. Read the request body as bytes. Do not parse JSON first.
+2. Read `X-Webhook-Timestamp`, `X-Webhook-Signature`, `X-Webhook-Id`, and
+   `X-Request-ID`.
+3. Compute HMAC-SHA256 over `timestamp + "." + raw_body` using the registration
+   webhook secret.
+4. Compare the `v1=` signature using a constant-time comparison.
+5. Enforce the consumer's timestamp freshness policy.
+6. Deduplicate on `X-Webhook-Id`.
+7. Persist the raw body and delivery metadata durably.
+8. Return `2xx` only after the durable write succeeds.
+9. Parse and route on the versioned `event` field.
+10. Treat an empty `data.posts` array as successful completion.
+
+## Python verifier
+
+```python
+import hashlib
+import hmac
+
+
+def verify_signature(
+    *,
+    secret: str,
+    timestamp: str,
+    raw_body: bytes,
+    signature: str,
+) -> bool:
+    message = timestamp.encode("ascii") + b"." + raw_body
+    expected = "v1=" + hmac.new(
+        secret.encode("utf-8"),
+        message,
+        hashlib.sha256,
+    ).hexdigest()
+    return hmac.compare_digest(expected, signature)
+```
+
+Never reconstruct or reserialize JSON before verification.
+
+## Delivery behavior
+
+- Any `2xx` response is success.
+- The sender uses a 10-second timeout.
+- Retry delays are 1 minute, 5 minutes, 30 minutes, 2 hours, 6 hours, and
+  24 hours.
+- A bounded `Retry-After` response may delay the next attempt.
+- Exhausted deliveries become dead-lettered and remain inspectable.
+- Replay requires `deliveries:write` and explicit operator approval.
+
+## Reconciliation
+
+If a webhook is delayed or unavailable:
+
+1. List batches for the registration.
+2. Read the target batch by ID.
+3. Persist the returned payload using its event ID as the deduplication key.
+4. List deliveries and attempts for diagnosis.
+5. Replay only after the destination is fixed and approval is present.
+
+Polling and webhook delivery return the same stored payload. Do not rerun
+collection merely because delivery failed.
+
+Use [LinkedIn webhooks](/guides/webhooks) or
+[Reddit webhooks](/reddit/webhooks) for platform-specific payload examples.

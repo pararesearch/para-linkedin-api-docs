@@ -1,0 +1,70 @@
+# PARA Social Research API
+
+> Agent-first documentation for registering LinkedIn and Reddit research topics, running collection through the paired Chrome extension, and consuming immutable relevant-post batches.
+
+Use this file as the compact documentation index. Use `llms-full.txt` only when
+the complete documentation corpus fits the available context window.
+
+## Agent directives
+
+- Read Agent quickstart and Agent handoff before making requests.
+- Treat the live OpenAPI 3.1 document as the canonical endpoint and schema contract.
+- Read API credentials from environment variables. Never print, persist, or place them in prompts, logs, URLs, or artifacts.
+- Reconcile registrations by `external_id` before creating one. Never invent resource IDs.
+- Persist one stable `Idempotency-Key` per intended mutation and reuse it only for the identical operation.
+- Creating a registration is side-effect free for collection. Activation is the boundary that enables extension work and daily delivery.
+- Collection is asynchronous and extension-only. Do not scrape LinkedIn or Reddit directly and do not launch a substitute browser collector.
+- Treat an empty `posts` array as a successful completed batch.
+- Verify webhook HMACs against the exact raw body before parsing JSON.
+- Require explicit operator approval before archive, secret rotation, API-key rotation or revocation, and delivery replay.
+- Reddit reply drafts and LinkedIn comment drafts are advisory. This public API never authorizes posting, commenting, voting, or other participation actions.
+- On `401` or `403`, stop and request corrected credentials or scopes. On `404`, do not infer that another owner's resource exists.
+- On `429`, honor `Retry-After`. Retry `5xx` and transport failures with bounded backoff. Do not blindly retry other `4xx` responses.
+
+## Start here
+
+- [Agent quickstart](https://para-linkedin-api.mintlify.site/agents/quickstart.md): Deterministic bootstrap, request policy, and completion conditions.
+- [Agent handoff](https://para-linkedin-api.mintlify.site/agents/handoff.md): Operator input contract, approvals, checkpoints, and final report format.
+- [Agent manifest](https://para-linkedin-api.mintlify.site/agent-manifest.json): Machine-readable origins, contracts, capabilities, scopes, events, and safety rules.
+- [Authentication](https://para-linkedin-api.mintlify.site/authentication.md): Bearer credentials, scopes, rotation, and secret handling.
+- [Errors, idempotency, and limits](https://para-linkedin-api.mintlify.site/guides/errors-idempotency-rate-limits.md): Retry decisions and stable mutation keys.
+
+## LinkedIn workflow
+
+- [LinkedIn agent workflow](https://para-linkedin-api.mintlify.site/agents/linkedin.md): Reconcile, create, activate, run, monitor, and consume final LinkedIn results.
+- [LinkedIn quickstart](https://para-linkedin-api.mintlify.site/quickstart.md): Copyable API requests.
+- [LinkedIn registrations](https://para-linkedin-api.mintlify.site/guides/registrations.md): Lifecycle and matching revisions.
+- [LinkedIn matching](https://para-linkedin-api.mintlify.site/guides/matching-relevance.md): Expanded post collection, Parallel author enrichment, reranking, and drafts.
+- [LinkedIn results](https://para-linkedin-api.mintlify.site/guides/result-polling.md): Immutable batch polling.
+- [LinkedIn webhooks](https://para-linkedin-api.mintlify.site/guides/webhooks.md): Event payload, signature, retries, and replay.
+
+## Reddit workflow
+
+- [Reddit agent workflow](https://para-linkedin-api.mintlify.site/agents/reddit.md): Reconcile, create, activate, run, monitor, and consume final Reddit results.
+- [Reddit quickstart](https://para-linkedin-api.mintlify.site/reddit/quickstart.md): Copyable API requests.
+- [Reddit registrations](https://para-linkedin-api.mintlify.site/reddit/registrations.md): Sources, capture settings, lifecycle, revisions, and owner isolation.
+- [Reddit matching](https://para-linkedin-api.mintlify.site/reddit/matching.md): Initial relevance, extension-only public author context, reranking, and advisory drafts.
+- [Reddit results](https://para-linkedin-api.mintlify.site/reddit/results.md): Full posts, comments, provenance, and immutable batches.
+- [Reddit webhooks](https://para-linkedin-api.mintlify.site/reddit/webhooks.md): Event payload, signature, retries, and replay.
+
+## Delivery consumers
+
+- [Webhook consumer workflow](https://para-linkedin-api.mintlify.site/agents/webhooks.md): One verification and reconciliation flow for both platforms.
+- [Observability](https://para-linkedin-api.mintlify.site/operations/observability.md): Correlation IDs and durable pipeline events.
+- [Operations runbook](https://para-linkedin-api.mintlify.site/operations/runbook.md): Provisioning and recovery.
+
+## Executable contract
+
+- [Live OpenAPI 3.1](https://para-linkedin-api.onrender.com/openapi.json): Canonical public API and webhook schemas.
+- [Documentation OpenAPI snapshot](https://para-linkedin-api.mintlify.site/openapi.json): Contract snapshot used to generate endpoint pages.
+- [API reference](https://para-linkedin-api.mintlify.site/api-reference): Interactive endpoint reference.
+- [Readiness](https://para-linkedin-api.onrender.com/health/ready): Live dependency and migration readiness.
+
+## Optional
+
+- [Complete documentation corpus](https://para-linkedin-api.mintlify.site/llms-full.txt): All navigable documentation in one text response.
+- [Shared extension architecture](https://para-linkedin-api.mintlify.site/guides/shared-extension.md): Database grants and real Chrome execution.
+- [Reddit extension pairing](https://para-linkedin-api.mintlify.site/reddit/extension-pairing.md): Direct-ZIP version and runner/persona pairing.
+- [Testing](https://para-linkedin-api.mintlify.site/operations/testing.md): Local and CI verification.
+- [Reddit testing](https://para-linkedin-api.mintlify.site/reddit/testing.md): Real-extension production smoke evidence.
+- [Changelog](https://para-linkedin-api.mintlify.site/changelog.md): Versioned behavior changes.

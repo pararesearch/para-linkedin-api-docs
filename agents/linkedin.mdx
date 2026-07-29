@@ -1,0 +1,128 @@
+---
+title: "LinkedIn agent workflow"
+description: "Deterministic LinkedIn registration, extension-run, batch, and delivery workflow for agents."
+keywords: ["LinkedIn agent", "registration", "batch", "webhook"]
+---
+
+LinkedIn collection is performed asynchronously by the paired real Chrome
+extension. The API agent controls registration state and observes results; it
+does not scrape LinkedIn itself.
+
+## Preconditions
+
+- Read [Agent handoff](/agents/handoff).
+- Require `registrations:read` for inspection.
+- Add `registrations:write` for create, patch, activate, pause, restore, run, or
+  webhook test.
+- Activation requires at least one topic and a public HTTPS webhook.
+- Use a stable `external_id` supplied by the operator.
+
+## State machine
+
+```text
+list -> reconcile -> create DRAFT or patch -> activate ACTIVE
+     -> request run -> poll status -> read READY batch
+     -> verify DELIVERED webhook or accept polling recovery
+```
+
+Create does not queue work. Activate is the collection boundary.
+
+## Reconcile
+
+```bash
+curl --fail-with-body \
+  "$PARA_SOCIAL_API/v1/linkedin/registrations?limit=100" \
+  --header "Authorization: Bearer $PARA_API_KEY" \
+  --header "X-Request-ID: linkedin-agent-reconcile-001"
+```
+
+Match `external_id` exactly. If it exists, patch only handoff-provided fields. If
+it does not exist and create is approved, create a draft.
+
+## Create
+
+```bash
+curl --fail-with-body \
+  --request POST "$PARA_SOCIAL_API/v1/linkedin/registrations" \
+  --header "Authorization: Bearer $PARA_API_KEY" \
+  --header "Content-Type: application/json" \
+  --header "X-Request-ID: linkedin-agent-create-001" \
+  --header "Idempotency-Key: create:linkedin:founder-workflows:v1" \
+  --data '{
+    "name": "Founder workflow discussions",
+    "external_id": "founder-workflows",
+    "topics": ["founder workflows", "AI operations"],
+    "context": "Prioritize practical operating lessons from startup founders.",
+    "explicit_queries": ["founder workflow design"],
+    "delivery_time": "17:00",
+    "timezone": "Asia/Kolkata",
+    "webhook_url": "https://hooks.example.com/linkedin"
+  }'
+```
+
+Capture `registration.id`. Send the one-time `webhook_secret` directly to the
+approved secret store and omit it from checkpoints.
+
+## Activate and run
+
+```bash
+curl --fail-with-body \
+  --request POST \
+  "$PARA_SOCIAL_API/v1/linkedin/registrations/REGISTRATION_ID/activate" \
+  --header "Authorization: Bearer $PARA_API_KEY" \
+  --header "X-Request-ID: linkedin-agent-activate-001" \
+  --header "Idempotency-Key: activate:linkedin:founder-workflows:v1"
+
+curl --fail-with-body \
+  --request POST \
+  "$PARA_SOCIAL_API/v1/linkedin/registrations/REGISTRATION_ID/run" \
+  --header "Authorization: Bearer $PARA_API_KEY" \
+  --header "X-Request-ID: linkedin-agent-run-001" \
+  --header "Idempotency-Key: run:linkedin:founder-workflows:2026-07-29"
+```
+
+Persist returned run IDs. A successful queue response is not collection
+completion, and a manual run does not bypass the configured daily delivery time.
+
+## Monitor
+
+Poll with bounded intervals:
+
+```bash
+curl --fail-with-body \
+  "$PARA_SOCIAL_API/v1/linkedin/registrations/REGISTRATION_ID/status" \
+  --header "Authorization: Bearer $PARA_API_KEY" \
+  --header "X-Request-ID: linkedin-agent-status-001"
+```
+
+Stop on a terminal failed or cancelled requested run and report its error plus
+request ID. Continue only when the requested runs are `COMPLETED`.
+
+## Consume results
+
+```bash
+curl --fail-with-body \
+  "$PARA_SOCIAL_API/v1/linkedin/registrations/REGISTRATION_ID/batches?limit=25" \
+  --header "Authorization: Bearer $PARA_API_KEY"
+
+curl --fail-with-body \
+  "$PARA_SOCIAL_API/v1/linkedin/registrations/REGISTRATION_ID/batches/BATCH_ID" \
+  --header "Authorization: Bearer $PARA_API_KEY"
+```
+
+The immutable batch contains expanded post content, media and engagement text,
+post/profile URLs, source query, initial and final relevance evidence, Parallel
+author enrichment, and optional comment draft. `posts: []` is a valid completed
+result.
+
+## LinkedIn-specific boundaries
+
+- Author context uses server-side Parallel enrichment after initial relevance.
+- Final selection deduplicates repeated queries, prior delivered URLs, and
+  authors within the registration.
+- Generated comment drafts are advisory and are not posted automatically.
+- A separate browser, synthetic collector, or direct LinkedIn scraper is not a
+  valid fallback.
+
+Use [Webhook consumer workflow](/agents/webhooks) for delivery and
+[LinkedIn matching](/guides/matching-relevance) for score semantics.

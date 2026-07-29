@@ -10,6 +10,19 @@ export PARA_SOCIAL_API="https://para-linkedin-api.onrender.com"
 export PARA_API_KEY="li_api_..."
 ```
 
+## Agent contract
+
+| Step | Side effect | Safe retry |
+| --- | --- | --- |
+| List and reconcile by exact `external_id` | None | Yes |
+| Create | Stores a `DRAFT`; does not queue collection | Same body and same idempotency key |
+| Activate | Enables scheduled extension work | Same idempotency key |
+| Run | Queues asynchronous extension work | Same idempotency key |
+| Poll status and batches | None | Yes |
+
+Agents should follow [LinkedIn agent workflow](/agents/linkedin). Never create a
+second registration when the requested `external_id` already exists.
+
 ## Create a registration
 
 ```bash

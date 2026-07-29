@@ -3,6 +3,17 @@
   "theme": "mint",
   "name": "PARA Social Research API",
   "description": "Register LinkedIn and Reddit research topics and receive final relevant-post batches.",
+  "contextual": {
+    "display": "header",
+    "options": [
+      "copy",
+      "view",
+      "chatgpt",
+      "claude",
+      "cursor",
+      "vscode"
+    ]
+  },
   "colors": {
     "primary": "#087F5B",
     "light": "#12B886",
@@ -10,6 +21,27 @@
   },
   "navigation": {
     "tabs": [
+      {
+        "tab": "Agents",
+        "icon": "bot",
+        "groups": [
+          {
+            "group": "Start here",
+            "pages": [
+              "agents/quickstart",
+              "agents/handoff"
+            ]
+          },
+          {
+            "group": "Workflows",
+            "pages": [
+              "agents/linkedin",
+              "agents/reddit",
+              "agents/webhooks"
+            ]
+          }
+        ]
+      },
       {
         "tab": "Guides",
         "icon": "book-open",
@@ -83,6 +115,12 @@
       }
     ]
   },
+  "redirects": [
+    {
+      "source": "/llm.txt",
+      "destination": "/llms.txt"
+    }
+  ],
   "api": {
     "playground": {
       "display": "interactive"

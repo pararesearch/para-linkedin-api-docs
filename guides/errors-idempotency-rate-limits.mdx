@@ -18,6 +18,18 @@ All public errors use one envelope:
 
 Include the returned `request_id` in support and log searches.
 
+## Agent decision table
+
+| Result | Decision |
+| --- | --- |
+| `2xx` | Persist the redacted checkpoint and continue |
+| `400`, `409`, `422` | Correct the request; never repeat it unchanged |
+| `401` | Stop and request a valid credential |
+| `403` | Stop and request the required scope |
+| `404` | Refresh owner-scoped state without inferring cross-owner existence |
+| `429` | Honor bounded `Retry-After` and reuse the same idempotency key |
+| `5xx` or transport failure | Apply bounded backoff and reuse the same idempotency key |
+
 ## Idempotency
 
 Creates and state-changing actions require `Idempotency-Key`, 8 to 200 characters. Reusing a key with the same owner, operation, and request returns the stored result. Reusing it with a different request is rejected.
@@ -32,6 +44,9 @@ replay:delivery-id:after-receiver-fix
 ```
 
 Idempotency does not make two different keys equivalent. Persist the key before sending a retryable request.
+
+Sensitive replay payloads remain available for at most 24 hours. Agents must not
+use idempotency storage as a credential vault or long-term checkpoint.
 
 ## Status codes
 

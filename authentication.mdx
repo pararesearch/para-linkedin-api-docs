@@ -15,6 +15,18 @@ Sensitive idempotency replay responses are AES-GCM encrypted at rest and expire
 after 24 hours. Plaintext API keys, temporary passwords, and webhook secrets are
 never written to the idempotency table or application logs.
 
+## Agent credential rules
+
+- Read the key from the environment variable named in the handoff, normally
+  `PARA_API_KEY`.
+- Never echo the key, interpolate it into a URL, or include it in a prompt,
+  checkpoint, test fixture, artifact, or final report.
+- Stop on `401`; do not attempt to discover or repair credentials.
+- Stop on `403` and report the missing scope.
+- Treat key creation, rotation, and revocation as explicit-approval actions.
+- Route one-time API keys and webhook secrets directly to an approved secret
+  store.
+
 ## Scopes
 
 | Scope | Allows |
