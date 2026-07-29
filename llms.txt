@@ -25,6 +25,7 @@ the complete documentation corpus fits the available context window.
 
 - [Agent quickstart](https://para-linkedin-api.mintlify.site/agents/quickstart.md): Deterministic bootstrap, request policy, and completion conditions.
 - [Agent handoff](https://para-linkedin-api.mintlify.site/agents/handoff.md): Operator input contract, approvals, checkpoints, and final report format.
+- [Installable agent skill](https://para-linkedin-api.mintlify.site/skill.md): Capabilities, required inputs, boundaries, and deterministic workflows for API agents.
 - [Agent manifest](https://para-linkedin-api.mintlify.site/agent-manifest.json): Machine-readable origins, contracts, capabilities, scopes, events, and safety rules.
 - [Authentication](https://para-linkedin-api.mintlify.site/authentication.md): Bearer credentials, scopes, rotation, and secret handling.
 - [Errors, idempotency, and limits](https://para-linkedin-api.mintlify.site/guides/errors-idempotency-rate-limits.md): Retry decisions and stable mutation keys.

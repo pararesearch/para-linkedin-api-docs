@@ -9,6 +9,8 @@
     "documentation_openapi": "https://para-linkedin-api.mintlify.site/openapi.json",
     "llms": "https://para-linkedin-api.mintlify.site/llms.txt",
     "llms_full": "https://para-linkedin-api.mintlify.site/llms-full.txt",
+    "skill": "https://para-linkedin-api.mintlify.site/skill.md",
+    "agent_skills_discovery": "https://para-linkedin-api.mintlify.site/.well-known/agent-skills/index.json",
     "agent_quickstart": "https://para-linkedin-api.mintlify.site/agents/quickstart.md",
     "agent_handoff": "https://para-linkedin-api.mintlify.site/agents/handoff.md"
   },

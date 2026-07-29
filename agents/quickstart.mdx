@@ -14,12 +14,19 @@ scopes.
 | --- | --- | --- |
 | Agent index | `https://para-linkedin-api.mintlify.site/llms.txt` | Read directives and choose the minimum relevant pages |
 | Full corpus | `https://para-linkedin-api.mintlify.site/llms-full.txt` | Load all docs only when context permits |
+| Installable skill | `https://para-linkedin-api.mintlify.site/skill.md` | Load capabilities, inputs, constraints, and deterministic workflows |
 | Agent manifest | `https://para-linkedin-api.mintlify.site/agent-manifest.json` | Read origins, scopes, events, capabilities, and safety policy |
 | OpenAPI 3.1 | `https://para-linkedin-api.onrender.com/openapi.json` | Resolve exact request and response schemas |
 | Readiness | `https://para-linkedin-api.onrender.com/health/ready` | Confirm the API and required migrations are ready |
 
 The OpenAPI document is authoritative when prose and generated endpoint
 reference disagree.
+
+Install the documentation skill in compatible agents:
+
+```bash
+npx skills add https://para-linkedin-api.mintlify.site
+```
 
 ## Bootstrap algorithm
 
