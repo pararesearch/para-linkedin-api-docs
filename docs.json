@@ -115,12 +115,6 @@
       }
     ]
   },
-  "redirects": [
-    {
-      "source": "/llm.txt",
-      "destination": "/llms.txt"
-    }
-  ],
   "api": {
     "playground": {
       "display": "interactive"
