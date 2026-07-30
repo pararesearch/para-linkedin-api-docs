@@ -58,6 +58,8 @@
             "pages": [
               "quickstart",
               "guides/registrations",
+              "guides/automatic-requirement-compilation",
+              "guides/compiled-plan-overrides",
               "guides/matching-relevance",
               "guides/webhooks",
               "guides/result-polling"

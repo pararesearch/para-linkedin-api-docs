@@ -3,7 +3,10 @@ title: "Overview"
 description: "How LinkedIn and Reddit registrations become extension-collected result batches."
 ---
 
-The PARA Social Research API is the public control plane for topic-based LinkedIn and Reddit research. A user creates one or more independent registrations per platform, and each registration controls its own topics, context, filters, sources, schedule, thresholds, draft settings, and webhook.
+The PARA Social Research API is the public control plane for LinkedIn and
+Reddit research. LinkedIn callers can provide one detailed business use case and
+let the server compile the searches and relevance system; legacy topics and
+explicit source controls remain available.
 
 The TypeScript core remains the single owner of task scheduling, Chrome-extension execution, PostgreSQL state, matching, reranking, draft generation, immutable result batches, and webhook delivery. FastAPI provides the public versioned contract and owner-scoped API-key authorization.
 
@@ -29,7 +32,9 @@ Mintlify's direct `.mintlify.app` origin.
 flowchart LR
   A["API client or dashboard"] --> B["FastAPI public control plane"]
   B --> C["Private TypeScript API"]
-  C --> D["PostgreSQL task queue"]
+  C --> P["LinkedIn requirement compiler"]
+  P --> D["PostgreSQL task queue"]
+  C --> D
   D --> E["Existing paired Chrome extension"]
   E --> F["Expanded platform post storage"]
   F --> G["Initial relevance"]
@@ -43,24 +48,31 @@ flowchart LR
 ## Core guarantees
 
 - API keys, registrations, batches, and deliveries are owner scoped.
-- Creating an account or draft registration creates no search work.
-- Only activation creates the requirement and scheduled extension tasks.
+- Creating an account creates no search work.
+- Topics-only legacy registration creation is side-effect free. LinkedIn
+  `use_case` creation queues compilation and may auto-activate a validated
+  ten-search plan when its HTTPS webhook is valid.
 - All LinkedIn and Reddit collection is performed by the paired real Chrome extension in its signed-in profile.
 - A result batch is created at most once per registration and local delivery date.
 - Polling returns the same stored payload that webhook delivery signs and sends.
 - Archived registrations retain historical batches but stop future work.
-- LinkedIn uses Parallel author enrichment. Reddit uses only public profile data captured by the extension and never performs identity resolution.
+- Only first-pass LinkedIn matches use Parallel author enrichment. Reddit uses
+  only public profile data captured by the extension and never performs identity
+  resolution.
 - Akhil and Deep's legacy LinkedIn requirements and Reddit configurations remain primary registrations with webhooks disabled.
 
 ## Barada setup
 
 Barada Sahu is provisioned with `barada@getmason.io`, a forced-change temporary dashboard password, and a one-time API key. His owner record is granted to the extension runner owned by `akhil@get-para.com`.
 
-Barada supplies his own research topics and relevance context. LinkedIn comment drafts and Reddit reply drafts resolve the effective persona to Akhil's profile and established voice while remaining advisory. Reddit posting, commenting, and voting stay dashboard-only and require explicit confirmation.
+Barada can supply one detailed LinkedIn use case; the live compiler produces ten
+queries, post and author rubrics, prompts, filters, and weights. LinkedIn
+comment drafts and Reddit reply drafts resolve the effective persona to Akhil's
+profile and established voice while remaining advisory.
 
 <CardGroup cols={2}>
   <Card title="LinkedIn quickstart" icon="linkedin" href="/quickstart">
-    Register LinkedIn topics and receive enriched daily post batches.
+    Compile one LinkedIn use case and receive enriched daily post batches.
   </Card>
   <Card title="Reddit quickstart" icon="reddit" href="/reddit/quickstart">
     Register Reddit sources and run collection through the existing real extension.

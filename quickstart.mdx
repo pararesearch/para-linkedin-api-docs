@@ -1,6 +1,6 @@
 ---
 title: "LinkedIn quickstart"
-description: "Create, activate, run, and inspect a LinkedIn registration."
+description: "Create a compiler-native LinkedIn registration from one use case and inspect its ten-search cycle."
 ---
 
 Set the deployed API origin and the one-time API key returned during provisioning.
@@ -15,15 +15,16 @@ export PARA_API_KEY="li_api_..."
 | Step | Side effect | Safe retry |
 | --- | --- | --- |
 | List and reconcile by exact `external_id` | None | Yes |
-| Create | Stores a `DRAFT`; does not queue collection | Same body and same idempotency key |
-| Activate | Enables scheduled extension work | Same idempotency key |
-| Run | Queues asynchronous extension work | Same idempotency key |
+| Create with topics only | Stores a legacy `DRAFT`; does not queue collection | Same body and same idempotency key |
+| Create with `use_case` | Queues compilation; may auto-activate after validation | Same body and same idempotency key |
+| Activate | Enables exactly ten compiled searches or legacy extension work | Same idempotency key |
+| Run | Queues one asynchronous ten-search cycle for a compiled plan | Same idempotency key |
 | Poll status and batches | None | Yes |
 
 Agents should follow [LinkedIn agent workflow](/agents/linkedin). Never create a
 second registration when the requested `external_id` already exists.
 
-## Create a registration
+## Create from one business use case
 
 ```bash
 curl --request POST "$PARA_SOCIAL_API/v1/linkedin/registrations" \
@@ -33,11 +34,8 @@ curl --request POST "$PARA_SOCIAL_API/v1/linkedin/registrations" \
   --data '{
     "name": "Founder workflow discussions",
     "external_id": "mason-founder-workflows",
-    "topics": ["founder workflows", "AI operations", "go-to-market"],
-    "context": "Prioritize practical operating lessons from startup founders.",
-    "include_terms": ["workflow", "customer context"],
-    "exclude_terms": ["job opening", "event promotion"],
-    "explicit_queries": ["founder workflow design"],
+    "use_case": "Find substantive LinkedIn posts from B2B SaaS founders and revenue leaders explaining how they use AI agents in go-to-market workflows. Prioritize firsthand implementation details, measured outcomes, buying friction, and unmet operational needs. Exclude job listings and event promotions. Authors must work at B2B software companies.",
+    "auto_activate": true,
     "delivery_time": "17:00",
     "timezone": "Asia/Kolkata",
     "first_pass_min_score": 0.45,
@@ -48,20 +46,29 @@ curl --request POST "$PARA_SOCIAL_API/v1/linkedin/registrations" \
   }'
 ```
 
-The response contains `registration` and a `webhook_secret`. Store the secret immediately; it is returned only when the webhook is created or rotated.
+The response contains `registration` and a `webhook_secret`. Store the secret
+immediately; it is returned only when the webhook is created or rotated.
+Compilation runs asynchronously. Once the plan is valid, the server
+auto-activates this registration and queues exactly ten extension runs.
 
-## Activate it
+## Poll compilation and inspect the plan
 
 ```bash
-curl --request POST \
-  "$PARA_SOCIAL_API/v1/linkedin/registrations/REGISTRATION_ID/activate" \
+curl "$PARA_SOCIAL_API/v1/linkedin/registrations/REGISTRATION_ID/status" \
   --header "Authorization: Bearer $PARA_API_KEY" \
-  --header "Idempotency-Key: activate-founder-workflows-v1"
+  --header "X-Request-ID: founder-workflows-status-001"
+
+curl "$PARA_SOCIAL_API/v1/linkedin/registrations/REGISTRATION_ID/plan" \
+  --header "Authorization: Bearer $PARA_API_KEY" \
+  --header "X-Request-ID: founder-workflows-plan-001"
 ```
 
-Activation validates the HTTPS webhook, creates or updates the scoped requirement, and makes its extension tasks eligible for scheduling.
+Wait for `compilation_status: READY`, `auto_activation_status: ACTIVATED`, an
+`active_plan_revision`, and ten correlated runs. The plan response includes ten
+unique searches, post and author rubrics, evidence-proven hard filters,
+thresholds, normalized weights, rendered prompts, and hashes.
 
-## Request a run
+## Request another ten-search cycle
 
 ```bash
 curl --request POST \
@@ -70,7 +77,62 @@ curl --request POST \
   --header "Idempotency-Key: run-founder-workflows-2026-07-28"
 ```
 
-This returns `202 Accepted`. The existing shared Chrome extension claims the work asynchronously.
+This returns `202 Accepted`. One cycle with exactly ten runs is created from the
+active revision. The existing shared Chrome extension claims those runs
+asynchronously.
+
+## Python
+
+```python
+import os
+import time
+
+import httpx
+
+base = os.environ["PARA_SOCIAL_API"]
+headers = {"Authorization": f"Bearer {os.environ['PARA_API_KEY']}"}
+
+created = httpx.post(
+    f"{base}/v1/linkedin/registrations",
+    headers={
+        **headers,
+        "Idempotency-Key": "create:linkedin:agent-gtm:v1",
+        "X-Request-ID": "python-linkedin-create-001",
+    },
+    json={
+        "name": "AI agent GTM signals",
+        "external_id": "agent-gtm-signals",
+        "use_case": (
+            "Find firsthand B2B SaaS posts about deploying AI agents in "
+            "go-to-market workflows. Exclude job listings."
+        ),
+        "auto_activate": True,
+        "webhook_url": "https://hooks.example.com/linkedin",
+    },
+    timeout=30,
+)
+created.raise_for_status()
+registration_id = created.json()["registration"]["id"]
+
+for _ in range(90):
+    status = httpx.get(
+        f"{base}/v1/linkedin/registrations/{registration_id}/status",
+        headers=headers,
+        timeout=30,
+    )
+    status.raise_for_status()
+    if status.json()["registration"]["compilation_status"] in {"READY", "FAILED"}:
+        break
+    time.sleep(2)
+
+plan = httpx.get(
+    f"{base}/v1/linkedin/registrations/{registration_id}/plan",
+    headers=headers,
+    timeout=30,
+)
+plan.raise_for_status()
+assert len(plan.json()["search_plans"]) == 10
+```
 
 ## Check status and results
 
@@ -82,4 +144,5 @@ curl "$PARA_SOCIAL_API/v1/linkedin/registrations/REGISTRATION_ID/batches?limit=1
   --header "Authorization: Bearer $PARA_API_KEY"
 ```
 
-See [result polling](/guides/result-polling) for immutable payload semantics and [webhooks](/guides/webhooks) for signature verification.
+See [automatic requirement compilation](/guides/automatic-requirement-compilation),
+[result polling](/guides/result-polling), and [webhooks](/guides/webhooks).

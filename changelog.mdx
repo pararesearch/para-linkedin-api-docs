@@ -3,6 +3,28 @@ title: "Changelog"
 description: "Contract and behavior changes for the PARA Social Research API."
 ---
 
+## 2026-07-30
+
+- Added LinkedIn compiler-native registration creation through one detailed
+  `use_case`, using the official TypeScript OpenAI Agents SDK and validated
+  structured output.
+- Added immutable plan revisions with exactly ten search plans, post and
+  author/ICP rubrics, rendered prompts, explicit hard-filter provenance,
+  normalized weights, thresholds, assumptions, and integrity hashes.
+- Added plan read, regenerate, and validated advanced-override endpoints.
+- Added correlated ten-run cycles for activation, cadence, and manual runs while
+  preserving the existing real-extension protocol and global single-run rule.
+- Limited Parallel enrichment to first-pass matches and expanded normalized
+  public author/company evidence with schema-versioned caching.
+- Made final scoring deterministic from persisted components and represented
+  missing author evidence as neutral `UNKNOWN` with reduced coverage.
+- Enabled Barada for live compilation and Akhil/Deep for shadow plans, with no
+  shadow changes to their current behavior.
+- Updated agent, OpenAPI, Mintlify, logging, CI, and real-extension smoke
+  contracts for compiler-aware operation.
+
+The LinkedIn event remains `linkedin.relevant_posts.daily.v1`.
+
 ## 2026-07-29
 
 - Added curated `/llms.txt`, custom installable `/skill.md`, SHA-256-backed

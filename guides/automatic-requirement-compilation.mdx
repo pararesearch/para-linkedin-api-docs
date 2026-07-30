@@ -1,0 +1,147 @@
+---
+title: "Automatic requirement compilation"
+description: "Turn one detailed LinkedIn business use case into ten searches and two evidence-based relevance rubrics."
+keywords: ["LinkedIn", "requirement compiler", "search plan", "ICP", "relevance"]
+---
+
+Compiler-native LinkedIn registrations let the caller describe the business
+outcome instead of hand-authoring topics, search queries, prompts, and scoring
+rules. Supply `use_case` plus delivery settings. The TypeScript core compiles an
+immutable plan revision with the official OpenAI Agents SDK and validates it
+before any extension work becomes eligible.
+
+## Creation boundary
+
+| Input | Planning mode | Creation side effect |
+| --- | --- | --- |
+| `topics` without `use_case` | `LEGACY` | Stores a `DRAFT`; collection is not queued |
+| `use_case` with `auto_activate: false` | `COMPILED` | Queues compilation; leaves a ready plan in `DRAFT` |
+| `use_case` with omitted or true `auto_activate` and a valid webhook | `COMPILED` | Queues compilation, then atomically activates a valid plan and its first ten-run cycle |
+| `use_case` without a valid webhook | `COMPILED` | Compiles the plan, then reports `activation_blocked` without collection tasks |
+
+Auto-activation never happens before compilation succeeds. A failed initial
+compilation leaves the registration in `DRAFT` and creates no search tasks.
+
+## Create from a use case
+
+```bash
+curl --fail-with-body \
+  --request POST "$PARA_SOCIAL_API/v1/linkedin/registrations" \
+  --header "Authorization: Bearer $PARA_API_KEY" \
+  --header "Content-Type: application/json" \
+  --header "X-Request-ID: linkedin-compiler-create-001" \
+  --header "Idempotency-Key: create:linkedin:agent-gtm:v1" \
+  --data '{
+    "name": "AI agent GTM signals",
+    "external_id": "agent-gtm-signals",
+    "use_case": "Find substantive LinkedIn posts from B2B SaaS founders and revenue leaders describing how they adopt AI agents in go-to-market workflows. Prioritize firsthand implementation details, measurable outcomes, buying friction, and unmet operational needs. Exclude job listings and event promotions. Authors must work at B2B software companies.",
+    "auto_activate": true,
+    "delivery_time": "17:00",
+    "timezone": "Asia/Kolkata",
+    "webhook_url": "https://hooks.example.com/linkedin"
+  }'
+```
+
+`use_case` accepts up to 10,000 characters. Existing fields such as `topics`,
+`include_terms`, `exclude_terms`, `geography_preference`,
+`profile_preference`, `follower_criteria`, and `explicit_queries` remain
+available as seeds or authoritative structured constraints.
+
+## Poll compilation
+
+Poll registration status using bounded intervals:
+
+```bash
+curl --fail-with-body \
+  "$PARA_SOCIAL_API/v1/linkedin/registrations/REGISTRATION_ID/status" \
+  --header "Authorization: Bearer $PARA_API_KEY" \
+  --header "X-Request-ID: linkedin-compiler-status-001"
+```
+
+Inspect these fields:
+
+| Field | Meaning |
+| --- | --- |
+| `compilation_status` | `PENDING`, `RUNNING`, `READY`, or `FAILED` |
+| `active_plan_revision` | Immutable revision currently used for live work |
+| `auto_activation_status` | Pending, activated, blocked, failed, or shadow state |
+| `latest_plan` | Safe revision summary and compilation error |
+| `recent_cycles` | Ten-run progress and terminal counts |
+| `runner` | Effective real-extension runner and latest heartbeat |
+| `effective_persona` | Persona owner used for advisory comment drafts |
+
+Do not call `/activate` or `/run` while compilation is pending. The API returns
+`409 plan_not_ready`. When an auto-activating registration is ready, the server
+queues exactly ten correlated runs without either call.
+
+## Inspect the generated plan
+
+```bash
+curl --fail-with-body \
+  "$PARA_SOCIAL_API/v1/linkedin/registrations/REGISTRATION_ID/plan" \
+  --header "Authorization: Bearer $PARA_API_KEY" \
+  --header "X-Request-ID: linkedin-plan-read-001"
+```
+
+The response contains:
+
+- exactly ten ordered, unique search plans with topic, query, intent, signals,
+  date facet, and sort mode;
+- the post-relevance rubric and rendered post prompt;
+- the author/ICP rubric and rendered author prompt;
+- explicit hard filters with source provenance;
+- assumptions, thresholds, normalized weights, model, compiler version, and
+  integrity hashes; and
+- the durable `request_id` propagated from plan creation through compilation,
+  activation, the initial cycle, all ten runs, and downstream logs.
+
+Pass `?revision=N` to inspect historical revisions. Historical result batches
+continue to reference the plan revision that produced them.
+
+## Hard and soft constraints
+
+The compiler may create a hard filter only from:
+
+- authoritative structured `include_terms` or `exclude_terms`; or
+- an exact `use_case` excerpt containing unambiguous restrictive language such
+  as “only,” “exclude,” “must,” or “must not.”
+
+Topics, explicit queries, and geography, profile, or follower preference fields
+remain search seeds or weighted rubric signals unless the use case separately
+states an explicit restriction. At
+author scoring time, missing public evidence is `UNKNOWN`, receives a neutral
+score of `0.5`, and reduces evidence coverage. Unknown evidence never proves a
+hard-filter violation; only contradictory public evidence can reject.
+
+## Ten-search cycles
+
+Every activation, scheduled due window, and accepted manual run creates one
+cycle containing exactly ten runs from the active plan. All ten share the
+registration, plan revision, requirement revision, cycle ID, and request ID.
+The installed paired Chrome extension claims them one at a time under the
+global single-run safety rule.
+
+A cycle becomes terminal after all ten runs are completed, failed, cancelled,
+or require reauthentication. Completed results survive partial failure, and the
+daily batch records per-query failure details.
+
+## Regenerate
+
+After changing the use case or seed fields, request a new immutable revision:
+
+```bash
+curl --fail-with-body \
+  --request POST \
+  "$PARA_SOCIAL_API/v1/linkedin/registrations/REGISTRATION_ID/plan/regenerate" \
+  --header "Authorization: Bearer $PARA_API_KEY" \
+  --header "X-Request-ID: linkedin-plan-regenerate-001" \
+  --header "Idempotency-Key: regenerate:linkedin:agent-gtm:v2"
+```
+
+If recompilation fails while an older plan is active, that active plan and its
+tasks remain unchanged. A successful live replacement atomically supersedes the
+old plan and archives its future tasks.
+
+See [Compiled-plan overrides](/guides/compiled-plan-overrides) for validated
+expert changes and [Matching and relevance](/guides/matching-relevance) for
+runtime scoring.

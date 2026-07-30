@@ -10,6 +10,10 @@ FastAPI writes JSON through structlog. TypeScript writes JSON through Pino. Post
 ```text
 api.request
 registration.created
+plan.compilation.queued
+plan.compilation.started
+plan.compilation.completed
+plan.activated
 task.queued
 extension.claimed
 posts.persisted
@@ -25,6 +29,12 @@ webhook.dead_letter
 
 Common fields include service, environment, event, request ID, owner, registration, requirement, task, run, batch, delivery, duration, attempt, counts, outcome, and error code.
 
+Compiled LinkedIn events also carry plan ID, plan revision, topic ID, cycle ID,
+and requirement revision. The verifier requires exactly ten `task.queued`
+events for each accepted compiled cycle and requires every extension,
+matching, enrichment, draft, batch, and webhook stage to remain traceable to
+that cycle.
+
 `X-Request-ID` is accepted at the public API and propagated through FastAPI, the private TypeScript request, queued run, extension claim and upload, result batch, webhook attempt, callback header, and payload.
 
 ## Redaction rules
@@ -36,6 +46,7 @@ Logs must never contain:
 - webhook plaintext secrets
 - full post bodies
 - raw Parallel or OpenAI responses
+- raw use cases, generated prompts, or complete public profile snapshots
 
 The E2E log verifier scans all captured logs for known fixture secrets and post-body markers, and fails when an expected stage lacks its correlation fields.
 
@@ -44,4 +55,6 @@ The E2E log verifier scans all captured logs for known fixture secrets and post-
 - `GET /health/live` checks the FastAPI process.
 - `GET /health/ready` calls the private TypeScript readiness endpoint.
 - `GET /api/health/ready` checks the TypeScript service and database.
-- The private readiness endpoint verifies that `linkedin_registrations` exists.
+- The private readiness endpoint verifies registration and plan migrations,
+  compiler-worker configuration, OpenAI compiler configuration, and database
+  connectivity.

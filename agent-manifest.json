@@ -1,7 +1,7 @@
 {
-  "schema_version": "2026-07-29",
+  "schema_version": "2026-07-30",
   "name": "PARA Social Research API",
-  "api_version": "1.1.0",
+  "api_version": "1.2.0",
   "api_origin": "https://para-linkedin-api.onrender.com",
   "documentation_origin": "https://para-linkedin-api.mintlify.site",
   "contracts": {
@@ -38,6 +38,8 @@
       "pause",
       "restore",
       "run",
+      "plan_regenerate",
+      "plan_override",
       "webhook_test",
       "webhook_secret_rotation",
       "delivery_replay",
@@ -77,7 +79,21 @@
         "webhook",
         "batch_polling"
       ],
-      "participation_actions": false
+      "participation_actions": false,
+      "requirement_compiler": {
+        "input": "use_case",
+        "searches_per_cycle": 10,
+        "plan_path": "/v1/linkedin/registrations/{registration_id}/plan",
+        "auto_activate_default": true,
+        "activation_requires": [
+          "ready_plan",
+          "ten_unique_searches",
+          "public_https_webhook"
+        ],
+        "author_enrichment": "first_pass_matches_only",
+        "unknown_evidence": "neutral_score_reduced_coverage",
+        "final_scoring": "deterministic_persisted_weights"
+      }
     },
     "reddit": {
       "base_path": "/v1/reddit",
@@ -101,8 +117,16 @@
       "PAUSED",
       "ARCHIVED"
     ],
-    "collection_boundary": "activate",
-    "create_queues_work": false,
+    "collection_boundary": {
+      "linkedin_legacy": "activate",
+      "linkedin_compiler_native": "successful_compile_with_auto_activate_or_explicit_activate",
+      "reddit": "activate"
+    },
+    "create_queues_work": {
+      "linkedin_legacy": false,
+      "linkedin_compiler_native": "compilation_and_conditional_ten-search_cycle",
+      "reddit": false
+    },
     "restore_target_state": "PAUSED",
     "archive_is_soft_delete": true
   },

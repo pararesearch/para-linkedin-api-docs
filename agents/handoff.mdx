@@ -11,7 +11,7 @@ or business-critical values.
 ## Operator input
 
 ```yaml
-schema_version: "2026-07-29"
+schema_version: "2026-07-30"
 api_origin: "https://para-linkedin-api.onrender.com"
 api_key_env: "PARA_API_KEY"
 platform: "linkedin" # linkedin | reddit
@@ -20,6 +20,8 @@ mode: "run" # inspect | manage | run | recover_delivery
 registration:
   external_id: "customer-pain-research"
   name: "Customer pain research"
+  use_case: "Find firsthand discussions of workflow bottlenecks and unmet customer-research needs. Exclude job listings."
+  auto_activate: true
   topics:
     - "workflow bottlenecks"
     - "customer research"
@@ -61,15 +63,18 @@ not in this document.
 | Mode | Required input | Allowed result |
 | --- | --- | --- |
 | `inspect` | platform and API key environment name | Read-only inventory and health report |
-| `manage` | stable `external_id`, name, topics, context | Draft registration created or patched |
-| `run` | manage fields, public HTTPS webhook, activation and run approvals | Extension work queued and final batch observed |
+| `manage` | stable `external_id`, name, and either LinkedIn `use_case` or legacy topics/context | Registration created or patched; compilation may be queued |
+| `run` | manage fields, public HTTPS webhook, and relevant mutation approvals | Extension work queued and final batch observed |
 | `recover_delivery` | registration ID or external ID, delivery ID, replay approval | Attempts diagnosed and optional replay requested |
 
 If a required field or approval is missing, stop before the mutation and report
 the exact missing input.
 
-The deadline must account for the registration's configured delivery time. A
-manual run requests collection but does not bypass daily batch scheduling.
+For compiler-native LinkedIn, `auto_activate: true` authorizes activation only
+when `approvals.activate` is true. The agent must wait for a ready plan, inspect
+its ten searches, and record the active revision. The deadline must account for
+compilation, ten serial real-extension runs, and the configured delivery time. A
+manual run does not bypass daily batch scheduling.
 
 ## Action policy
 
@@ -99,11 +104,14 @@ An agent should persist this redacted shape after every successful mutation:
 
 ```json
 {
-  "schema_version": "2026-07-29",
+  "schema_version": "2026-07-30",
   "platform": "reddit",
   "external_id": "customer-pain-research",
   "registration_id": "REGISTRATION_ID",
   "registration_status": "ACTIVE",
+  "compilation_status": "READY",
+  "active_plan_revision": 1,
+  "cycle_id": "CYCLE_ID",
   "request_ids": ["REQUEST_ID"],
   "idempotency_keys": {
     "create": "create:reddit:customer-pain-research:v1",

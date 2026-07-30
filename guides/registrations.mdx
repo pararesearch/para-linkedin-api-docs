@@ -3,18 +3,34 @@ title: "Registration lifecycle"
 description: "Manage several independent topic registrations per owner."
 ---
 
-Each registration is an independent research stream. Topic or context changes increment `matching_revision`, update its scoped requirement, and reevaluate new work without mutating previously delivered batches.
+Each registration is an independent research stream. Topic, context, use-case,
+or plan changes create new matching or plan revisions without mutating
+previously delivered batches.
 
 ## States
 
 | State | Behavior |
 | --- | --- |
-| `DRAFT` | Editable; creates no tasks |
+| `DRAFT` | Editable; legacy drafts have no work, while compiler-native drafts may be compiling |
 | `ACTIVE` | Scheduled tasks and daily batches are enabled |
 | `PAUSED` | Existing history remains; no new task or webhook work |
 | `ARCHIVED` | Soft deleted; hidden by default and cannot run |
 
-Activation requires at least one topic and a valid HTTPS webhook. Restoring an archived registration returns it to `PAUSED`; activate it explicitly when ready.
+Legacy activation requires at least one topic and a valid HTTPS webhook.
+Compiler-native activation requires a ready plan with exactly ten valid searches
+and a valid HTTPS webhook. Restoring an archived registration returns it to
+`PAUSED`; activate it explicitly when ready.
+
+## Planning modes
+
+`LEGACY` registrations keep the existing topics/query workflow. Their create
+operation is side-effect free and requires explicit activation.
+
+`COMPILED` registrations contain `use_case`. Creation queues the compiler.
+`auto_activate` defaults to `true` for this mode, so a successful compilation
+may transition the registration to `ACTIVE` and queue ten real-extension runs.
+Set `auto_activate: false` to inspect or override the ready plan before
+activation.
 
 ## CRUD
 
@@ -27,11 +43,11 @@ curl "$PARA_LINKEDIN_API/v1/linkedin/registrations?limit=50" \
 curl "$PARA_LINKEDIN_API/v1/linkedin/registrations/REGISTRATION_ID" \
   -H "Authorization: Bearer $PARA_LINKEDIN_API_KEY"
 
-# Edit relevance context
+# Edit relevance context; use_case changes queue a new compilation revision
 curl -X PATCH "$PARA_LINKEDIN_API/v1/linkedin/registrations/REGISTRATION_ID" \
   -H "Authorization: Bearer $PARA_LINKEDIN_API_KEY" \
   -H "Content-Type: application/json" \
-  -d '{"topics":["AI operations"],"context":"Prioritize specific operating playbooks."}'
+  -d '{"use_case":"Find firsthand AI operations playbooks. Exclude job listings."}'
 
 # Archive
 curl -X DELETE "$PARA_LINKEDIN_API/v1/linkedin/registrations/REGISTRATION_ID" \
@@ -45,4 +61,13 @@ List endpoints use opaque cursors. Pass `next_cursor` back as `cursor`; do not p
 
 Search cadence is configured in minutes, from 60 through 10,080. Daily delivery defaults to `17:00` in `Asia/Kolkata`. The scheduler considers registration due times fairly across owners while preserving the global one-extension-run rule.
 
+Every compiled activation, due cadence window, or manual run creates exactly one
+cycle of ten persisted plan queries. A duplicate trigger window or idempotency
+key returns the existing cycle, and a second concurrent cycle for the same
+registration returns `409 cycle_already_running`.
+
 If the service is unavailable at delivery time, the next scheduler tick creates the missing local-date batch. The unique `(registration_id, delivery_date)` constraint prevents duplicate daily snapshots.
+
+See [Automatic requirement compilation](/guides/automatic-requirement-compilation)
+for plan states and [Compiled-plan overrides](/guides/compiled-plan-overrides)
+for revision-safe expert controls.

@@ -161,6 +161,501 @@
         "title": "ApiKeyListResponse",
         "type": "object"
       },
+      "AuthorEducationPayload": {
+        "properties": {
+          "dates": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Dates"
+          },
+          "degree": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Degree"
+          },
+          "school": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "School"
+          }
+        },
+        "title": "AuthorEducationPayload",
+        "type": "object"
+      },
+      "AuthorEnrichmentPayload": {
+        "properties": {
+          "about": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "About"
+          },
+          "connections_text": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Connections Text"
+          },
+          "current_employer": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Current Employer"
+          },
+          "current_experience": {
+            "anyOf": [
+              {
+                "items": {
+                  "$ref": "#/components/schemas/AuthorExperiencePayload"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Current Experience"
+          },
+          "current_function": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Current Function"
+          },
+          "current_role": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Current Role"
+          },
+          "education": {
+            "anyOf": [
+              {
+                "items": {
+                  "$ref": "#/components/schemas/AuthorEducationPayload"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Education"
+          },
+          "employer_domain": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Employer Domain"
+          },
+          "employer_linkedin_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Employer Linkedin Url"
+          },
+          "employer_location": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Employer Location"
+          },
+          "enriched_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Enriched At"
+          },
+          "followers_count": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Followers Count"
+          },
+          "freshness_notes": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Freshness Notes"
+          },
+          "full_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Full Name"
+          },
+          "headline": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Headline"
+          },
+          "location": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Location"
+          },
+          "matched_profile_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Matched Profile Url"
+          },
+          "normalized_signals": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/NormalizedAuthorSignalsPayload"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "past_experience": {
+            "anyOf": [
+              {
+                "items": {
+                  "$ref": "#/components/schemas/AuthorExperiencePayload"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Past Experience"
+          },
+          "processor": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Processor"
+          },
+          "public_company_size": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Public Company Size"
+          },
+          "public_industry": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Public Industry"
+          },
+          "public_source_urls": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Public Source Urls",
+            "type": "array"
+          },
+          "schema_version": {
+            "title": "Schema Version",
+            "type": "integer"
+          },
+          "seniority": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Seniority"
+          },
+          "skills_or_topics": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Skills Or Topics",
+            "type": "array"
+          },
+          "status": {
+            "title": "Status",
+            "type": "string"
+          }
+        },
+        "required": [
+          "status",
+          "schema_version"
+        ],
+        "title": "AuthorEnrichmentPayload",
+        "type": "object"
+      },
+      "AuthorExperiencePayload": {
+        "properties": {
+          "company": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Company"
+          },
+          "dates": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Dates"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description"
+          },
+          "location": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Location"
+          },
+          "title": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Title"
+          }
+        },
+        "title": "AuthorExperiencePayload",
+        "type": "object"
+      },
+      "AuthorRelevanceRubric": {
+        "additionalProperties": false,
+        "properties": {
+          "company_signals": {
+            "items": {
+              "type": "string"
+            },
+            "maxItems": 30,
+            "title": "Company Signals",
+            "type": "array"
+          },
+          "criteria": {
+            "items": {
+              "$ref": "#/components/schemas/RubricCriterion"
+            },
+            "maxItems": 12,
+            "minItems": 2,
+            "title": "Criteria",
+            "type": "array"
+          },
+          "follower_signals": {
+            "items": {
+              "type": "string"
+            },
+            "maxItems": 20,
+            "title": "Follower Signals",
+            "type": "array"
+          },
+          "geography_signals": {
+            "items": {
+              "type": "string"
+            },
+            "maxItems": 20,
+            "title": "Geography Signals",
+            "type": "array"
+          },
+          "missing_evidence_policy": {
+            "maxLength": 1000,
+            "minLength": 10,
+            "title": "Missing Evidence Policy",
+            "type": "string"
+          },
+          "objective": {
+            "maxLength": 2000,
+            "minLength": 10,
+            "title": "Objective",
+            "type": "string"
+          },
+          "prompt_guidance": {
+            "anyOf": [
+              {
+                "maxLength": 2000,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Prompt Guidance"
+          },
+          "target_functions": {
+            "items": {
+              "type": "string"
+            },
+            "maxItems": 30,
+            "title": "Target Functions",
+            "type": "array"
+          },
+          "target_industries": {
+            "items": {
+              "type": "string"
+            },
+            "maxItems": 30,
+            "title": "Target Industries",
+            "type": "array"
+          },
+          "target_roles": {
+            "items": {
+              "type": "string"
+            },
+            "maxItems": 30,
+            "title": "Target Roles",
+            "type": "array"
+          },
+          "target_seniorities": {
+            "items": {
+              "type": "string"
+            },
+            "maxItems": 20,
+            "title": "Target Seniorities",
+            "type": "array"
+          }
+        },
+        "required": [
+          "objective",
+          "criteria",
+          "missing_evidence_policy"
+        ],
+        "title": "AuthorRelevanceRubric",
+        "type": "object"
+      },
       "CommentPersonaAssignmentView": {
         "additionalProperties": true,
         "properties": {
@@ -282,8 +777,669 @@
         "title": "CommentPersonaView",
         "type": "object"
       },
+      "CompilationStatusView": {
+        "additionalProperties": true,
+        "properties": {
+          "active_plan_revision": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Active Plan Revision"
+          },
+          "auto_activation_status": {
+            "title": "Auto Activation Status",
+            "type": "string"
+          },
+          "latest_plan": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Latest Plan"
+          },
+          "status": {
+            "title": "Status",
+            "type": "string"
+          }
+        },
+        "required": [
+          "status",
+          "auto_activation_status"
+        ],
+        "title": "CompilationStatusView",
+        "type": "object"
+      },
+      "CompiledHardFilter": {
+        "additionalProperties": false,
+        "properties": {
+          "field": {
+            "maxLength": 100,
+            "minLength": 1,
+            "title": "Field",
+            "type": "string"
+          },
+          "operator": {
+            "pattern": "^(EQUALS|NOT_EQUALS|IN|NOT_IN|CONTAINS|NOT_CONTAINS|MIN|MAX)$",
+            "title": "Operator",
+            "type": "string"
+          },
+          "source_excerpt": {
+            "maxLength": 500,
+            "minLength": 1,
+            "title": "Source Excerpt",
+            "type": "string"
+          },
+          "source_field": {
+            "anyOf": [
+              {
+                "maxLength": 100,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source Field"
+          },
+          "source_type": {
+            "pattern": "^(structured_field|explicit_language)$",
+            "title": "Source Type",
+            "type": "string"
+          },
+          "values": {
+            "items": {
+              "type": "string"
+            },
+            "maxItems": 30,
+            "minItems": 1,
+            "title": "Values",
+            "type": "array"
+          }
+        },
+        "required": [
+          "field",
+          "operator",
+          "values",
+          "source_type",
+          "source_excerpt"
+        ],
+        "title": "CompiledHardFilter",
+        "type": "object"
+      },
+      "CompiledPlanOverride": {
+        "additionalProperties": false,
+        "properties": {
+          "author_rubric": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/AuthorRelevanceRubric"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "final_min_score": {
+            "anyOf": [
+              {
+                "maximum": 1.0,
+                "minimum": 0.0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Final Min Score"
+          },
+          "first_pass_min_score": {
+            "anyOf": [
+              {
+                "maximum": 1.0,
+                "minimum": 0.0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "First Pass Min Score"
+          },
+          "hard_filters": {
+            "anyOf": [
+              {
+                "items": {
+                  "$ref": "#/components/schemas/CompiledHardFilter"
+                },
+                "maxItems": 30,
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Hard Filters"
+          },
+          "post_rubric": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/PostRelevanceRubric"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "scoring_weights": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/CompiledScoringWeights"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "search_plans": {
+            "anyOf": [
+              {
+                "items": {
+                  "$ref": "#/components/schemas/CompiledSearchPlan"
+                },
+                "maxItems": 10,
+                "minItems": 10,
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Search Plans"
+          },
+          "summary": {
+            "anyOf": [
+              {
+                "maxLength": 2000,
+                "minLength": 10,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Summary"
+          }
+        },
+        "title": "CompiledPlanOverride",
+        "type": "object"
+      },
+      "CompiledPlanQueuedResponse": {
+        "additionalProperties": true,
+        "properties": {
+          "deployment_mode": {
+            "title": "Deployment Mode",
+            "type": "string"
+          },
+          "plan_id": {
+            "title": "Plan Id",
+            "type": "string"
+          },
+          "revision": {
+            "title": "Revision",
+            "type": "integer"
+          },
+          "status": {
+            "title": "Status",
+            "type": "string"
+          }
+        },
+        "required": [
+          "plan_id",
+          "revision",
+          "status",
+          "deployment_mode"
+        ],
+        "title": "CompiledPlanQueuedResponse",
+        "type": "object"
+      },
+      "CompiledPlanView": {
+        "additionalProperties": true,
+        "properties": {
+          "activated_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Activated At"
+          },
+          "assumptions": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Assumptions",
+            "type": "array"
+          },
+          "attempt_count": {
+            "title": "Attempt Count",
+            "type": "integer"
+          },
+          "author_relevance_prompt": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Author Relevance Prompt"
+          },
+          "author_rubric": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/AuthorRelevanceRubric"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "compiler_model": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Compiler Model"
+          },
+          "compiler_version": {
+            "title": "Compiler Version",
+            "type": "string"
+          },
+          "completed_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Completed At"
+          },
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "deployment_mode": {
+            "title": "Deployment Mode",
+            "type": "string"
+          },
+          "error": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Error"
+          },
+          "final_min_score": {
+            "title": "Final Min Score",
+            "type": "number"
+          },
+          "first_pass_min_score": {
+            "title": "First Pass Min Score",
+            "type": "number"
+          },
+          "hard_filters": {
+            "items": {
+              "$ref": "#/components/schemas/CompiledHardFilter"
+            },
+            "title": "Hard Filters",
+            "type": "array"
+          },
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "input_hash": {
+            "title": "Input Hash",
+            "type": "string"
+          },
+          "plan_hash": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Plan Hash"
+          },
+          "post_relevance_prompt": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Post Relevance Prompt"
+          },
+          "post_rubric": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/PostRelevanceRubric"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "registration_id": {
+            "title": "Registration Id",
+            "type": "string"
+          },
+          "request_id": {
+            "title": "Request Id",
+            "type": "string"
+          },
+          "revision": {
+            "title": "Revision",
+            "type": "integer"
+          },
+          "scoring_weights": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/CompiledScoringWeights"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "search_plans": {
+            "items": {
+              "$ref": "#/components/schemas/CompiledSearchPlanView"
+            },
+            "title": "Search Plans",
+            "type": "array"
+          },
+          "status": {
+            "title": "Status",
+            "type": "string"
+          },
+          "summary": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Summary"
+          },
+          "updated_at": {
+            "format": "date-time",
+            "title": "Updated At",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "registration_id",
+          "request_id",
+          "revision",
+          "status",
+          "deployment_mode",
+          "search_plans",
+          "first_pass_min_score",
+          "final_min_score",
+          "compiler_version",
+          "input_hash",
+          "attempt_count",
+          "created_at",
+          "updated_at"
+        ],
+        "title": "CompiledPlanView",
+        "type": "object"
+      },
+      "CompiledScoringWeights": {
+        "additionalProperties": false,
+        "properties": {
+          "author": {
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "title": "Author",
+            "type": "number"
+          },
+          "comment_opportunity": {
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "title": "Comment Opportunity",
+            "type": "number"
+          },
+          "company": {
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "title": "Company",
+            "type": "number"
+          },
+          "followers": {
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "title": "Followers",
+            "type": "number"
+          },
+          "geography": {
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "title": "Geography",
+            "type": "number"
+          },
+          "post": {
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "title": "Post",
+            "type": "number"
+          }
+        },
+        "required": [
+          "post",
+          "author",
+          "company",
+          "geography",
+          "followers",
+          "comment_opportunity"
+        ],
+        "title": "CompiledScoringWeights",
+        "type": "object"
+      },
+      "CompiledSearchPlan": {
+        "additionalProperties": false,
+        "properties": {
+          "date_posted": {
+            "pattern": "^(|past-24h|past-week|past-month)$",
+            "title": "Date Posted",
+            "type": "string"
+          },
+          "intent": {
+            "maxLength": 500,
+            "minLength": 3,
+            "title": "Intent",
+            "type": "string"
+          },
+          "negative_signals": {
+            "items": {
+              "type": "string"
+            },
+            "maxItems": 20,
+            "title": "Negative Signals",
+            "type": "array"
+          },
+          "positive_signals": {
+            "items": {
+              "type": "string"
+            },
+            "maxItems": 20,
+            "title": "Positive Signals",
+            "type": "array"
+          },
+          "priority_score": {
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "title": "Priority Score",
+            "type": "number"
+          },
+          "query": {
+            "maxLength": 120,
+            "minLength": 2,
+            "title": "Query",
+            "type": "string"
+          },
+          "sort_by": {
+            "pattern": "^(date_posted|relevance)$",
+            "title": "Sort By",
+            "type": "string"
+          },
+          "topic": {
+            "maxLength": 160,
+            "minLength": 2,
+            "title": "Topic",
+            "type": "string"
+          }
+        },
+        "required": [
+          "topic",
+          "query",
+          "intent",
+          "priority_score",
+          "date_posted",
+          "sort_by"
+        ],
+        "title": "CompiledSearchPlan",
+        "type": "object"
+      },
+      "CompiledSearchPlanView": {
+        "additionalProperties": false,
+        "properties": {
+          "date_posted": {
+            "pattern": "^(|past-24h|past-week|past-month)$",
+            "title": "Date Posted",
+            "type": "string"
+          },
+          "enabled": {
+            "default": true,
+            "title": "Enabled",
+            "type": "boolean"
+          },
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "intent": {
+            "maxLength": 500,
+            "minLength": 3,
+            "title": "Intent",
+            "type": "string"
+          },
+          "negative_signals": {
+            "items": {
+              "type": "string"
+            },
+            "maxItems": 20,
+            "title": "Negative Signals",
+            "type": "array"
+          },
+          "ordinal": {
+            "maximum": 10.0,
+            "minimum": 1.0,
+            "title": "Ordinal",
+            "type": "integer"
+          },
+          "positive_signals": {
+            "items": {
+              "type": "string"
+            },
+            "maxItems": 20,
+            "title": "Positive Signals",
+            "type": "array"
+          },
+          "priority_score": {
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "title": "Priority Score",
+            "type": "number"
+          },
+          "query": {
+            "maxLength": 120,
+            "minLength": 2,
+            "title": "Query",
+            "type": "string"
+          },
+          "sort_by": {
+            "pattern": "^(date_posted|relevance)$",
+            "title": "Sort By",
+            "type": "string"
+          },
+          "topic": {
+            "maxLength": 160,
+            "minLength": 2,
+            "title": "Topic",
+            "type": "string"
+          }
+        },
+        "required": [
+          "topic",
+          "query",
+          "intent",
+          "priority_score",
+          "date_posted",
+          "sort_by",
+          "id",
+          "ordinal"
+        ],
+        "title": "CompiledSearchPlanView",
+        "type": "object"
+      },
       "DailyWebhookData": {
         "properties": {
+          "cycle_summary": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/WebhookCycleSummaryPayload"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
           "delivery_date": {
             "title": "Delivery Date",
             "type": "string"
@@ -296,14 +1452,10 @@
             "type": "array"
           },
           "registration": {
-            "additionalProperties": true,
-            "title": "Registration",
-            "type": "object"
+            "$ref": "#/components/schemas/WebhookRegistrationPayload"
           },
           "window": {
-            "additionalProperties": true,
-            "title": "Window",
-            "type": "object"
+            "$ref": "#/components/schemas/WebhookWindowPayload"
           }
         },
         "required": [
@@ -346,6 +1498,97 @@
           "data"
         ],
         "title": "DailyWebhookPayload",
+        "type": "object"
+      },
+      "DraftPayload": {
+        "properties": {
+          "comment": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Comment"
+          },
+          "draft_config_hash": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Draft Config Hash"
+          },
+          "generated_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Generated At"
+          },
+          "model": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Model"
+          },
+          "persona_hash": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Persona Hash"
+          },
+          "persona_owner_user_id": {
+            "title": "Persona Owner User Id",
+            "type": "string"
+          },
+          "reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reason"
+          },
+          "status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Status"
+          }
+        },
+        "required": [
+          "persona_owner_user_id"
+        ],
+        "title": "DraftPayload",
         "type": "object"
       },
       "ErrorDetail": {
@@ -600,6 +1843,217 @@
         "title": "ExtensionRunnerView",
         "type": "object"
       },
+      "FinalRelevancePayload": {
+        "properties": {
+          "author_evidence": {
+            "items": {
+              "$ref": "#/components/schemas/RubricEvidencePayload"
+            },
+            "title": "Author Evidence",
+            "type": "array"
+          },
+          "components": {
+            "$ref": "#/components/schemas/FinalScoreComponents"
+          },
+          "evaluated_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Evaluated At"
+          },
+          "evidence_coverage": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Evidence Coverage"
+          },
+          "hard_filter_decisions": {
+            "items": {
+              "$ref": "#/components/schemas/HardFilterDecisionPayload"
+            },
+            "title": "Hard Filter Decisions",
+            "type": "array"
+          },
+          "labels": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Labels",
+            "type": "array"
+          },
+          "model": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Model"
+          },
+          "reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reason"
+          },
+          "score": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Score"
+          },
+          "scoring_config_hash": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Scoring Config Hash"
+          },
+          "scoring_weights": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/CompiledScoringWeights"
+              },
+              {
+                "additionalProperties": {
+                  "type": "number"
+                },
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Scoring Weights"
+          },
+          "status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Status"
+          }
+        },
+        "required": [
+          "components"
+        ],
+        "title": "FinalRelevancePayload",
+        "type": "object"
+      },
+      "FinalScoreComponents": {
+        "properties": {
+          "author_relevance": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Author Relevance"
+          },
+          "comment_opportunity": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Comment Opportunity"
+          },
+          "company_relevance": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Company Relevance"
+          },
+          "followers": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Followers"
+          },
+          "geography_relevance": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Geography Relevance"
+          },
+          "post_relevance": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Post Relevance"
+          },
+          "profile_relevance": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Profile Relevance"
+          }
+        },
+        "title": "FinalScoreComponents",
+        "type": "object"
+      },
       "HTTPValidationError": {
         "properties": {
           "detail": {
@@ -611,6 +2065,277 @@
           }
         },
         "title": "HTTPValidationError",
+        "type": "object"
+      },
+      "HardFilterDecisionPayload": {
+        "properties": {
+          "field": {
+            "title": "Field",
+            "type": "string"
+          },
+          "outcome": {
+            "title": "Outcome",
+            "type": "string"
+          },
+          "provenance": {
+            "$ref": "#/components/schemas/HardFilterProvenancePayload"
+          },
+          "reason": {
+            "title": "Reason",
+            "type": "string"
+          }
+        },
+        "required": [
+          "field",
+          "outcome",
+          "reason",
+          "provenance"
+        ],
+        "title": "HardFilterDecisionPayload",
+        "type": "object"
+      },
+      "HardFilterProvenancePayload": {
+        "properties": {
+          "source_excerpt": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source Excerpt"
+          },
+          "source_field": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source Field"
+          },
+          "source_type": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source Type"
+          }
+        },
+        "title": "HardFilterProvenancePayload",
+        "type": "object"
+      },
+      "InitialRelevancePayload": {
+        "properties": {
+          "evaluated_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Evaluated At"
+          },
+          "evidence": {
+            "items": {
+              "$ref": "#/components/schemas/RubricEvidencePayload"
+            },
+            "title": "Evidence",
+            "type": "array"
+          },
+          "hard_filter_decisions": {
+            "items": {
+              "$ref": "#/components/schemas/HardFilterDecisionPayload"
+            },
+            "title": "Hard Filter Decisions",
+            "type": "array"
+          },
+          "labels": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Labels",
+            "type": "array"
+          },
+          "model": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Model"
+          },
+          "reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reason"
+          },
+          "score": {
+            "title": "Score",
+            "type": "number"
+          },
+          "status": {
+            "title": "Status",
+            "type": "string"
+          }
+        },
+        "required": [
+          "status",
+          "score",
+          "labels"
+        ],
+        "title": "InitialRelevancePayload",
+        "type": "object"
+      },
+      "LinkedInPostPayload": {
+        "properties": {
+          "author_headline": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Author Headline"
+          },
+          "content": {
+            "title": "Content",
+            "type": "string"
+          },
+          "engagement_text": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Engagement Text"
+          },
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "media": {
+            "title": "Media"
+          },
+          "profile_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Profile Name"
+          },
+          "profile_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Profile Url"
+          },
+          "relative_time": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Relative Time"
+          },
+          "scraped_at": {
+            "format": "date-time",
+            "title": "Scraped At",
+            "type": "string"
+          },
+          "search_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Search Url"
+          },
+          "source_query": {
+            "title": "Source Query",
+            "type": "string"
+          },
+          "source_type": {
+            "title": "Source Type",
+            "type": "string"
+          },
+          "sources": {
+            "items": {
+              "$ref": "#/components/schemas/PostSourceObservation"
+            },
+            "title": "Sources",
+            "type": "array"
+          },
+          "topic_matches": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Topic Matches",
+            "type": "array"
+          },
+          "url": {
+            "title": "Url",
+            "type": "string"
+          },
+          "warnings": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Warnings",
+            "type": "array"
+          }
+        },
+        "required": [
+          "id",
+          "url",
+          "content",
+          "source_type",
+          "source_query",
+          "topic_matches",
+          "warnings",
+          "scraped_at"
+        ],
+        "title": "LinkedInPostPayload",
         "type": "object"
       },
       "MatchingStatusView": {
@@ -630,6 +2355,100 @@
           "requirement_revision"
         ],
         "title": "MatchingStatusView",
+        "type": "object"
+      },
+      "NormalizedAuthorSignalsPayload": {
+        "properties": {
+          "company_size": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Company Size"
+          },
+          "employer": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Employer"
+          },
+          "employer_domain": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Employer Domain"
+          },
+          "function": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Function"
+          },
+          "industry": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Industry"
+          },
+          "location": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Location"
+          },
+          "role": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Role"
+          },
+          "seniority": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Seniority"
+          }
+        },
+        "title": "NormalizedAuthorSignalsPayload",
         "type": "object"
       },
       "OwnerIdentityView": {
@@ -660,6 +2479,140 @@
           "email"
         ],
         "title": "OwnerIdentityView",
+        "type": "object"
+      },
+      "PostRelevanceRubric": {
+        "additionalProperties": false,
+        "properties": {
+          "criteria": {
+            "items": {
+              "$ref": "#/components/schemas/RubricCriterion"
+            },
+            "maxItems": 10,
+            "minItems": 2,
+            "title": "Criteria",
+            "type": "array"
+          },
+          "negative_signals": {
+            "items": {
+              "type": "string"
+            },
+            "maxItems": 30,
+            "title": "Negative Signals",
+            "type": "array"
+          },
+          "objective": {
+            "maxLength": 2000,
+            "minLength": 10,
+            "title": "Objective",
+            "type": "string"
+          },
+          "positive_signals": {
+            "items": {
+              "type": "string"
+            },
+            "maxItems": 30,
+            "minItems": 1,
+            "title": "Positive Signals",
+            "type": "array"
+          },
+          "prompt_guidance": {
+            "anyOf": [
+              {
+                "maxLength": 2000,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Prompt Guidance"
+          }
+        },
+        "required": [
+          "objective",
+          "positive_signals",
+          "criteria"
+        ],
+        "title": "PostRelevanceRubric",
+        "type": "object"
+      },
+      "PostSourceObservation": {
+        "properties": {
+          "cycle_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Cycle Id"
+          },
+          "intent": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Intent"
+          },
+          "observation_id": {
+            "title": "Observation Id",
+            "type": "string"
+          },
+          "observed_at": {
+            "format": "date-time",
+            "title": "Observed At",
+            "type": "string"
+          },
+          "plan_topic_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Plan Topic Id"
+          },
+          "query": {
+            "title": "Query",
+            "type": "string"
+          },
+          "result_position": {
+            "title": "Result Position",
+            "type": "integer"
+          },
+          "run_id": {
+            "title": "Run Id",
+            "type": "string"
+          },
+          "topic": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Topic"
+          }
+        },
+        "required": [
+          "observation_id",
+          "run_id",
+          "query",
+          "result_position",
+          "observed_at"
+        ],
+        "title": "PostSourceObservation",
         "type": "object"
       },
       "RedditDailyWebhookPayload": {
@@ -1681,6 +3634,17 @@
       "RegistrationCreate": {
         "additionalProperties": false,
         "properties": {
+          "auto_activate": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Auto Activate"
+          },
           "cadence_minutes": {
             "default": 360,
             "maximum": 10080.0,
@@ -1849,6 +3813,19 @@
             "title": "Topics",
             "type": "array"
           },
+          "use_case": {
+            "anyOf": [
+              {
+                "maxLength": 10000,
+                "minLength": 10,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Use Case"
+          },
           "webhook_url": {
             "anyOf": [
               {
@@ -1925,6 +3902,17 @@
       "RegistrationPatch": {
         "additionalProperties": false,
         "properties": {
+          "auto_activate": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Auto Activate"
+          },
           "cadence_minutes": {
             "anyOf": [
               {
@@ -2194,6 +4182,19 @@
             ],
             "title": "Topics"
           },
+          "use_case": {
+            "anyOf": [
+              {
+                "maxLength": 10000,
+                "minLength": 10,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Use Case"
+          },
           "webhook_url": {
             "anyOf": [
               {
@@ -2215,6 +4216,16 @@
       "RegistrationRunListResponse": {
         "additionalProperties": true,
         "properties": {
+          "cycle": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/SearchCycleView"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
           "runs": {
             "items": {
               "$ref": "#/components/schemas/RegistrationRunView"
@@ -2248,6 +4259,17 @@
             "format": "date-time",
             "title": "Created At",
             "type": "string"
+          },
+          "cycle_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Cycle Id"
           },
           "error": {
             "anyOf": [
@@ -2308,9 +4330,53 @@
             "title": "Id",
             "type": "string"
           },
+          "plan_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Plan Id"
+          },
+          "plan_revision": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Plan Revision"
+          },
+          "plan_topic_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Plan Topic Id"
+          },
           "query": {
             "title": "Query",
             "type": "string"
+          },
+          "registration_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Registration Id"
           },
           "request_id": {
             "anyOf": [
@@ -2322,6 +4388,17 @@
               }
             ],
             "title": "Request Id"
+          },
+          "requirement_revision": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Requirement Revision"
           },
           "source_type": {
             "title": "Source Type",
@@ -2379,6 +4456,9 @@
       "RegistrationStatusResponse": {
         "additionalProperties": true,
         "properties": {
+          "compilation": {
+            "$ref": "#/components/schemas/CompilationStatusView"
+          },
           "effective_comment_persona": {
             "anyOf": [
               {
@@ -2401,6 +4481,13 @@
           },
           "matching": {
             "$ref": "#/components/schemas/MatchingStatusView"
+          },
+          "recent_cycles": {
+            "items": {
+              "$ref": "#/components/schemas/SearchCycleView"
+            },
+            "title": "Recent Cycles",
+            "type": "array"
           },
           "recent_runs": {
             "items": {
@@ -2426,6 +4513,7 @@
         "required": [
           "registration",
           "matching",
+          "compilation",
           "recent_runs"
         ],
         "title": "RegistrationStatusResponse",
@@ -2434,6 +4522,17 @@
       "RegistrationView": {
         "additionalProperties": true,
         "properties": {
+          "active_plan_revision": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Active Plan Revision"
+          },
           "archived_at": {
             "anyOf": [
               {
@@ -2446,9 +4545,24 @@
             ],
             "title": "Archived At"
           },
+          "auto_activate": {
+            "default": false,
+            "title": "Auto Activate",
+            "type": "boolean"
+          },
+          "auto_activation_status": {
+            "default": "NOT_APPLICABLE",
+            "title": "Auto Activation Status",
+            "type": "string"
+          },
           "cadence_minutes": {
             "title": "Cadence Minutes",
             "type": "integer"
+          },
+          "compilation_status": {
+            "default": "NOT_REQUESTED",
+            "title": "Compilation Status",
+            "type": "string"
           },
           "context": {
             "title": "Context",
@@ -2568,6 +4682,17 @@
             ],
             "title": "Last Batch At"
           },
+          "last_compilation_error": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Compilation Error"
+          },
           "matching_revision": {
             "title": "Matching Revision",
             "type": "integer"
@@ -2578,6 +4703,11 @@
           },
           "owner_user_id": {
             "title": "Owner User Id",
+            "type": "string"
+          },
+          "planning_mode": {
+            "default": "LEGACY",
+            "title": "Planning Mode",
             "type": "string"
           },
           "profile_preference": {
@@ -2630,6 +4760,17 @@
             "title": "Updated At",
             "type": "string"
           },
+          "use_case": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Use Case"
+          },
           "webhook_enabled": {
             "title": "Webhook Enabled",
             "type": "boolean"
@@ -2678,6 +4819,49 @@
           "updated_at"
         ],
         "title": "RegistrationView",
+        "type": "object"
+      },
+      "RelevancePayload": {
+        "properties": {
+          "final": {
+            "$ref": "#/components/schemas/FinalRelevancePayload"
+          },
+          "initial": {
+            "$ref": "#/components/schemas/InitialRelevancePayload"
+          },
+          "plan_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Plan Id"
+          },
+          "plan_revision": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Plan Revision"
+          },
+          "requirement_revision": {
+            "title": "Requirement Revision",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "requirement_revision",
+          "initial",
+          "final"
+        ],
+        "title": "RelevancePayload",
         "type": "object"
       },
       "RequirementTaskView": {
@@ -2748,9 +4932,64 @@
             ],
             "title": "Next Run At"
           },
+          "plan_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Plan Id"
+          },
+          "plan_revision": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Plan Revision"
+          },
+          "plan_topic_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Plan Topic Id"
+          },
           "query": {
             "title": "Query",
             "type": "string"
+          },
+          "registration_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Registration Id"
+          },
+          "requirement_revision": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Requirement Revision"
           },
           "sort_by": {
             "title": "Sort By",
@@ -3141,6 +5380,112 @@
         "title": "ResultItemView",
         "type": "object"
       },
+      "RubricCriterion": {
+        "additionalProperties": false,
+        "properties": {
+          "description": {
+            "maxLength": 700,
+            "minLength": 3,
+            "title": "Description",
+            "type": "string"
+          },
+          "name": {
+            "maxLength": 100,
+            "minLength": 2,
+            "title": "Name",
+            "type": "string"
+          },
+          "negative_evidence": {
+            "items": {
+              "type": "string"
+            },
+            "maxItems": 12,
+            "title": "Negative Evidence",
+            "type": "array"
+          },
+          "positive_evidence": {
+            "items": {
+              "type": "string"
+            },
+            "maxItems": 12,
+            "title": "Positive Evidence",
+            "type": "array"
+          },
+          "weight": {
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "title": "Weight",
+            "type": "number"
+          }
+        },
+        "required": [
+          "name",
+          "description",
+          "weight"
+        ],
+        "title": "RubricCriterion",
+        "type": "object"
+      },
+      "RubricEvidencePayload": {
+        "properties": {
+          "criterion": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Criterion"
+          },
+          "dimension": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Dimension"
+          },
+          "excerpts": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Excerpts",
+            "type": "array"
+          },
+          "outcome": {
+            "title": "Outcome",
+            "type": "string"
+          },
+          "reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reason"
+          },
+          "source_urls": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Source Urls",
+            "type": "array"
+          }
+        },
+        "required": [
+          "outcome"
+        ],
+        "title": "RubricEvidencePayload",
+        "type": "object"
+      },
       "RunEventView": {
         "additionalProperties": true,
         "properties": {
@@ -3170,6 +5515,222 @@
           "created_at"
         ],
         "title": "RunEventView",
+        "type": "object"
+      },
+      "SearchCycleRunView": {
+        "additionalProperties": true,
+        "properties": {
+          "claimed_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Claimed At"
+          },
+          "error": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Error"
+          },
+          "extension_device_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Extension Device Id"
+          },
+          "finished_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Finished At"
+          },
+          "plan_topic_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Plan Topic Id"
+          },
+          "query": {
+            "title": "Query",
+            "type": "string"
+          },
+          "request_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Request Id"
+          },
+          "run_id": {
+            "title": "Run Id",
+            "type": "string"
+          },
+          "started_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Started At"
+          },
+          "status": {
+            "title": "Status",
+            "type": "string"
+          },
+          "total_posts": {
+            "title": "Total Posts",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "run_id",
+          "query",
+          "status",
+          "total_posts"
+        ],
+        "title": "SearchCycleRunView",
+        "type": "object"
+      },
+      "SearchCycleView": {
+        "additionalProperties": true,
+        "properties": {
+          "completed_run_count": {
+            "title": "Completed Run Count",
+            "type": "integer"
+          },
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "expected_run_count": {
+            "title": "Expected Run Count",
+            "type": "integer"
+          },
+          "failed_run_count": {
+            "title": "Failed Run Count",
+            "type": "integer"
+          },
+          "finished_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Finished At"
+          },
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "plan_id": {
+            "title": "Plan Id",
+            "type": "string"
+          },
+          "plan_revision": {
+            "title": "Plan Revision",
+            "type": "integer"
+          },
+          "query_states": {
+            "items": {
+              "$ref": "#/components/schemas/SearchCycleRunView"
+            },
+            "title": "Query States",
+            "type": "array"
+          },
+          "request_id": {
+            "title": "Request Id",
+            "type": "string"
+          },
+          "started_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Started At"
+          },
+          "status": {
+            "title": "Status",
+            "type": "string"
+          },
+          "terminal_run_count": {
+            "title": "Terminal Run Count",
+            "type": "integer"
+          },
+          "trigger": {
+            "title": "Trigger",
+            "type": "string"
+          },
+          "trigger_key": {
+            "title": "Trigger Key",
+            "type": "string"
+          },
+          "updated_at": {
+            "format": "date-time",
+            "title": "Updated At",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "request_id",
+          "plan_id",
+          "plan_revision",
+          "trigger",
+          "trigger_key",
+          "status",
+          "expected_run_count",
+          "terminal_run_count",
+          "completed_run_count",
+          "failed_run_count",
+          "created_at",
+          "updated_at"
+        ],
+        "title": "SearchCycleView",
         "type": "object"
       },
       "TemporaryPasswordResponse": {
@@ -3515,6 +6076,47 @@
         "title": "WebhookAttemptView",
         "type": "object"
       },
+      "WebhookCycleSummaryPayload": {
+        "properties": {
+          "completed_run_count": {
+            "title": "Completed Run Count",
+            "type": "integer"
+          },
+          "cycle_ids": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Cycle Ids",
+            "type": "array"
+          },
+          "expected_run_count": {
+            "title": "Expected Run Count",
+            "type": "integer"
+          },
+          "failed_run_count": {
+            "title": "Failed Run Count",
+            "type": "integer"
+          },
+          "partial": {
+            "title": "Partial",
+            "type": "boolean"
+          },
+          "terminal_run_count": {
+            "title": "Terminal Run Count",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "cycle_ids",
+          "expected_run_count",
+          "terminal_run_count",
+          "completed_run_count",
+          "failed_run_count",
+          "partial"
+        ],
+        "title": "WebhookCycleSummaryPayload",
+        "type": "object"
+      },
       "WebhookDeliveryListResponse": {
         "additionalProperties": true,
         "properties": {
@@ -3662,33 +6264,25 @@
           "author_enrichment": {
             "anyOf": [
               {
-                "additionalProperties": true,
-                "type": "object"
+                "$ref": "#/components/schemas/AuthorEnrichmentPayload"
               },
               {
                 "type": "null"
               }
-            ],
-            "title": "Author Enrichment"
+            ]
           },
           "draft": {
-            "additionalProperties": true,
-            "title": "Draft",
-            "type": "object"
+            "$ref": "#/components/schemas/DraftPayload"
           },
           "post": {
-            "additionalProperties": true,
-            "title": "Post",
-            "type": "object"
+            "$ref": "#/components/schemas/LinkedInPostPayload"
           },
           "rank": {
             "title": "Rank",
             "type": "integer"
           },
           "relevance": {
-            "additionalProperties": true,
-            "title": "Relevance",
-            "type": "object"
+            "$ref": "#/components/schemas/RelevancePayload"
           }
         },
         "required": [
@@ -3699,6 +6293,62 @@
           "draft"
         ],
         "title": "WebhookPost",
+        "type": "object"
+      },
+      "WebhookRegistrationPayload": {
+        "properties": {
+          "external_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "External Id"
+          },
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "matching_revision": {
+            "title": "Matching Revision",
+            "type": "integer"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "plan_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Plan Id"
+          },
+          "plan_revision": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Plan Revision"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "matching_revision"
+        ],
+        "title": "WebhookRegistrationPayload",
         "type": "object"
       },
       "WebhookTestResponse": {
@@ -3724,6 +6374,31 @@
         ],
         "title": "WebhookTestResponse",
         "type": "object"
+      },
+      "WebhookWindowPayload": {
+        "properties": {
+          "end": {
+            "format": "date-time",
+            "title": "End",
+            "type": "string"
+          },
+          "start": {
+            "format": "date-time",
+            "title": "Start",
+            "type": "string"
+          },
+          "timezone": {
+            "title": "Timezone",
+            "type": "string"
+          }
+        },
+        "required": [
+          "start",
+          "end",
+          "timezone"
+        ],
+        "title": "WebhookWindowPayload",
+        "type": "object"
       }
     },
     "securitySchemes": {
@@ -3734,9 +6409,9 @@
     }
   },
   "info": {
-    "summary": "Register LinkedIn or Reddit topics and receive final relevant-post webhooks.",
+    "summary": "Register LinkedIn use cases or Reddit topics and receive final relevant-post webhooks.",
     "title": "PARA Social Research API",
-    "version": "1.1.0"
+    "version": "1.2.0"
   },
   "openapi": "3.1.0",
   "paths": {
@@ -5477,6 +8152,237 @@
         "summary": "Pause Registration",
         "tags": [
           "Registrations"
+        ]
+      }
+    },
+    "/v1/linkedin/registrations/{registration_id}/plan": {
+      "get": {
+        "operationId": "get_registration_plan_v1_linkedin_registrations__registration_id__plan_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "registration_id",
+            "required": true,
+            "schema": {
+              "title": "Registration Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "revision",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "minimum": 1,
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Revision"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CompiledPlanView",
+                  "title": "Response Get Registration Plan V1 Linkedin Registrations  Registration Id  Plan Get"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Get Registration Plan",
+        "tags": [
+          "LinkedIn Plans"
+        ]
+      },
+      "patch": {
+        "operationId": "override_registration_plan_v1_linkedin_registrations__registration_id__plan_patch",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "registration_id",
+            "required": true,
+            "schema": {
+              "title": "Registration Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "Idempotency-Key",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Idempotency-Key"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CompiledPlanOverride"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CompiledPlanView",
+                  "title": "Response Override Registration Plan V1 Linkedin Registrations  Registration Id  Plan Patch"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Override Registration Plan",
+        "tags": [
+          "LinkedIn Plans"
+        ]
+      }
+    },
+    "/v1/linkedin/registrations/{registration_id}/plan/regenerate": {
+      "post": {
+        "operationId": "regenerate_registration_plan_v1_linkedin_registrations__registration_id__plan_regenerate_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "registration_id",
+            "required": true,
+            "schema": {
+              "title": "Registration Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "Idempotency-Key",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Idempotency-Key"
+            }
+          }
+        ],
+        "responses": {
+          "202": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CompiledPlanQueuedResponse",
+                  "title": "Response Regenerate Registration Plan V1 Linkedin Registrations  Registration Id  Plan Regenerate Post"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Regenerate Registration Plan",
+        "tags": [
+          "LinkedIn Plans"
         ]
       }
     },

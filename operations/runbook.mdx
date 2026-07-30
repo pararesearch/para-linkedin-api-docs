@@ -28,7 +28,10 @@ Do not create a registration during account provisioning. Verify zero Barada req
 
 Confirm an active grant from Akhil's owner ID to Barada's owner ID for `linkedin`, then confirm the existing Akhil extension device is online. Do not pair a second Barada device.
 
-After Barada activates a registration, request one manual run and search logs by its request ID. Expect `task.queued`, `extension.claimed`, `posts.persisted`, and matching events in order.
+For compiler rollout, create a temporary Barada registration with `use_case`,
+`auto_activate: true`, and a public HTTPS receiver. Search logs by its request
+ID. Expect compilation queued/started/completed, plan activated, exactly ten
+task queued events, and ten extension claim/persist/complete sequences.
 
 For the complete live smoke, configure the production GitHub environment secrets and dispatch `LinkedIn Real Chrome Extension Smoke`, or run:
 
@@ -43,7 +46,10 @@ The script never opens Chromium and never inserts post rows. It waits for the in
 
 The production workflow also sets `LINKEDIN_REAL_E2E_REQUIRE_RECEIVER_INSPECTION=true`. It fails unless the receiver inspection endpoint returns the raw callback and headers needed to verify the HMAC and exact polling-payload equivalence.
 
-Its dedicated receiver must reset per webhook ID and respond `500`, `429` with `Retry-After: 300`, exceed the 10-second timeout, then return `200`. The workflow allows 60 minutes so the real retry schedule is exercised rather than shortened for the test.
+Its dedicated receiver must reset per webhook ID and respond `500`, `429` with
+bounded `Retry-After`, exceed the 10-second timeout, then return `200`. The
+workflow allows 90 minutes for ten serial real-extension searches and the real
+retry schedule.
 
 ## Recover a webhook
 
@@ -61,7 +67,15 @@ Webhook secret rotation returns the new value once and increments `webhook_secre
 
 - Apply Prisma migrations before serving traffic.
 - Require Node, Python, migration/contract, extension package/contract, and docs CI jobs.
-- Build version `0.5.7`, reload the existing unpacked connector in the `shivesh@getmason.io` Chrome profile, and confirm its heartbeat reports the new version without re-pairing.
+- Build version `0.6.0`, reload the existing unpacked connector in the
+  `shivesh@getmason.io` Chrome profile, and confirm its heartbeat reports the
+  new version without re-pairing.
+- Set `LINKEDIN_PLAN_COMPILER_LIVE_OWNER_EMAILS=barada@getmason.io` and
+  `LINKEDIN_PLAN_COMPILER_SHADOW_OWNER_EMAILS=akhil@get-para.com,deep@uselamina.ai`.
+- Verify Barada's active LinkedIn grant resolves to Akhil's runner and Barada's
+  comment persona resolves to Akhil before smoke creation.
+- Inspect Akhil and Deep shadow plans without activating them or changing their
+  legacy searches, schedules, dashboards, digests, or comments.
 - Run the real-extension workflow after production deployment while the existing Chrome profile is online.
 - Keep Render `autoDeployTrigger: checksPass`.
 - Verify FastAPI readiness can reach the private TypeScript service.

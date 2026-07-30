@@ -1,6 +1,6 @@
 ---
 title: "LinkedIn agent workflow"
-description: "Deterministic LinkedIn registration, extension-run, batch, and delivery workflow for agents."
+description: "Compile one LinkedIn use case, execute its ten real-extension searches, and consume the immutable result."
 keywords: ["LinkedIn agent", "registration", "batch", "webhook"]
 ---
 
@@ -14,18 +14,20 @@ does not scrape LinkedIn itself.
 - Require `registrations:read` for inspection.
 - Add `registrations:write` for create, patch, activate, pause, restore, run, or
   webhook test.
-- Activation requires at least one topic and a public HTTPS webhook.
+- Compiler-native creation requires a detailed `use_case`; activation requires a
+  ready ten-search plan and a public HTTPS webhook.
 - Use a stable `external_id` supplied by the operator.
 
 ## State machine
 
 ```text
-list -> reconcile -> create DRAFT or patch -> activate ACTIVE
-     -> request run -> poll status -> read READY batch
+list -> reconcile -> create with use_case -> compile -> inspect ten-search plan
+     -> auto-activate -> ten extension runs -> terminal cycle -> READY batch
      -> verify DELIVERED webhook or accept polling recovery
 ```
 
-Create does not queue work. Activate is the collection boundary.
+Topics-only legacy creation does not queue work. `use_case` creation queues
+compilation and may auto-activate after plan and webhook validation.
 
 ## Reconcile
 
@@ -37,7 +39,7 @@ curl --fail-with-body \
 ```
 
 Match `external_id` exactly. If it exists, patch only handoff-provided fields. If
-it does not exist and create is approved, create a draft.
+it does not exist and create is approved, create one registration.
 
 ## Create
 
@@ -51,9 +53,8 @@ curl --fail-with-body \
   --data '{
     "name": "Founder workflow discussions",
     "external_id": "founder-workflows",
-    "topics": ["founder workflows", "AI operations"],
-    "context": "Prioritize practical operating lessons from startup founders.",
-    "explicit_queries": ["founder workflow design"],
+    "use_case": "Find firsthand B2B SaaS founder and revenue-leader posts about adopting AI agents in go-to-market workflows. Prioritize implementation details, measurable outcomes, buying friction, and unmet needs. Exclude job listings and event promotions.",
+    "auto_activate": true,
     "delivery_time": "17:00",
     "timezone": "Asia/Kolkata",
     "webhook_url": "https://hooks.example.com/linkedin"
@@ -63,7 +64,29 @@ curl --fail-with-body \
 Capture `registration.id`. Send the one-time `webhook_secret` directly to the
 approved secret store and omit it from checkpoints.
 
-## Activate and run
+## Wait for compilation
+
+```bash
+curl --fail-with-body \
+  "$PARA_SOCIAL_API/v1/linkedin/registrations/REGISTRATION_ID/status" \
+  --header "Authorization: Bearer $PARA_API_KEY" \
+  --header "X-Request-ID: linkedin-agent-status-001"
+
+curl --fail-with-body \
+  "$PARA_SOCIAL_API/v1/linkedin/registrations/REGISTRATION_ID/plan" \
+  --header "Authorization: Bearer $PARA_API_KEY" \
+  --header "X-Request-ID: linkedin-agent-plan-001"
+```
+
+Wait until `compilation_status` is `READY`. Require exactly ten unique search
+plans, both rubrics, valid normalized weights, provenance for each hard filter,
+and non-empty plan hashes. With `auto_activate: true`, also require
+`auto_activation_status: ACTIVATED` and one ten-run cycle. Do not call activate
+or run while compilation is pending.
+
+## Manual activation and later runs
+
+Call activate only when `auto_activate` was false:
 
 ```bash
 curl --fail-with-body \
@@ -81,8 +104,9 @@ curl --fail-with-body \
   --header "Idempotency-Key: run:linkedin:founder-workflows:2026-07-29"
 ```
 
-Persist returned run IDs. A successful queue response is not collection
-completion, and a manual run does not bypass the configured daily delivery time.
+Each successful compiled activation or run creates exactly ten correlated runs.
+Persist the cycle ID, all ten run IDs, and plan revision. A queue response is
+not collection completion, and a manual run does not bypass delivery time.
 
 ## Monitor
 
@@ -95,8 +119,9 @@ curl --fail-with-body \
   --header "X-Request-ID: linkedin-agent-status-001"
 ```
 
-Stop on a terminal failed or cancelled requested run and report its error plus
-request ID. Continue only when the requested runs are `COMPLETED`.
+A cycle is terminal only after all ten query runs are terminal. Preserve
+completed results and report partial failures with request ID, cycle ID, plan
+revision, and per-query state.
 
 ## Consume results
 
@@ -118,6 +143,11 @@ result.
 ## LinkedIn-specific boundaries
 
 - Author context uses server-side Parallel enrichment after initial relevance.
+- Only posts passing the server's first-pass threshold receive enrichment.
+- Hard filters require explicit source provenance; unknown evidence is neutral
+  and cannot hard-reject.
+- Final scoring is deterministic from persisted post, author, company,
+  geography, follower, and comment-opportunity components.
 - Final selection deduplicates repeated queries, prior delivered URLs, and
   authors within the registration.
 - Generated comment drafts are advisory and are not posted automatically.

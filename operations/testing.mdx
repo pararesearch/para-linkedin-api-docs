@@ -29,23 +29,36 @@ Set `LINKEDIN_PUBLIC_API_URL`, `LINKEDIN_BARADA_API_KEY`, and `LINKEDIN_REAL_E2E
 
 The scenario proves:
 
-1. A temporary Barada registration is created and activated through the public API.
+1. A temporary Barada `use_case` registration queues real OpenAI compilation.
 2. The active DB grant points to Akhil's runner owner.
-3. A recently seen device uses fixed extension ID `memidhnoiniadgfomefhmcahjcekkddd` and version `0.5.7` or later.
-4. The real extension claims Barada's `USER_EXTENSION` run.
-5. Durable `claimed_by_extension`, `extension_results_persisted`, and `completed` events exist.
-6. Initial matching completes after the extension upload.
-7. The daily pipeline performs enrichment, reranking, deduplication, and draft generation.
-8. Final drafts identify Akhil as the effective persona owner.
-9. One immutable local-date batch contains the source extension run.
-10. The production receiver returns `500`, `429`, times out, then returns `200`; all four durable attempts share the batch request ID.
-11. Webhook delivery reaches `DELIVERED`.
-12. The production workflow requires a receiver inspection endpoint and verifies both the HMAC and byte equivalence with polling. Ad hoc local smoke runs may omit inspection.
+3. Compilation yields ten unique queries, both rubrics, valid weights,
+   provenance, rendered prompts, and an active revision.
+4. Auto-activation creates exactly ten correlated runs without calling
+   `/activate` or `/run`.
+5. A recent device uses extension ID `memidhnoiniadgfomefhmcahjcekkddd`,
+   version `0.6.0` or later, and Akhil's runner identity.
+6. The real extension claims, persists, and completes each Barada
+   `USER_EXTENSION` run.
+7. At least one expanded real post is proven to enter only through the extension
+   upload endpoint.
+8. Only first-pass matches reach Parallel; final evidence and scores use the
+   compiled plan.
+9. Final drafts identify Akhil as the effective persona owner and include a
+   persona hash.
+10. One immutable local-date batch contains plan, cycle, source, and score
+    evidence.
+11. The production receiver returns `500`, `429`, times out, then returns `200`;
+    all durable attempts share the batch request ID.
+12. Webhook delivery reaches `DELIVERED`; receiver HMAC and byte-equivalent
+    polling payload verification pass.
 13. The temporary registration is archived afterward.
 
 GitHub-hosted CI does not have access to the signed-in local Chrome profile. The manual `LinkedIn Real Chrome Extension Smoke` workflow only calls the production API and polls evidence; LinkedIn collection is performed by the existing extension on the real profile.
 
-`npm run test:e2e:synthetic` is an optional isolated fixture harness for extension development. It is not accepted as proof that the production Chrome profile, LinkedIn session, DB grant, or deployed service works.
+Synthetic extension tests may cover protocol compatibility, but they are not
+accepted as compiler collection E2E evidence. The production workflow must not
+launch Playwright, Chromium, a persistent browser context, a fixture uploader,
+or a direct post insertion path.
 
 ## Artifacts
 

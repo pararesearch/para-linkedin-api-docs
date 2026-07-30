@@ -1,0 +1,110 @@
+---
+title: "Compiled-plan overrides"
+description: "Safely revise ten LinkedIn searches, rubrics, hard filters, thresholds, and deterministic scoring weights."
+keywords: ["LinkedIn", "plan override", "advanced configuration", "scoring"]
+---
+
+Use an advanced override only after reading the generated plan. `PATCH
+/v1/linkedin/registrations/{id}/plan` creates a new immutable revision; it does
+not mutate the active or historical plan in place.
+
+## Rules
+
+- If `search_plans` is present, it must contain exactly ten unique, non-empty,
+  LinkedIn-compatible queries.
+- Search facets are limited to supported `date_posted` and `sort_by` values.
+- Rubrics must retain their required objectives and criteria.
+- Weights must be finite and non-negative; the server normalizes their sum to
+  one.
+- Thresholds must be between zero and one.
+- Every hard filter needs valid structured-field or exact-language provenance.
+- Server safety instructions are versioned and immutable. Override text is
+  treated as quoted data inside those instructions.
+
+Invalid input returns `422 plan_override_invalid` through the standard error
+envelope. Read and compilation races return `409 plan_not_ready`.
+
+## Override thresholds and weights
+
+```bash
+curl --fail-with-body \
+  --request PATCH \
+  "$PARA_SOCIAL_API/v1/linkedin/registrations/REGISTRATION_ID/plan" \
+  --header "Authorization: Bearer $PARA_API_KEY" \
+  --header "Content-Type: application/json" \
+  --header "X-Request-ID: linkedin-plan-override-001" \
+  --header "Idempotency-Key: override:linkedin:agent-gtm:v2" \
+  --data '{
+    "first_pass_min_score": 0.50,
+    "final_min_score": 0.62,
+    "scoring_weights": {
+      "post": 0.40,
+      "author": 0.30,
+      "company": 0.10,
+      "geography": 0.08,
+      "followers": 0.04,
+      "comment_opportunity": 0.08
+    }
+  }'
+```
+
+The response is the complete new plan. When the registration is already active,
+a valid replacement becomes active atomically and queues a fresh ten-run
+activation cycle.
+
+## Override all searches
+
+Each item requires `topic`, `query`, `intent`, `priority_score`,
+`positive_signals`, `negative_signals`, `date_posted`, and `sort_by`. The body
+below shows one item; an actual request must provide ten:
+
+```json
+{
+  "search_plans": [
+    {
+      "topic": "AI agent pipeline operations",
+      "query": "\"AI agents\" sales pipeline",
+      "intent": "Find firsthand implementation and outcome reports.",
+      "priority_score": 1.0,
+      "positive_signals": ["implementation", "measured outcome"],
+      "negative_signals": ["job listing", "event promotion"],
+      "date_posted": "past-week",
+      "sort_by": "relevance"
+    }
+  ]
+}
+```
+
+Fetch the current plan, transform all ten entries, validate uniqueness, and then
+send the complete array. Do not invent or drop searches to fill the count.
+
+## Override hard filters
+
+A structured provenance example:
+
+```json
+{
+  "hard_filters": [
+    {
+      "field": "industry",
+      "operator": "IN",
+      "values": ["B2B software"],
+      "source_type": "explicit_language",
+      "source_field": null,
+      "source_excerpt": "Only authors at B2B software companies"
+    }
+  ]
+}
+```
+
+An exact-language filter must quote text present in the current registration
+input. `include_terms` and `exclude_terms` are authoritative structured
+constraints. Topics, queries, and preference fields are seeds or soft signals;
+ambiguous phrases such as “prefer,” “ideally,” and “focus on” must not become
+hard filters.
+
+## Revision behavior
+
+Plan reads accept `?revision=N`. Each result item and webhook payload records
+`plan_revision`, evidence, weights, and persona hash. Replaying a webhook uses
+the stored immutable payload; it does not rerun scoring under a newer override.

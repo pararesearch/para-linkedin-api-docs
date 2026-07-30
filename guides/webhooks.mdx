@@ -127,13 +127,19 @@ def verify_webhook(raw_body: bytes, timestamp: str, signature: str, secret: str)
           "reason": "Uses the effective Akhil voice.",
           "model": "configured-comment-model",
           "persona_owner_user_id": "akhil_owner_id",
-          "persona_hash": "sha256..."
+          "persona_hash": "sha256...",
+          "draft_config_hash": "sha256..."
         }
       }
     ]
   }
 }
 ```
+
+`persona_hash` identifies the effective Akhil voice profile used for Barada.
+`draft_config_hash` additionally covers the active comment controls, style
+override, limits, and forbidden phrases so consumers can distinguish a persona
+change from a draft-configuration change.
 
 ## Retries and replay
 

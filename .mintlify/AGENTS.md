@@ -20,6 +20,13 @@ generated skill indexes and A2A agent card use the direct
 - State platform differences explicitly instead of hiding them in generic prose.
 - Describe side effects, required scopes, idempotency, terminal conditions, and
   safe retries for every agent workflow.
+- Distinguish topics-only LinkedIn creation from `use_case` creation:
+  compiler-native creation queues compilation and may auto-activate exactly ten
+  real-extension searches after plan and webhook validation.
+- Require agents to poll compilation and inspect the generated plan before
+  manual lifecycle actions or advanced overrides.
+- Document explicit hard-filter provenance, inferred soft preferences, neutral
+  unknown evidence, first-pass-only enrichment, and deterministic final scoring.
 - Keep collection extension-only. Never document Chromium, Playwright, fixture
   uploaders, or direct scraping as production collection paths.
 - Keep generated drafts advisory. Never imply that the public API posts,

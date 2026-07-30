@@ -44,7 +44,12 @@ Scheduled and manual tasks use `USER_EXTENSION`. The extension:
 
 Neither integration nor acceptance tests insert LinkedIn posts directly. The production acceptance suite queues work through the API and waits for the already-installed extension in the existing Chrome profile to claim, capture, expand, and upload the results.
 
-Production acceptance does not launch another browser. `npm run test:e2e` queues a temporary registration through the public API and waits for version `0.5.7` or later of the already loaded extension in the existing Chrome profile to claim and upload it. GitHub Actions can initiate and poll this test, but the actual LinkedIn browsing remains inside that real signed-in Chrome session.
+Production acceptance does not launch another browser. `npm run test:e2e`
+creates a temporary compiler-native registration through the public API and
+waits for version `0.6.0` or later of the already loaded extension in the
+existing Chrome profile to claim all ten correlated searches and upload them.
+GitHub Actions can initiate and poll this test, but the actual LinkedIn browsing
+remains inside that real signed-in Chrome session.
 
 The Chrome profile identity, extension app owner, and result owner are separate:
 

@@ -5,7 +5,7 @@ license: Proprietary
 compatibility: Requires HTTPS access to the public API and an owner-scoped Bearer API key supplied through an environment variable.
 metadata:
   author: PARA
-  version: "1.1.0"
+  version: "1.2.0"
 ---
 
 # PARA Social Research API
@@ -34,7 +34,7 @@ Read these from the operator handoff:
 - mode: `inspect`, `manage`, `run`, or `recover_delivery`
 - API key environment-variable name, normally `PARA_API_KEY`
 - stable registration `external_id`
-- name, topics, and free-form filtering context
+- name and either a detailed LinkedIn `use_case` or legacy topics/context
 - platform-specific sources or queries
 - public HTTPS webhook URL for activation
 - mutation approvals
@@ -86,19 +86,24 @@ Unsupported:
 1. Call `GET /health/ready`; stop if it is not successful.
 2. Load OpenAPI and select operations under `/v1/{platform}`.
 3. List registrations and match the exact operator-supplied `external_id`.
-4. Patch only explicitly supplied fields, or create one `DRAFT` when approved.
+4. Patch only explicitly supplied fields, or create one registration when approved.
 5. Persist each one-time webhook secret outside the transcript.
-6. Activate only with topics, a public HTTPS webhook, and approval.
-7. Request a run only with approval and persist returned run IDs.
-8. Poll status with bounded intervals until requested runs are terminal.
-9. Respect `delivery_time`; a manual run does not force an immediate batch.
-10. Read the immutable batch by webhook or polling.
-11. Treat `posts: []` as successful completion.
-12. Return a redacted checkpoint with resource IDs, states, counts, request IDs,
+6. For LinkedIn `use_case` creation, poll compilation, inspect `/plan`, require
+   exactly ten unique searches, and observe auto-activation when enabled.
+7. Activate a legacy or non-auto-activating registration only with a ready
+   requirement, a public HTTPS webhook, and approval.
+8. Request a run only with approval and persist returned cycle and run IDs.
+9. Poll status with bounded intervals until all requested runs are terminal.
+10. Respect `delivery_time`; a manual run does not force an immediate batch.
+11. Read the immutable batch by webhook or polling.
+12. Treat `posts: []` as successful completion.
+13. Return a redacted checkpoint with resource IDs, states, counts, request IDs,
     and remaining operator actions.
 
-Creating a registration never queues collection. Activation is the collection
-boundary.
+Topics-only LinkedIn and all Reddit creation remain side-effect free. A
+LinkedIn registration containing `use_case` queues server-side compilation and,
+when `auto_activate` is true and the webhook is valid, may atomically queue one
+cycle of exactly ten real-extension searches.
 
 ## Idempotency
 
@@ -131,9 +136,14 @@ Never reuse a key with a different body or operation.
 
 LinkedIn:
 
+- one detailed `use_case` can compile into exactly ten searches, post and
+  author/ICP rubrics, prompts, hard filters, thresholds, and scoring weights;
 - collection expands post content and visible media in the extension;
-- initially relevant authors receive Parallel enrichment;
-- final batches include both scoring stages and optional advisory comment drafts.
+- only initially relevant authors receive Parallel enrichment;
+- unavailable author evidence is neutral `UNKNOWN`, not an automatic rejection;
+- final scoring is deterministic from persisted components and weights;
+- final batches include plan revision, source provenance, both scoring stages,
+  enrichment coverage, persona hash, and optional advisory comment drafts.
 
 Reddit:
 

@@ -12,7 +12,8 @@ the complete documentation corpus fits the available context window.
 - Read API credentials from environment variables. Never print, persist, or place them in prompts, logs, URLs, or artifacts.
 - Reconcile registrations by `external_id` before creating one. Never invent resource IDs.
 - Persist one stable `Idempotency-Key` per intended mutation and reuse it only for the identical operation.
-- Creating a registration is side-effect free for collection. Activation is the boundary that enables extension work and daily delivery.
+- LinkedIn creation has two modes: topics-only legacy creation is side-effect free; creation with `use_case` queues compilation and may auto-activate exactly ten real-extension searches when the plan and HTTPS webhook validate.
+- Never call LinkedIn activate or run while `compilation_status` is pending. Inspect `/plan`, require ten unique searches, and follow `auto_activation_status`.
 - Collection is asynchronous and extension-only. Do not scrape LinkedIn or Reddit directly and do not launch a substitute browser collector.
 - Treat an empty `posts` array as a successful completed batch.
 - Verify webhook HMACs against the exact raw body before parsing JSON.
@@ -36,6 +37,8 @@ the complete documentation corpus fits the available context window.
 - [LinkedIn agent workflow](https://para-linkedin-api.mintlify.site/agents/linkedin.md): Reconcile, create, activate, run, monitor, and consume final LinkedIn results.
 - [LinkedIn quickstart](https://para-linkedin-api.mintlify.site/quickstart.md): Copyable API requests.
 - [LinkedIn registrations](https://para-linkedin-api.mintlify.site/guides/registrations.md): Lifecycle and matching revisions.
+- [Automatic requirement compilation](https://para-linkedin-api.mintlify.site/guides/automatic-requirement-compilation.md): Convert one use case into ten searches, post and author rubrics, prompts, filters, and weights.
+- [Compiled-plan overrides](https://para-linkedin-api.mintlify.site/guides/compiled-plan-overrides.md): Validated, immutable expert revisions.
 - [LinkedIn matching](https://para-linkedin-api.mintlify.site/guides/matching-relevance.md): Expanded post collection, Parallel author enrichment, reranking, and drafts.
 - [LinkedIn results](https://para-linkedin-api.mintlify.site/guides/result-polling.md): Immutable batch polling.
 - [LinkedIn webhooks](https://para-linkedin-api.mintlify.site/guides/webhooks.md): Event payload, signature, retries, and replay.

@@ -32,20 +32,23 @@ npx skills add https://para-linkedin-api.mintlify.app
 
 ## Bootstrap algorithm
 
-1. Read the handoff and identify `platform`, `mode`, `external_id`, topics,
-   webhook destination, and allowed mutations.
+1. Read the handoff and identify `platform`, `mode`, `external_id`, LinkedIn
+   `use_case` or legacy topics, webhook destination, and allowed mutations.
 2. Read the API key from `PARA_API_KEY`. Do not echo or serialize it.
 3. Call `GET /health/ready`. Stop on a non-`2xx` response.
 4. Load OpenAPI and select only operations under the requested platform prefix.
 5. List registrations and reconcile by `external_id` before creating anything.
 6. For each mutation, persist one operation-specific `Idempotency-Key` before
    sending the request.
-7. Treat create as configuration only. Call activate only when the handoff
-   authorizes collection and supplies topics plus a public HTTPS webhook.
-8. Treat run execution as asynchronous. Poll status with bounded intervals and
-   stop when the requested runs are terminal.
-9. Consume the immutable batch from the webhook or batch polling endpoint.
-10. Return a redacted checkpoint containing IDs, states, counts, and request IDs.
+7. Treat legacy topics-only LinkedIn and Reddit creation as configuration only.
+   A LinkedIn create containing `use_case` queues compilation and can
+   auto-activate when the plan and public HTTPS webhook validate.
+8. For compiler-native LinkedIn, poll `compilation_status`, inspect `/plan`,
+   require ten unique searches, and do not call activate/run while pending.
+9. Treat run execution as asynchronous. A compiled LinkedIn activation,
+   schedule, or manual run creates exactly ten correlated runs.
+10. Consume the immutable batch from the webhook or batch polling endpoint.
+11. Return a redacted checkpoint containing IDs, states, counts, and request IDs.
 
 A manual run does not bypass `delivery_time`. Use the handoff deadline and stop
 with a resumable checkpoint instead of polling indefinitely.

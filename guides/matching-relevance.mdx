@@ -5,15 +5,34 @@ description: "How expanded posts become the final selected and drafted result se
 
 Collection and matching are separate. The Chrome extension first opens LinkedIn search in the paired signed-in profile, scrolls results, expands truncated post text, captures visible media and engagement text, and uploads the run. The server never manufactures LinkedIn post rows for scheduled work.
 
-## Selection pipeline
+## Compiled selection pipeline
 
-1. **Initial relevance:** The model compares full captured post content and author context with the registration requirement. It stores status, score, labels, reason, model, raw response metadata, and requirement revision.
-2. **Cross-query deduplication:** Repeated URLs collected by different search variants are consolidated within the registration.
-3. **Parallel enrichment:** Author profile URLs are resolved and cached. The stored profile can include name, headline, location, follower count, about text, experience, education, topics, sources, freshness notes, and processing status.
-4. **Final rerank:** The enriched post is scored again with weighted post relevance, profile relevance, geography, followers, and comment opportunity components.
-5. **Author and historical deduplication:** The final list avoids repeated authors and excludes post URLs already emitted in an earlier batch for this registration.
-6. **Draft generation:** Qualifying rows receive a comment draft when enabled.
-7. **Final limit:** The registration's `result_limit` is applied and the exact set is stored as immutable result items.
+1. **Deterministic prechecks:** Reject empty content, duplicate URLs, out-of-window
+   posts, and explicit post constraints with contradictory evidence.
+2. **Initial post relevance:** The model applies the active plan's versioned post
+   prompt and rubric to full expanded content. It returns component evidence,
+   labels, score, confidence, and hard-filter outcomes. The server compares the
+   score with `first_pass_min_score`; a hidden model boolean is not a gate.
+3. **Cross-query deduplication:** Repeated URLs from the ten queries are
+   consolidated and every occurrence remains available as append-only source
+   provenance.
+4. **Parallel enrichment:** Only first-pass matches are submitted. The
+   versioned cache stores normalized role, function, seniority, current employer,
+   employer URL/domain, public industry and company size, location, followers,
+   experience, skills, public sources, missing fields, and freshness.
+5. **Author/ICP evaluation:** The active author rubric evaluates the terminal
+   enrichment result. Unavailable evidence is `UNKNOWN`, scores `0.5`, and
+   reduces coverage instead of becoming an automatic rejection.
+6. **Deterministic final score:** The server combines post, author, company,
+   geography, followers, and comment-opportunity components using the exact
+   persisted normalized weights.
+7. **Author and historical deduplication:** The final list avoids repeated
+   authors and excludes URLs already delivered for this registration.
+8. **Draft generation:** Qualifying rows receive an advisory comment draft using
+   the effective persona plus the registration use case and enriched author
+   context.
+9. **Final limit:** `result_limit` is applied and the exact result and webhook
+   payload are stored immutably.
 
 An empty qualifying set is successful and produces a ready batch with `"posts": []`.
 
@@ -21,7 +40,35 @@ An empty qualifying set is successful and produces a ready batch with `"posts": 
 
 The same LinkedIn post may be relevant to two registrations and appear in both. Dedupe history is registration scoped, and every requirement lookup uses both `owner_user_id` and `requirement_id`.
 
-Editing topics, context, inclusion/exclusion terms, explicit queries, thresholds, or author preferences increments the registration's matching revision. Historical batches keep the revision and score details used when they were produced.
+Editing compiler inputs creates a new plan revision. Advanced overrides also
+create revisions. Historical batches keep the plan, requirement, scoring
+weights, evidence, enrichment schema, and persona hash used when they were
+produced.
+
+## Hard filters
+
+Hard filters must retain provenance from authoritative `include_terms` or
+`exclude_terms`, an explicit advanced override, or an exact source excerpt with
+restrictive language. “Only,” “exclude,” “must,” and “must not” can express
+hard intent; topics, queries, and inferred preferences remain soft signals.
+
+A filter rejects only when available evidence contradicts it. Missing author or
+company evidence produces `UNKNOWN`, not `REJECT`. The result payload exposes
+every decision with its provenance and reason.
+
+## Default compiled weights
+
+| Component | Default |
+| --- | ---: |
+| Post relevance | `0.45` |
+| Author/ICP relevance | `0.25` |
+| Company fit | `0.10` |
+| Geography | `0.10` |
+| Followers | `0.05` |
+| Comment opportunity | `0.05` |
+
+Valid compiler or advanced-override weights are normalized to one. Default
+first-pass and final thresholds are `0.45` and `0.55`.
 
 ## Barada's comment voice
 
@@ -33,4 +80,6 @@ Barada account persona mapping -> Akhil owner
 Akhil profile + voice summary + approved/retrieved examples -> draft prompt
 ```
 
-This preserves Akhil's established tone while keeping Barada's research intent independent. E2E tests inspect the mocked comment-generation request and require both Akhil's voice summary and a retrieved Akhil example.
+This preserves Akhil's established tone while keeping Barada's research intent
+independent. The final payload includes the persona hash used for the draft.
+Drafts remain advisory and are never automatically posted.
