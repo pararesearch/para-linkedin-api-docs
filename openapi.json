@@ -9963,42 +9963,51 @@
             "required": true,
             "schema": {
               "format": "uuid",
+              "title": "X-Webhook-Id",
               "type": "string"
             }
           },
           {
+            "description": "Unix timestamp in seconds",
             "in": "header",
             "name": "X-Webhook-Timestamp",
             "required": true,
             "schema": {
               "description": "Unix timestamp in seconds",
+              "title": "X-Webhook-Timestamp",
               "type": "string"
             }
           },
           {
+            "description": "HMAC-SHA256 signature in the form v1=<hex digest>",
             "in": "header",
             "name": "X-Webhook-Signature",
             "required": true,
             "schema": {
               "description": "HMAC-SHA256 signature in the form v1=<hex digest>",
+              "title": "X-Webhook-Signature",
               "type": "string"
             }
           },
           {
+            "description": "Same value as X-Webhook-Id",
             "in": "header",
             "name": "Idempotency-Key",
             "required": true,
             "schema": {
               "description": "Same value as X-Webhook-Id",
+              "title": "Idempotency-Key",
               "type": "string"
             }
           },
           {
+            "description": "End-to-end correlation ID",
             "in": "header",
             "name": "X-Request-ID",
             "required": true,
             "schema": {
               "description": "End-to-end correlation ID",
+              "title": "X-Request-Id",
               "type": "string"
             }
           }
@@ -10047,42 +10056,51 @@
             "required": true,
             "schema": {
               "format": "uuid",
+              "title": "X-Webhook-Id",
               "type": "string"
             }
           },
           {
+            "description": "Unix timestamp in seconds",
             "in": "header",
             "name": "X-Webhook-Timestamp",
             "required": true,
             "schema": {
               "description": "Unix timestamp in seconds",
+              "title": "X-Webhook-Timestamp",
               "type": "string"
             }
           },
           {
+            "description": "HMAC-SHA256 signature in the form v1=<hex digest>",
             "in": "header",
             "name": "X-Webhook-Signature",
             "required": true,
             "schema": {
               "description": "HMAC-SHA256 signature in the form v1=<hex digest>",
+              "title": "X-Webhook-Signature",
               "type": "string"
             }
           },
           {
+            "description": "Same value as X-Webhook-Id",
             "in": "header",
             "name": "Idempotency-Key",
             "required": true,
             "schema": {
               "description": "Same value as X-Webhook-Id",
+              "title": "Idempotency-Key",
               "type": "string"
             }
           },
           {
+            "description": "End-to-end correlation ID",
             "in": "header",
             "name": "X-Request-ID",
             "required": true,
             "schema": {
               "description": "End-to-end correlation ID",
+              "title": "X-Request-Id",
               "type": "string"
             }
           }
