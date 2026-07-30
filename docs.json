@@ -2,7 +2,7 @@
   "$schema": "https://mintlify.com/docs.json",
   "theme": "mint",
   "name": "PARA Social Research API",
-  "description": "Register LinkedIn and Reddit research topics and receive final relevant-post batches.",
+  "description": "Canonical agent contract and OpenAPI for LinkedIn and Reddit research automation.",
   "contextual": {
     "display": "header",
     "options": [
@@ -22,88 +22,19 @@
   "navigation": {
     "tabs": [
       {
-        "tab": "Agents",
+        "tab": "Agent Contract",
         "icon": "bot",
         "groups": [
           {
-            "group": "Start here",
+            "group": "Required reading",
             "pages": [
-              "agents/quickstart",
-              "agents/handoff"
-            ]
-          },
-          {
-            "group": "Workflows",
-            "pages": [
-              "agents/linkedin",
-              "agents/reddit",
-              "agents/webhooks"
+              "agent"
             ]
           }
         ]
       },
       {
-        "tab": "Guides",
-        "icon": "book-open",
-        "groups": [
-          {
-            "group": "Get started",
-            "pages": [
-              "overview",
-              "authentication"
-            ]
-          },
-          {
-            "group": "LinkedIn",
-            "pages": [
-              "quickstart",
-              "guides/registrations",
-              "guides/automatic-requirement-compilation",
-              "guides/compiled-plan-overrides",
-              "guides/matching-relevance",
-              "guides/webhooks",
-              "guides/result-polling"
-            ]
-          },
-          {
-            "group": "Reddit",
-            "pages": [
-              "reddit/quickstart",
-              "reddit/registrations",
-              "reddit/matching",
-              "reddit/results",
-              "reddit/webhooks",
-              "reddit/extension-pairing"
-            ]
-          },
-          {
-            "group": "Platform",
-            "pages": [
-              "guides/errors-idempotency-rate-limits"
-            ]
-          },
-          {
-            "group": "Product",
-            "pages": [
-              "guides/dashboard",
-              "guides/shared-extension"
-            ]
-          },
-          {
-            "group": "Operate",
-            "pages": [
-              "operations/testing",
-              "reddit/testing",
-              "operations/observability",
-              "reddit/operations",
-              "operations/runbook",
-              "changelog"
-            ]
-          }
-        ]
-      },
-      {
-        "tab": "API Reference",
+        "tab": "OpenAPI",
         "icon": "square-terminal",
         "groups": [
           {

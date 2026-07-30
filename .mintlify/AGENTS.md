@@ -4,15 +4,17 @@
 
 1. `openapi.json` is generated from FastAPI and is authoritative for the public
    contract.
-2. `agent-manifest.json` summarizes capabilities and must match OpenAPI.
-3. `llms.txt` is the curated navigation and directive layer.
-4. `skill.md` is the installable capability and workflow summary.
-5. `agents/handoff.mdx` defines operator inputs, approvals, checkpoints, and
-   completion reporting.
+2. `agent.mdx` is the complete narrative operating contract and the only
+   required documentation page for an executing agent.
+3. `agent-manifest.json` summarizes capabilities and must match OpenAPI.
+4. `llms.txt` is a minimal bootstrap that points to `agent.mdx` and OpenAPI.
+5. `skill.md` is the installable capability summary and must point to
+   `agent.mdx`.
 
-Human-facing documentation uses `para-linkedin-api.mintlify.site`. Mintlify's
+Agent-readable documentation uses `para-linkedin-api.mintlify.site`. Mintlify's
 generated skill indexes and A2A agent card use the direct
-`para-linkedin-api.mintlify.app` machine origin.
+`para-linkedin-api.mintlify.app` machine origin. Legacy pages remain available
+for old links but are not primary navigation or required reading.
 
 ## Required behavior
 
@@ -38,6 +40,10 @@ generated skill indexes and A2A agent card use the direct
   operations as explicit-approval actions.
 - Link to OpenAPI instead of manually duplicating large schemas.
 - Preserve existing LinkedIn URLs when adding Reddit or agent content.
+- Keep primary navigation limited to the canonical agent contract and OpenAPI.
+- Keep `agent.mdx` compact enough for one-pass loading while retaining the
+  complete lifecycle, platform differences, delivery, recovery, and safety
+  contract.
 
 ## Validation
 

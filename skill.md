@@ -16,15 +16,17 @@ and runs only through the already-paired real Chrome extension.
 
 ## Canonical context
 
-- Agent index: `https://para-linkedin-api.mintlify.site/llms.txt`
-- Agent handoff: `https://para-linkedin-api.mintlify.site/agents/handoff.md`
+- Complete agent contract: `https://para-linkedin-api.mintlify.site/agent.md`
+- Minimal bootstrap index: `https://para-linkedin-api.mintlify.site/llms.txt`
 - Machine manifest: `https://para-linkedin-api.mintlify.site/agent-manifest.json`
 - A2A agent card: `https://para-linkedin-api.mintlify.app/.well-known/agent-card.json`
 - OpenAPI 3.1: `https://para-linkedin-api.onrender.com/openapi.json`
 - API origin: `https://para-linkedin-api.onrender.com`
 - Readiness: `https://para-linkedin-api.onrender.com/health/ready`
 
-OpenAPI is authoritative for methods, paths, schemas, and webhook contracts.
+Read the complete agent contract before any mutation. OpenAPI is authoritative
+for methods, paths, schemas, and webhook contracts. Do not crawl legacy guide
+pages unless resolving an old link.
 
 ## Required inputs
 
