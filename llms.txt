@@ -4,7 +4,7 @@
 
 ## Required read order
 
-1. [Canonical agent contract](https://para-linkedin-api.mintlify.site/agent.md)
+1. [Canonical agent contract](https://para-linkedin-api.mintlify.app/agent.md)
 2. [Live OpenAPI 3.1](https://para-linkedin-api.onrender.com/openapi.json)
 
 The canonical contract contains the complete operating model, approvals,

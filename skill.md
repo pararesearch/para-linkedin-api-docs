@@ -16,7 +16,7 @@ and runs only through the already-paired real Chrome extension.
 
 ## Canonical context
 
-- Complete agent contract: `https://para-linkedin-api.mintlify.site/agent.md`
+- Complete agent contract: `https://para-linkedin-api.mintlify.app/agent.md`
 - Minimal bootstrap index: `https://para-linkedin-api.mintlify.site/llms.txt`
 - Machine manifest: `https://para-linkedin-api.mintlify.site/agent-manifest.json`
 - A2A agent card: `https://para-linkedin-api.mintlify.app/.well-known/agent-card.json`
