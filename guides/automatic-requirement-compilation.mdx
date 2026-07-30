@@ -95,6 +95,12 @@ The response contains:
 - the durable `request_id` propagated from plan creation through compilation,
   activation, the initial cycle, all ten runs, and downstream logs.
 
+Before activation, the server also verifies that every query is a complete
+LinkedIn keyword or Boolean expression: 120 characters or fewer, no URL or
+search-facet syntax, balanced quotes and parentheses, no dangling operators,
+and no more than four Boolean operators. Invalid compiler output is retried
+without creating tasks.
+
 Pass `?revision=N` to inspect historical revisions. Historical result batches
 continue to reference the plan revision that produced them.
 

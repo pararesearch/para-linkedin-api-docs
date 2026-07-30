@@ -12,6 +12,9 @@ not mutate the active or historical plan in place.
 
 - If `search_plans` is present, it must contain exactly ten unique, non-empty,
   LinkedIn-compatible queries.
+- Each query is at most 120 characters, has balanced quotes and parentheses,
+  contains no URL or unsupported search-facet syntax, and uses no more than
+  four uppercase `AND`, `OR`, or `NOT` operators.
 - Search facets are limited to supported `date_posted` and `sort_by` values.
 - Rubrics must retain their required objectives and criteria.
 - Weights must be finite and non-negative; the server normalizes their sum to
@@ -22,7 +25,8 @@ not mutate the active or historical plan in place.
   treated as quoted data inside those instructions.
 
 Invalid input returns `422 plan_override_invalid` through the standard error
-envelope. Read and compilation races return `409 plan_not_ready`.
+envelope and does not replace the active revision. Read and compilation races
+return `409 plan_not_ready`.
 
 ## Override thresholds and weights
 

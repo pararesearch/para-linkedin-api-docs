@@ -22,6 +22,9 @@ description: "Contract and behavior changes for the PARA Social Research API."
   shadow changes to their current behavior.
 - Updated agent, OpenAPI, Mintlify, logging, CI, and real-extension smoke
   contracts for compiler-aware operation.
+- Hardened compiler version `linkedin-plan-v2` so clipped, unbalanced,
+  overlong, or unsupported LinkedIn search syntax is rejected before
+  activation and retried without creating tasks.
 
 The LinkedIn event remains `linkedin.relevant_posts.daily.v1`.
 

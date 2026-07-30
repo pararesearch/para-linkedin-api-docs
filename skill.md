@@ -90,6 +90,8 @@ Unsupported:
 5. Persist each one-time webhook secret outside the transcript.
 6. For LinkedIn `use_case` creation, poll compilation, inspect `/plan`, require
    exactly ten unique searches, and observe auto-activation when enabled.
+   Query compatibility is server-owned: activation additionally requires
+   complete queries of at most 120 characters with balanced Boolean syntax.
 7. Activate a legacy or non-auto-activating registration only with a ready
    requirement, a public HTTPS webhook, and approval.
 8. Request a run only with approval and persist returned cycle and run IDs.
