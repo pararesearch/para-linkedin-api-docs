@@ -1,15 +1,15 @@
-# PARA Social Research API
+# PARA Social Automation
 
-> Agent-only control plane for owner-scoped LinkedIn and Reddit research through a paired real Chrome extension.
+> Owner-scoped LinkedIn and Reddit research with persisted draft review and separately approved extension publishing.
 
 ## Required read order
 
-1. [Canonical agent contract](https://para-linkedin-api.mintlify.app/agent.md)
+1. [PARA integration guide](https://para-linkedin-api.mintlify.app/agent.md)
 2. [Live OpenAPI 3.1](https://para-linkedin-api.onrender.com/openapi.json)
 
-The canonical contract contains the complete operating model, approvals,
-lifecycle, LinkedIn requirement compiler, Reddit workflow, matching, batching,
-webhook verification, retries, recovery, and completion checkpoint. OpenAPI is
+The integration guide contains the complete operating model, authentication
+surfaces, use cases, research lifecycle, automatic human-review intake, explicit
+publishing confirmation, queue states, and completion rules. OpenAPI is
 authoritative for exact request and response schemas. Do not crawl the rest of
 the site unless resolving a legacy link.
 
@@ -31,7 +31,12 @@ the site unless resolving a legacy link.
   `X-Webhook-Id`.
 - Require explicit operator approval for archive, secret rotation, delivery
   replay, and API-key lifecycle.
-- Never scrape directly or submit generated drafts.
+- Ready generated drafts are persisted and automatically surfaced in the human
+  review queue; generation alone never performs a platform action.
+- An explicit dashboard confirmation creates a durable publishing queue item.
+  The paired extension may execute only that approved snapshot later.
+- The public API key cannot call dashboard publishing or extension device
+  endpoints. With public API access alone, stop at review-ready.
 
 ## Machine contracts
 

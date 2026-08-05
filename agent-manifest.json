@@ -1,5 +1,5 @@
 {
-  "schema_version": "2026-07-30",
+  "schema_version": "2026-08-05",
   "name": "PARA Social Research API",
   "handoff_scope": "universal",
   "api_version": "1.2.0",
@@ -73,7 +73,7 @@
     "linkedin": {
       "base_path": "/v1/linkedin",
       "registration_path": "/v1/linkedin/registrations",
-      "agent_workflow": "https://para-linkedin-api.mintlify.app/agent.md#linkedin",
+      "agent_workflow": "https://para-linkedin-api.mintlify.app/agent.md#research-flow",
       "event": "linkedin.relevant_posts.daily.v1",
       "collection": "paired_real_chrome_extension",
       "author_context": "parallel_enrichment",
@@ -81,7 +81,16 @@
         "webhook",
         "batch_polling"
       ],
-      "participation_actions": false,
+      "public_api_participation_actions": false,
+      "review_and_publishing": {
+        "ready_drafts_auto_enter_review": true,
+        "review_intake_requires_mutation": false,
+        "review_decision_automation": "separate_capability_not_implied",
+        "confirmation_surface": "dashboard_session",
+        "confirmation_path": "/api/linkedin/comment-queue",
+        "execution_surface": "paired_posting_extension",
+        "explicit_confirmation_required": true
+      },
       "requirement_compiler": {
         "input": "use_case",
         "searches_per_cycle": 10,
@@ -100,7 +109,7 @@
     "reddit": {
       "base_path": "/v1/reddit",
       "registration_path": "/v1/reddit/registrations",
-      "agent_workflow": "https://para-linkedin-api.mintlify.app/agent.md#reddit",
+      "agent_workflow": "https://para-linkedin-api.mintlify.app/agent.md#research-flow",
       "event": "reddit.relevant_posts.daily.v1",
       "collection": "paired_real_chrome_extension",
       "author_context": "extension_only_public_profile",
@@ -109,7 +118,17 @@
         "batch_polling",
         "post_detail_polling"
       ],
-      "participation_actions": false
+      "public_api_participation_actions": false,
+      "review_and_publishing": {
+        "ready_drafts_auto_enter_review": true,
+        "review_intake_requires_mutation": false,
+        "review_decision_automation": "separate_capability_not_implied",
+        "confirmation_surface": "dashboard_session",
+        "comment_confirmation_path": "/api/reddit/comment-queue",
+        "post_confirmation_path": "/api/reddit/post-queue",
+        "execution_surface": "paired_participation_extension",
+        "explicit_confirmation_required": true
+      }
     }
   },
   "lifecycle": {
@@ -173,15 +192,34 @@
       "delivery_replay",
       "api_key_create",
       "api_key_rotation",
-      "api_key_revocation"
+      "api_key_revocation",
+      "confirm_draft_for_publishing",
+      "cancel_pending_publishing_item"
     ],
     "unsupported": [
       "direct_platform_scraping",
       "synthetic_collection",
-      "posting",
-      "commenting",
-      "voting",
-      "automatic_draft_submission"
+      "unreviewed_platform_participation",
+      "automatic_unreviewed_draft_submission",
+      "public_api_key_on_dashboard_publishing_endpoints",
+      "unpaired_calls_to_extension_device_endpoints"
     ]
+  },
+  "control_surfaces": {
+    "public_api": {
+      "path_prefix": "/v1",
+      "authentication": "owner_scoped_api_key",
+      "includes_publishing_mutations": false
+    },
+    "dashboard_api": {
+      "path_prefix": "/api",
+      "authentication": "dashboard_access_token",
+      "includes_review_and_publishing_mutations": true
+    },
+    "extension_api": {
+      "path_prefix": "/api/extensions",
+      "authentication": "paired_device_token",
+      "executes_only_approved_queue_items": true
+    }
   }
 }

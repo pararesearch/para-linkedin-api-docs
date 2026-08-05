@@ -4,8 +4,8 @@
 
 1. `openapi.json` is generated from FastAPI and is authoritative for the public
    contract.
-2. `agent.mdx` is the complete narrative operating contract and the only
-   required documentation page for an executing agent.
+2. `agent.mdx` is the single one-page integration guide for the public API and
+   the human-review-to-publishing handoff.
 3. `agent-manifest.json` summarizes capabilities and must match OpenAPI.
 4. `llms.txt` is a minimal bootstrap that points to `agent.mdx` and OpenAPI.
 5. `skill.md` is the installable capability summary and must point to
@@ -31,8 +31,14 @@ for old links but are not primary navigation or required reading.
   unknown evidence, first-pass-only enrichment, and deterministic final scoring.
 - Keep collection extension-only. Never document Chromium, Playwright, fixture
   uploaders, or direct scraping as production collection paths.
-- Keep generated drafts advisory. Never imply that the public API posts,
-  comments, votes, or submits drafts automatically.
+- State that ready drafts are persisted and automatically surfaced for human
+  review, while generation itself performs no platform action.
+- Distinguish the human review queue from the durable publishing queue. Explicit
+  confirmation creates the publishing item; a paired extension executes it.
+- State that public API keys, dashboard access tokens, and extension device
+  tokens are not interchangeable.
+- Prohibit unreviewed platform actions without hiding the approved publishing
+  workflow behind a blanket "posting unsupported" statement.
 - Never add API keys, temporary passwords, webhook secrets, authorization
   headers, session material, or receiver tokens to documentation or examples.
 - Use obvious placeholders and environment variables in commands.
@@ -41,9 +47,8 @@ for old links but are not primary navigation or required reading.
 - Link to OpenAPI instead of manually duplicating large schemas.
 - Preserve existing LinkedIn URLs when adding Reddit or agent content.
 - Keep primary navigation limited to the canonical agent contract and OpenAPI.
-- Keep `agent.mdx` compact enough for one-pass loading while retaining the
-  complete lifecycle, platform differences, delivery, recovery, and safety
-  contract.
+- Keep `agent.mdx` concise enough for one-pass loading while retaining the
+  complete research, review, confirmation, publishing, and completion flow.
 
 ## Validation
 

@@ -150,7 +150,15 @@ result.
   geography, follower, and comment-opportunity components.
 - Final selection deduplicates repeated queries, prior delivered URLs, and
   authors within the registration.
-- Generated comment drafts are advisory and are not posted automatically.
+- Ready comment drafts are persisted and automatically enter the human review
+  queue. Generation alone does not post anything.
+- A reviewer can edit a draft and select `Confirm to send`. The dashboard then
+  creates a durable publishing queue snapshot at
+  `POST /api/linkedin/comment-queue`.
+- The separately paired posting extension may later execute that approved
+  snapshot under its configured identity, pacing, and retry rules.
+- The dashboard publishing endpoint requires dashboard authentication and is not
+  part of the public `/v1/*` OpenAPI contract.
 - A separate browser, synthetic collector, or direct LinkedIn scraper is not a
   valid fallback.
 

@@ -11,7 +11,7 @@ or business-critical values.
 ## Operator input
 
 ```yaml
-schema_version: "2026-07-30"
+schema_version: "2026-08-05"
 api_origin: "https://para-linkedin-api.onrender.com"
 api_key_env: "PARA_API_KEY"
 platform: "linkedin" # linkedin | reddit
@@ -48,6 +48,8 @@ approvals:
   rotate_webhook_secret: false
   replay_delivery: false
   manage_api_keys: false
+  confirm_for_publishing: false
+  cancel_publishing_item: false
 
 completion:
   wait_for: "delivery" # queued | run | batch | delivery
@@ -86,7 +88,16 @@ manual run does not bypass daily batch scheduling.
 | Rotate webhook secret | Requires `approvals.rotate_webhook_secret: true`; return the secret through an approved secret channel only |
 | Replay delivery | Requires `approvals.replay_delivery: true` |
 | Create, rotate, or revoke API keys | Requires `approvals.manage_api_keys: true` |
-| Direct scraping, posting, commenting, voting, or submitting generated drafts | Unsupported |
+| Review or edit a ready generated draft | Allowed through an authenticated dashboard session |
+| Confirm an edited draft into the publishing queue | Requires `approvals.confirm_for_publishing: true` and dashboard authentication |
+| Cancel a pending publishing item | Requires `approvals.cancel_publishing_item: true` and dashboard authentication |
+| Direct scraping or unreviewed platform participation | Unsupported |
+
+Ready drafts are persisted and automatically appear in the human review queue.
+That has no platform side effect. Explicit confirmation creates a separate,
+durable publishing queue item; the assigned extension may execute that approved
+snapshot later. A public API key cannot authenticate to dashboard or extension
+endpoints.
 
 ## Reconciliation rules
 

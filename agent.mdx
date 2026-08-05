@@ -1,293 +1,251 @@
 ---
-title: "Canonical agent contract"
-description: "Complete execution contract for agents operating the PARA LinkedIn and Reddit research API."
-keywords: ["agent contract", "LinkedIn API", "Reddit API", "webhook", "OpenAPI"]
+title: "PARA integration"
+description: "One-page guide to research, automatic review intake, explicit approval, and extension publishing."
+keywords: ["PARA", "LinkedIn", "Reddit", "review queue", "publishing queue", "API"]
 ---
 
-# PARA Social Research API agent contract
+# PARA integration
 
-This is the only narrative document an agent needs. The [live OpenAPI 3.1 contract](https://para-linkedin-api.onrender.com/openapi.json) is authoritative for exact schemas, methods, status codes, and response fields.
-
-## Bootstrap
+PARA finds relevant LinkedIn and Reddit posts, evaluates them, optionally
+generates response drafts, and makes ready drafts available for review. A
+reviewed item can then be confirmed into a durable publishing queue and executed
+later by the assigned browser extension.
 
 ```text
-API origin: https://para-linkedin-api.onrender.com
-Credential environment variable: PARA_API_KEY
-Canonical guide: https://para-linkedin-api.mintlify.app/agent.md
-OpenAPI: https://para-linkedin-api.onrender.com/openapi.json
-Manifest: https://para-linkedin-api.mintlify.site/agent-manifest.json
-Readiness: https://para-linkedin-api.onrender.com/health/ready
+Configure -> collect -> process -> generate -> review -> confirm -> queue -> publish
 ```
 
-Load this document once, load OpenAPI for the operations you will call, and do not traverse the rest of the documentation site.
+## The important distinction
 
-## Runtime assignment
+PARA has two different queue stages:
 
-Projects, registrations, discovery runners, effective personas, posting profiles, and participation devices are owner-scoped and database-controlled. Resolve them from the authenticated project and live status responses; never reuse identifiers or assignments from another owner or project. Discovery assignment does not imply that posting or participation is paired. Live status is authoritative for device, heartbeat, version, persona, and readiness.
+| Stage | How it starts | Platform side effect |
+| --- | --- | --- |
+| Human-review queue | A generated draft reaches `READY` and appears automatically | None |
+| Publishing queue | A reviewer edits or accepts the draft and explicitly selects `Confirm to send` | The assigned extension may publish it later |
 
-## Non-negotiable invariants
+No API call is required to add a `READY` draft to human review. The system
+automates review intake, not the review decision. Automating review decisions is
+a separate capability and is not part of this flow.
 
-1. All resources are owner-scoped by the Bearer key. Never infer that a `404` belongs to another owner.
-2. Collection is asynchronous and extension-only. Never scrape LinkedIn or Reddit directly and never launch Chromium, Playwright, or a fixture uploader.
-3. Never print, log, persist in checkpoints, or return API keys, temporary passwords, authorization headers, webhook secrets, or receiver tokens.
-4. Use `X-Request-ID` on every request and a stable `Idempotency-Key` on every mutation declared idempotent by OpenAPI.
-5. Match registrations by exact `external_id`; never select by similar names.
-6. Generated drafts are advisory. The public API never posts, comments, votes, or submits a draft.
-7. A queue response is not completion. Completion is the requested terminal run, immutable batch, or delivered webhook.
-8. `posts: []` is a successful completed batch.
+Generation never posts by itself. Confirmation snapshots the final reviewed
+text, destination, source metadata, project, profile, and confirming user into a
+durable database queue. A server restart does not remove that item.
 
-## Required operator input
+## Three control surfaces
 
-```yaml
-platform: linkedin # linkedin | reddit
-mode: inspect # inspect | manage | run | recover_delivery
-api_key_env: PARA_API_KEY
-registration:
-  external_id: stable-operator-owned-id
-  name: descriptive name
-  use_case: detailed LinkedIn business objective
-  topics: []
-  context: optional constraints and preferences
-  webhook_url: https://public.example/webhook
-  delivery_time: "17:00"
-  timezone: Asia/Kolkata
-linkedin:
-  explicit_queries: []
-reddit:
-  subreddits: []
-  explicit_queries: []
-  post_urls: []
-approvals:
-  create_or_patch: false
-  activate: false
-  run: false
-  archive: false
-  rotate_webhook_secret: false
-  replay_delivery: false
-  manage_api_keys: false
-completion:
-  wait_for: queued # queued | run | batch | delivery
-  deadline: ISO-8601 timestamp
-  accept_empty_batch: true
-```
+| Surface | Base path | Credential | Use it for |
+| --- | --- | --- | --- |
+| Public API | `https://para-linkedin-api.onrender.com/v1/*` | Owner-scoped `PARA_API_KEY` | Registrations, discovery runs, results, batches, and webhooks |
+| Dashboard API | `https://para-linkedin-scraper.onrender.com/api/*` | Dashboard access token | Projects, review, confirmation, posting profiles, and queue status |
+| Extension API | `/api/extensions/*` | Paired device token | Collection and execution of already-approved queue items |
 
-Do not guess a missing webhook destination, business objective, subreddit, target user, approval, or completion deadline.
+These credentials are not interchangeable. In particular, `PARA_API_KEY`
+cannot confirm a publishing item, and dashboard credentials cannot claim an
+extension task.
 
-## Authentication and request policy
+## Choose the operation
+
+| Goal | Operation | Done when |
+| --- | --- | --- |
+| Check service readiness | `GET /health/ready` on the public API | Response has `ok: true` |
+| List or configure topics | `/v1/{platform}/registrations` | Registration is reconciled by exact `external_id` |
+| Start discovery | `POST /v1/{platform}/registrations/{id}/run` | The requested run or cycle is queued |
+| Read final results | Batch polling or signed webhook | Immutable batch is available; `posts: []` is valid |
+| Review a draft | Dashboard post or draft view | A human has accepted, edited, or rejected it |
+| Confirm a LinkedIn comment | `POST /api/linkedin/comment-queue` | Response item is `QUEUED` |
+| Confirm a Reddit comment | `POST /api/reddit/comment-queue` | Response item is `QUEUED` |
+| Confirm a Reddit post | `POST /api/reddit/post-queue` | Response item is `QUEUED` |
+| Observe publishing | LinkedIn queue or Reddit participation workspace | Item reaches `POSTED`, `FAILED`, or `CANCELLED` |
+
+## Research flow
+
+### 1. Authenticate
+
+Send the public API key only through the authorization header:
 
 ```http
 Authorization: Bearer ${PARA_API_KEY}
-X-Request-ID: <stable trace id>
-Idempotency-Key: <stable mutation id>
+X-Request-ID: <stable-request-id>
+Idempotency-Key: <stable-key-for-this-mutation>
 Content-Type: application/json
 ```
 
-Scopes:
+Use `Idempotency-Key` only on mutations that declare it in
+[OpenAPI](https://para-linkedin-api.onrender.com/openapi.json). Reuse the same key
+only when retrying the identical operation.
 
-| Scope | Capability |
-| --- | --- |
-| `registrations:read` | Registrations, plans, status, and posts |
-| `registrations:write` | Create, patch, lifecycle actions, run, webhook test |
-| `batches:read` | Immutable result batches |
-| `deliveries:read` | Delivery and attempt inspection |
-| `deliveries:write` | Delivery replay |
-| `keys:manage` | Caller key lifecycle |
+### 2. Reconcile before creating
 
-Use cursor pagination. Treat timestamps as ISO-8601. Parse failures through `{error:{code,message,request_id,details}}`.
-
-## Approval boundary
-
-| Action | Required authority |
-| --- | --- |
-| Health, list, get, status, plan, post, batch, delivery inspection | Read-only mode |
-| Create, patch, activate, pause, restore, run, webhook test | Matching task approval |
-| Archive, rotate webhook secret, replay delivery, manage API keys | Explicit operator approval |
-| Direct collection or participation actions | Unsupported |
-
-## Universal execution algorithm
-
-1. Call `GET /health/ready`; stop if `ok` is not true.
-2. Load the required OpenAPI operations.
-3. List registrations with `limit=100`; follow cursors if needed.
-4. Reconcile by exact `external_id`.
-5. Patch only fields explicitly present in the handoff, or create once when approved.
-6. Route any one-time `webhook_secret` directly to the approved secret store.
-7. Perform only approved lifecycle or run actions.
-8. Persist registration, plan, cycle, run, batch, delivery, request, and idempotency IDs in a redacted checkpoint.
-9. Poll status with bounded backoff until the requested terminal condition or deadline.
-10. Respect `delivery_time`; a manual run does not force immediate batching.
-11. Consume the immutable batch by signed webhook or exact batch polling.
-12. Return a redacted completion report.
-
-## Endpoint map
-
-Replace `{platform}` with `linkedin` or `reddit`.
-
-| Purpose | Operation |
-| --- | --- |
-| List/create | `GET/POST /v1/{platform}/registrations` |
-| Read/update/archive | `GET/PATCH/DELETE /v1/{platform}/registrations/{id}` |
-| Observe | `GET /v1/{platform}/registrations/{id}/status` |
-| Lifecycle | `POST .../{id}/activate`, `/pause`, `/restore`, `/run` |
-| Results | `GET .../{id}/batches`, `GET .../{id}/batches/{batch_id}` |
-| Delivery | `GET .../{id}/deliveries`, `GET .../{id}/deliveries/{delivery_id}` |
-| Recovery | `POST .../{id}/deliveries/{delivery_id}/replay` |
-| Webhook | `POST .../{id}/webhook/test`, `/webhook/rotate-secret` |
-
-LinkedIn adds `GET/PATCH .../{id}/plan` and `POST .../{id}/plan/regenerate`. Reddit adds `GET .../{id}/posts` and `GET .../{id}/posts/{post_id}`.
-
-## LinkedIn
-
-### Creation modes
-
-| Input | Side effect |
-| --- | --- |
-| Topics without `use_case` | Legacy draft; no compilation or task |
-| `use_case` with `auto_activate:false` | Queue compilation; wait for a ready plan |
-| `use_case` with `auto_activate:true` | Compile, then conditionally activate and queue exactly ten searches |
-
-Minimal compiler-native body:
-
-```json
-{
-  "name": "Research name",
-  "external_id": "stable-linkedin-id",
-  "use_case": "Detailed objective, desired evidence, audience or ICP, and explicit exclusions.",
-  "auto_activate": true,
-  "delivery_time": "17:00",
-  "timezone": "Asia/Kolkata",
-  "webhook_url": "https://public.example/linkedin"
-}
-```
-
-### Compiler contract
-
-- The server generates exactly ten unique LinkedIn-compatible search plans.
-- Every query is non-empty, at most 120 characters, and has balanced quotes and Boolean syntax.
-- The plan contains topics, queries, intents, post rubric, author/ICP rubric, hard filters with provenance, prompts, thresholds, weights, assumptions, and hashes.
-- Only structured constraints or unambiguous source language such as `only`, `exclude`, or `must not` may become hard filters.
-- Inferred preferences remain soft scoring signals.
-- Generated prompts are server-rendered; user text is quoted data and cannot replace safety instructions.
-- Activation requires a ready plan, ten valid unique queries, topics, and a public HTTPS webhook.
-- A successful activation, scheduled cycle, or manual run creates exactly ten correlated extension runs.
-- `GET .../{id}/plan` returns the readable plan. Regenerate or override only with mutation approval; each valid change creates an auditable revision.
-- A failed initial compilation leaves the registration draft with no tasks. A failed recompilation preserves the previous active plan.
-
-Poll `GET .../{id}/status` until `compilation_status=READY`. For automatic activation also require `auto_activation_status=ACTIVATED`, an active plan revision, one cycle, and ten per-query runs. Do not call `/activate` or `/run` while compilation is pending.
-
-### Collection and relevance
-
-1. The database-assigned paired real Chrome extension claims each serial search run.
-2. The extension expands and uploads post text, media, engagement text, URLs, source query, cycle, plan revision, and request correlation.
-3. The server applies deterministic duplicate, time-window, empty-content, and explicit-exclusion checks.
-4. OpenAI scores the compiled post rubric. Only first-pass matches receive Parallel author enrichment.
-5. Parallel normalizes role, function, seniority, employer, company domain, industry, company size, location, followers, experience, skills, sources, freshness, and missing fields.
-6. The compiled author/ICP rubric scores available evidence. Missing evidence is neutral `UNKNOWN` with score `0.5` and reduced coverage; it cannot hard-reject.
-7. Contradictory evidence may reject an explicit hard constraint.
-8. Final score is deterministic from persisted component scores and weights.
-9. Selection deduplicates queries and prior deliveries, applies author diversity, and generates optional assigned-persona advisory drafts.
-10. The immutable batch preserves full content, provenance, both scoring stages, evidence, enrichment coverage, plan revision, persona hash, and draft status.
-
-Fallback final weights are post `0.45`, author `0.25`, company `0.10`, geography `0.10`, followers `0.05`, and comment opportunity `0.05`; compiler weights are normalized to one. Default first/final thresholds are `0.45` and `0.55`.
-
-## Reddit
-
-Reddit creation is always side-effect free. Activation requires at least one topic and a public HTTPS webhook.
-
-Minimal body:
-
-```json
-{
-  "name": "Research name",
-  "external_id": "stable-reddit-id",
-  "topics": ["operator-supplied topic"],
-  "context": "Desired evidence and explicit exclusions.",
-  "subreddits": ["operator-supplied-subreddit"],
-  "explicit_queries": ["operator-supplied query"],
-  "delivery_time": "17:00",
-  "timezone": "Asia/Kolkata",
-  "webhook_url": "https://public.example/reddit"
-}
-```
-
-After approved creation, call `/activate`; call `/run` only when a separate run is approved. The paired extension collects canonical post data, expanded selftext, media, engagement, visible comments, URLs, Reddit fullnames, source provenance, and public author context.
-
-Reddit-specific rules:
-
-- Public author context is extension-only and cached for seven days.
-- Never call Parallel or attempt real-world identity resolution.
-- Initial relevance uses topics, context, terms, subreddit, full post text, and top comments, with deterministic fallback.
-- Final scoring persists semantic relevance, topic/subreddit fit, recency, comment opportunity, engagement, public author context, evidence, and weights.
-- Post detail exposes all captured comments with cursor pagination.
-- Assigned-persona reply drafts are advisory; posting, commenting, and voting remain outside the public API and require explicit human confirmation.
-
-Default final weights are semantic relevance `0.45`, topic/subreddit fit `0.15`, recency `0.10`, comment opportunity `0.15`, engagement `0.10`, and author `0.05`.
-
-## Webhook contract
-
-Events:
+List registrations and match the operator-supplied `external_id` exactly:
 
 ```text
-linkedin.relevant_posts.daily.v1
-reddit.relevant_posts.daily.v1
+GET  /v1/linkedin/registrations?limit=100
+GET  /v1/reddit/registrations?limit=100
+POST /v1/{platform}/registrations
+GET  /v1/{platform}/registrations/{id}
+PATCH /v1/{platform}/registrations/{id}
 ```
 
-Headers:
+Do not select a registration by a similar display name. Create or patch only
+when the handoff authorizes that mutation.
+
+### 3. Activate and run
 
 ```text
-X-Webhook-Id
-X-Webhook-Timestamp
-X-Webhook-Signature
-Idempotency-Key
-X-Request-ID
+POST /v1/{platform}/registrations/{id}/activate
+POST /v1/{platform}/registrations/{id}/pause
+POST /v1/{platform}/registrations/{id}/restore
+POST /v1/{platform}/registrations/{id}/run
+GET  /v1/{platform}/registrations/{id}/status
 ```
 
-Verification:
+LinkedIn `use_case` creation compiles a plan of exactly ten searches and may
+auto-activate after plan and webhook validation. Poll until
+`compilation_status=READY`; inspect `GET /v1/linkedin/registrations/{id}/plan`;
+then wait for all requested extension runs to become terminal.
+
+Reddit creation stores configuration without starting collection. Activation
+requires at least one topic and a public HTTPS webhook. A run is then collected
+through the assigned discovery extension.
+
+### 4. Consume results
 
 ```text
-expected = HMAC_SHA256(webhook_secret, timestamp + "." + raw_body)
-require constant_time_equal("v1=" + hex(expected), X-Webhook-Signature)
-deduplicate by X-Webhook-Id
-persist raw body durably before returning 2xx
+GET /v1/{platform}/registrations/{id}/batches
+GET /v1/{platform}/registrations/{id}/batches/{batchId}
+GET /v1/{platform}/registrations/{id}/deliveries
+GET /v1/reddit/registrations/{id}/posts
+GET /v1/reddit/registrations/{id}/posts/{postId}
 ```
 
-Any `2xx` succeeds. Retries occur after 1 minute, 5 minutes, 30 minutes, 2 hours, 6 hours, and 24 hours. A final failure is retained for explicit replay. Polling `GET .../batches/{batch_id}` returns the stored payload for recovery. The server creates at most one immutable batch per registration and local date, including empty batches, with downtime catch-up and prior-delivery deduplication.
+Results contain collected content, provenance, relevance evidence, and optional
+drafts. Webhook events are `linkedin.relevant_posts.daily.v1` and
+`reddit.relevant_posts.daily.v1`. Verify `X-Webhook-Signature` against
+`timestamp + "." + raw_body`, deduplicate by `X-Webhook-Id`, and persist the raw
+body before returning `2xx`.
 
-## Errors and retries
+## Review and publishing flow
 
-| Result | Agent action |
+### 1. Authenticate to the dashboard
+
+```http
+POST https://para-linkedin-scraper.onrender.com/api/auth/login
+Content-Type: application/json
+
+{"email":"operator@example.com","password":"<dashboard-password>"}
+```
+
+Use the returned `access_token` as `Authorization: Bearer
+<dashboard-access-token>`. If `mustChangePassword` is true, complete
+`POST /api/auth/change-password` first. Use `POST /api/auth/refresh` with the
+returned refresh token when needed.
+
+### 2. Resolve project scope
+
+```text
+GET /api/workspaces
+GET /api/workspaces/{workspaceId}/projects
+GET /api/projects/{projectId}
+GET /api/workspaces/{workspaceId}/connections
+```
+
+Append `?projectId={projectId}` to LinkedIn and Reddit dashboard operations.
+Publishing requires an active project, a source post owned by its registration,
+and the correct posting or participation profile assignment.
+
+### 3. Confirm the reviewed content
+
+LinkedIn comment:
+
+```http
+POST /api/linkedin/comment-queue?projectId={projectId}
+Authorization: Bearer <dashboard-access-token>
+Content-Type: application/json
+
+{"postId":"<dashboard-post-id>","commentText":"<final-reviewed-comment>"}
+```
+
+The response is `202` with `{item}`. A valid `READY` source draft, configured
+posting identity, active posting profile, and project assignment are required.
+Inspect setup and queue state with:
+
+```text
+GET  /api/linkedin/posting-profile?projectId={projectId}
+GET  /api/linkedin/comment-queue?projectId={projectId}&limit=100
+POST /api/linkedin/comment-queue/{itemId}/cancel?projectId={projectId}
+```
+
+Reddit comment:
+
+```http
+POST /api/reddit/comment-queue?projectId={projectId}
+Authorization: Bearer <dashboard-access-token>
+Content-Type: application/json
+
+{"profileId":"<participation-profile-id>","postId":"<dashboard-post-id>","commentText":"<final-reviewed-comment>"}
+```
+
+Reddit post:
+
+```http
+POST /api/reddit/post-queue?projectId={projectId}
+Authorization: Bearer <dashboard-access-token>
+Content-Type: application/json
+
+{"profileId":"<participation-profile-id>","subreddit":"example","title":"<reviewed-title>","body":"<reviewed-body>","rulesAcknowledged":true}
+```
+
+Both return `201` with `{item}`. Inspect the assigned profile, device, limits,
+communities, and queues with
+`GET /api/reddit/participation?projectId={projectId}`.
+
+An explicitly reviewed Reddit vote uses:
+
+```http
+POST /api/reddit/vote-review?projectId={projectId}
+Authorization: Bearer <dashboard-access-token>
+Content-Type: application/json
+
+{"profileId":"<participation-profile-id>","postId":"<dashboard-post-id>","decision":"APPROVED"}
+```
+
+Use `decision: "REJECTED"` to record that no vote should be queued.
+
+### 4. Wait for a terminal publishing state
+
+| State | Meaning |
 | --- | --- |
-| `2xx` | Persist checkpoint and continue |
-| `400`, `409`, `422` | Correct state or body; do not repeat unchanged |
-| `401` | Stop; request a valid key |
-| `403` | Stop; request the missing scope |
-| `404` | Refresh owner-scoped state; never probe other owners |
-| `429` | Honor bounded `Retry-After`; reuse the same idempotency key |
-| `5xx` or transport failure | Bounded backoff; reuse the same idempotency key |
+| `QUEUED` | Durable item accepted; not yet posted |
+| `CLAIMED` | Assigned extension holds a temporary lease |
+| `RETRY_WAIT` | Retryable failure; server will make it eligible later |
+| `POSTED` | Platform action completed |
+| `FAILED` | Terminal failure; inspect the failure reason |
+| `CANCELLED` | Pending item was cancelled |
 
-Special conflicts include `plan_not_ready`, `plan_override_invalid`, `activation_blocked`, and `cycle_already_running`.
+Expired leases are recovered by the server. Regenerating the source draft does
+not change the confirmed snapshot. Only `QUEUED` and `RETRY_WAIT` items can be
+cancelled.
 
-## Completion checkpoint
+## Extension responsibilities
 
-Return this shape without secrets or full post bodies:
+- The discovery extension collects page data and never claims LinkedIn posting
+  tasks.
+- The separate LinkedIn posting extension claims one approved comment at a time
+  from the configured LinkedIn identity.
+- Reddit participation is executed only through its assigned paired extension.
+- Extension endpoints require device tokens and are not orchestration endpoints.
+- Login, captcha, identity mismatch, restriction, or unavailable commenting may
+  pause or fail publishing and must be surfaced through queue state.
 
-```json
-{
-  "platform": "linkedin",
-  "external_id": "stable-id",
-  "registration_id": "id",
-  "registration_status": "ACTIVE",
-  "compilation_status": "READY",
-  "active_plan_revision": 1,
-  "cycle_id": "id",
-  "run_ids": ["id"],
-  "batch_id": "id",
-  "delivery_id": "id",
-  "counts": {"runs_terminal": 10, "collected": 0, "matched": 0, "selected": 0},
-  "delivery_status": "DELIVERED",
-  "request_ids": ["id"],
-  "remaining_actions": []
-}
-```
+## Completion rules
 
-Report partial failures explicitly. If the deadline expires, return the last known state, identifiers, next safe poll time, and required operator action.
+- A run response means work was queued, not collected.
+- A `READY` draft means review is available, not approved.
+- A `QUEUED` publishing item means approval was recorded, not posted.
+- Only `POSTED` means the platform action completed.
+- With only `PARA_API_KEY`, stop after research results and drafts are available;
+  dashboard authentication and explicit approval are required to publish.
+
+For exact public schemas, request bodies, responses, and status codes, use the
+[live OpenAPI contract](https://para-linkedin-api.onrender.com/openapi.json).

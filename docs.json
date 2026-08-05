@@ -1,8 +1,8 @@
 {
   "$schema": "https://mintlify.com/docs.json",
   "theme": "mint",
-  "name": "PARA Social Research API",
-  "description": "Canonical agent contract and OpenAPI for LinkedIn and Reddit research automation.",
+  "name": "PARA Social Automation",
+  "description": "LinkedIn and Reddit research, human review, and approved publishing.",
   "contextual": {
     "display": "header",
     "options": [

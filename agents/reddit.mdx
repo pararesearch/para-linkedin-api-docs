@@ -132,10 +132,14 @@ pagination. An empty daily batch is successful.
 - Public author context is collected by the extension and cached for seven days.
 - Do not call Parallel or attempt real-world identity resolution for Reddit
   authors.
-- Reply drafts use the assigned persona plus registration context and are never
-  submitted automatically.
-- Posting, commenting, voting, and participation automation are dashboard-only
-  and require explicit human confirmation.
+- Ready reply drafts use the assigned persona and registration context, are
+  persisted, and automatically enter the human review queue. Generation alone
+  does not submit anything.
+- Explicit dashboard confirmation creates a separate durable comment or post
+  publishing item. The assigned participation extension may execute that
+  approved snapshot later.
+- Publishing confirmation is dashboard-only and is not part of the public
+  `/v1/*` OpenAPI contract.
 - Playwright, Chromium, fixture uploaders, and direct Reddit collection are not
   valid production fallbacks.
 
