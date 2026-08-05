@@ -15,8 +15,6 @@ Use this skill for API-driven LinkedIn and Reddit research. The API controls reg
 ## Canonical context
 
 - Complete agent contract: `https://para-linkedin-api.mintlify.app/agent.md`
-- Ruchika / Lamina handoff: `https://para-linkedin-api.mintlify.app/ruchika-lamina`
-- Ruchika / Lamina machine handoff: `https://para-linkedin-api.mintlify.site/agent-manifest.json` at `named_handoffs.ruchika_lamina`
 - Minimal bootstrap index: `https://para-linkedin-api.mintlify.site/llms.txt`
 - Machine manifest: `https://para-linkedin-api.mintlify.site/agent-manifest.json`
 - A2A agent card: `https://para-linkedin-api.mintlify.app/.well-known/agent-card.json`

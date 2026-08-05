@@ -16,8 +16,6 @@ Credential environment variable: PARA_API_KEY
 Canonical guide: https://para-linkedin-api.mintlify.app/agent.md
 OpenAPI: https://para-linkedin-api.onrender.com/openapi.json
 Manifest: https://para-linkedin-api.mintlify.site/agent-manifest.json
-Ruchika / Lamina handoff: https://para-linkedin-api.mintlify.app/ruchika-lamina
-Ruchika / Lamina machine handoff: https://para-linkedin-api.mintlify.site/agent-manifest.json
 Readiness: https://para-linkedin-api.onrender.com/health/ready
 ```
 
@@ -25,11 +23,7 @@ Load this document once, load OpenAPI for the operations you will call, and do n
 
 ## Runtime assignment
 
-Extension grants and comment personas are database-controlled. For Barada, LinkedIn and Reddit resolve to runner `akhil@get-para.com`, connector `memidhnoiniadgfomefhmcahjcekkddd` version `0.6.0+`, and Akhil's comment persona.
-
-Ruchika's Lamina project uses the same discovery runner and connector, with Ruchika's own effective persona. See the [production handoff](/ruchika-lamina) for IDs, readiness, and checks. Discovery does not imply posting is paired.
-
-No browser installation is required for assigned discovery work. Each status response is authoritative for device, heartbeat, version, and persona.
+Projects, registrations, discovery runners, effective personas, posting profiles, and participation devices are owner-scoped and database-controlled. Resolve them from the authenticated project and live status responses; never reuse identifiers or assignments from another owner or project. Discovery assignment does not imply that posting or participation is paired. Live status is authoritative for device, heartbeat, version, persona, and readiness.
 
 ## Non-negotiable invariants
 
