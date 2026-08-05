@@ -32,6 +32,53 @@ Generation never posts by itself. Confirmation snapshots the final reviewed
 text, destination, source metadata, project, profile, and confirming user into a
 durable database queue. A server restart does not remove that item.
 
+## Resource model
+
+Use this hierarchy when resolving any identifier:
+
+```text
+User -> Workspace -> Project -> Platform registration -> Run -> Batch/draft
+                         |-> Connection assignment -> Posting profile -> Queue item
+```
+
+| Resource | What it represents | Important boundary |
+| --- | --- | --- |
+| User | A dashboard login identity | A login alone does not grant access to every workspace |
+| Workspace | The team and permission boundary | Members have `OWNER`, `ADMIN`, `MEMBER`, or `VIEWER` access |
+| Project | One cross-platform business initiative, such as `Lamina GTM Visibility` | Holds platform setup, connection assignments, review data, and publishing queues |
+| Registration | One platform-specific discovery configuration inside a project | Holds topics, searches, sources, cadence, matching, webhook, and generation settings |
+| Connection assignment | The Chrome device/account selected for a project, platform, and purpose | `DISCOVERY` and `POSTING` are separate assignments and may use different accounts |
+| Posting or participation profile | The platform identity and its pacing, limits, and pause state | It controls approved publishing, not discovery intent |
+| Run, batch, draft, queue item | Runtime records produced beneath a registration or project | A draft is not approval; a queue item is not a completed platform action |
+
+A project is the stable business scope; a registration is the executable
+discovery definition for one platform. A project currently has at most one
+LinkedIn registration and one Reddit registration. X uses one project-owned
+configuration. The dashboard's **Create project** flow creates the project first
+and then creates the selected platform registrations from the entered topics.
+
+### Identifier rules
+
+| Identifier | Source | Use |
+| --- | --- | --- |
+| `workspaceId` | Dashboard API | Select the team/access boundary |
+| `projectId` or public `project_id` | Dashboard project | Attach all platform work to the intended business initiative |
+| `registrationId` | PARA registration response | Address the server-side LinkedIn or Reddit configuration |
+| `external_id` | Integration caller | Stable caller-owned key used to reconcile a registration before creating one |
+
+`projectId`, `registrationId`, and `external_id` are never interchangeable. When
+the public registration create request includes `project_id`, PARA attaches the
+registration to that explicit project. Omitting `project_id` creates a personal,
+implicit compatibility project. New multi-project integrations should always
+resolve and send the intended project ID instead of relying on this fallback.
+
+Project and registration states are also separate. An explicit project is the
+master runtime gate: activating it requires at least one active platform
+registration and the required discovery connection assignments. Pausing or
+archiving it stops or cancels work across its platforms. Pausing one registration
+stops only that platform. Compatibility projects mirror registration lifecycle
+state so older integrations continue to work.
+
 ## Three control surfaces
 
 | Surface | Base path | Credential | Use it for |
@@ -43,6 +90,80 @@ durable database queue. A server restart does not remove that item.
 These credentials are not interchangeable. In particular, `PARA_API_KEY`
 cannot confirm a publishing item, and dashboard credentials cannot claim an
 extension task.
+
+## Authentication setup
+
+### Dashboard login
+
+The dashboard at `https://para-linkedin-scraper.onrender.com` uses email and
+password authentication. Use credentials supplied in the operator handoff; do
+not place the password in source control, documentation, or logs.
+
+```http
+POST https://para-linkedin-scraper.onrender.com/api/auth/login
+Content-Type: application/json
+
+{"email":"operator@example.com","password":"<dashboard-password>"}
+```
+
+The response contains `access_token`, `refresh_token`, `expires_at`, and `user`.
+Use only the access token on dashboard `/api/*` operations:
+
+```http
+Authorization: Bearer <dashboard-access-token>
+```
+
+Validate the session with `GET /api/auth/me`. If
+`user.mustChangePassword` is true, call
+`POST /api/auth/change-password` with a new password of at least 12 characters;
+the response replaces both tokens. Refresh an expired access token with:
+
+```http
+POST /api/auth/refresh
+Content-Type: application/json
+
+{"refresh_token":"<dashboard-refresh-token>"}
+```
+
+For password recovery, call `POST /api/auth/forgot-password` with the email,
+then use the emailed token through the dashboard reset page or
+`POST /api/auth/reset-password`. The forgot-password endpoint intentionally
+returns the same `202` response whether or not the account exists.
+
+Dashboard login does not create, reveal, or replace a public API key. It grants
+the user's workspace permissions and is required for project management, human
+review, and publishing confirmation.
+
+### Public API key
+
+The initial owner-scoped API key is supplied through the integration handoff or
+control plane. Store it in a secret manager or environment variable:
+
+```bash
+export PARA_API_KEY='<issued-once-api-key>'
+```
+
+Use it only on `https://para-linkedin-api.onrender.com/v1/*`:
+
+```bash
+curl --fail --silent --show-error \
+  -H "Authorization: Bearer ${PARA_API_KEY}" \
+  -H "X-Request-ID: setup-check-001" \
+  "https://para-linkedin-api.onrender.com/v1/linkedin/registrations?limit=1"
+```
+
+The key resolves the owner and scopes; it does not select a project. Send the
+resolved `project_id` when creating a registration and then use the returned
+registration ID for its lifecycle and result endpoints.
+
+An existing key with `keys:manage` can list, create, rotate, or revoke the
+owner's keys at `/v1/api-keys`. Creation and rotation return the new plaintext
+`api_key` once; route it directly to an approved secret store. Listing later
+returns only metadata and `key_prefix`. API-key lifecycle mutations require
+explicit operator approval and a stable `Idempotency-Key`.
+
+Never put an API key in a URL, request body, webhook, browser storage, log,
+checkpoint, or final report. Stop on `401`; on `403`, request the missing scope.
 
 ## Choose the operation
 
@@ -60,7 +181,7 @@ extension task.
 
 ## Research flow
 
-### 1. Authenticate
+### 1. Use the public API credential
 
 Send the public API key only through the authorization header:
 
@@ -75,7 +196,12 @@ Use `Idempotency-Key` only on mutations that declare it in
 [OpenAPI](https://para-linkedin-api.onrender.com/openapi.json). Reuse the same key
 only when retrying the identical operation.
 
-### 2. Reconcile before creating
+### 2. Resolve the project and reconcile before creating
+
+When the handoff includes a project ID, preserve it as `project_id` on create.
+Do not silently substitute another project or omit it. If no project ID is
+provided, report that creating a registration will also create an implicit
+compatibility project before performing the approved mutation.
 
 List registrations and match the operator-supplied `external_id` exactly:
 
@@ -129,17 +255,9 @@ body before returning `2xx`.
 
 ### 1. Authenticate to the dashboard
 
-```http
-POST https://para-linkedin-scraper.onrender.com/api/auth/login
-Content-Type: application/json
-
-{"email":"operator@example.com","password":"<dashboard-password>"}
-```
-
-Use the returned `access_token` as `Authorization: Bearer
-<dashboard-access-token>`. If `mustChangePassword` is true, complete
-`POST /api/auth/change-password` first. Use `POST /api/auth/refresh` with the
-returned refresh token when needed.
+Follow **Authentication setup → Dashboard login**. Keep the access token in
+memory when possible and use it only on the dashboard origin. A public API key
+cannot be exchanged for a dashboard session.
 
 ### 2. Resolve project scope
 

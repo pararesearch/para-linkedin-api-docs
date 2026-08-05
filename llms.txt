@@ -13,11 +13,55 @@ publishing confirmation, queue states, and completion rules. OpenAPI is
 authoritative for exact request and response schemas. Do not crawl the rest of
 the site unless resolving a legacy link.
 
+## Resource and identifier model
+
+`User -> Workspace -> Project -> Platform registration -> Run -> Batch/draft`
+
+- A workspace is the team and role boundary.
+- A project is one cross-platform business initiative and the master runtime
+  scope for connections, review, profiles, and publishing queues.
+- A registration is one platform-specific discovery configuration containing
+  topics, searches, sources, cadence, matching, webhook, and generation rules.
+- A project currently has at most one LinkedIn registration and one Reddit
+  registration; X uses one project-owned configuration.
+- A connection assignment selects the extension account for one project,
+  platform, and purpose. `DISCOVERY` and `POSTING` are separate.
+- `project_id` selects the parent project, a returned registration ID addresses
+  PARA's platform configuration, and caller-owned `external_id` reconciles it.
+  These identifiers are not interchangeable.
+- Registration creation without `project_id` creates an implicit personal
+  compatibility project. New multi-project integrations must resolve and send
+  the intended project ID.
+- An explicit project can activate only after an included registration and its
+  required discovery assignment are active. Pausing a project stops all of its
+  platform work; pausing a registration stops only that platform.
+
+## Authentication routing
+
+- Dashboard login uses email and password at
+  `POST https://para-linkedin-scraper.onrender.com/api/auth/login`. Its returned
+  access token is valid only for dashboard `/api/*` workspace, project, review,
+  and publishing operations. Use the refresh token only at `/api/auth/refresh`.
+- If `user.mustChangePassword` is true, complete
+  `/api/auth/change-password` before other dashboard operations. Password
+  recovery starts at `/api/auth/forgot-password`.
+- The initial owner-scoped public API key is supplied in the integration
+  handoff. Read it from `PARA_API_KEY` and send it as `Authorization: Bearer` only
+  to `https://para-linkedin-api.onrender.com/v1/*`.
+- A public API key selects the owner and scopes, not a project. It cannot be
+  exchanged for a dashboard token or used on publishing or extension endpoints.
+- A key with `keys:manage` may use `/v1/api-keys`; creation and rotation return
+  plaintext once. Never print, persist in a transcript, or place credentials in
+  URLs, request bodies, logs, checkpoints, browser storage, or final reports.
+
 ## Agent directives
 
 - Read the API key only from `PARA_API_KEY`; never print or persist it.
 - Never invent resource IDs, business inputs, webhook URLs, subreddits, target
   users, or approvals.
+- Resolve the workspace and project before mutating a registration or queue.
+- Preserve an explicitly supplied `project_id`; do not silently trigger the
+  implicit-project fallback.
 - Reconcile registrations by exact `external_id`.
 - Topics-only legacy creation is side-effect free.
 - LinkedIn `use_case` creation may auto-activate exactly ten real-extension searches
