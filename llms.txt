@@ -35,6 +35,7 @@ the site unless resolving a legacy link.
 
 ## Machine contracts
 
+- [Ruchika / Lamina machine handoff](https://para-linkedin-api.mintlify.site/agent-manifest.json)
 - [Agent manifest](https://para-linkedin-api.mintlify.site/agent-manifest.json)
 - [Installable skill](https://para-linkedin-api.mintlify.app/skill.md)
 - [A2A agent card](https://para-linkedin-api.mintlify.app/.well-known/agent-card.json)

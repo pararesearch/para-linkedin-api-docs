@@ -15,7 +15,60 @@
     "skills_discovery": "https://para-linkedin-api.mintlify.app/.well-known/skills/index.json",
     "agent_card": "https://para-linkedin-api.mintlify.app/.well-known/agent-card.json",
     "agent_quickstart": "https://para-linkedin-api.mintlify.app/agent.md",
-    "agent_handoff": "https://para-linkedin-api.mintlify.app/agent.md"
+    "agent_handoff": "https://para-linkedin-api.mintlify.app/agent.md",
+    "ruchika_lamina_handoff": "https://para-linkedin-api.mintlify.site/agent-manifest.json"
+  },
+  "named_handoffs": {
+    "ruchika_lamina": {
+      "assignment_id": "ruchika-lamina-gtm-visibility",
+      "human": "https://para-linkedin-api.mintlify.app/ruchika-lamina",
+      "machine": "https://para-linkedin-api.mintlify.site/agent-manifest.json",
+      "machine_selector": "named_handoffs.ruchika_lamina",
+      "observed_at": "2026-08-05",
+      "owner": {
+        "email": "ruchika@getmason.io",
+        "user_id": "cmsfyjk6009no29oslitfypz7"
+      },
+      "project": {
+        "name": "Lamina GTM Visibility",
+        "project_id": "cmsfyjkni09nr29oso3rgz6bf"
+      },
+      "registrations": {
+        "linkedin": {
+          "external_id": "ruchika-lamina-gtm-linkedin",
+          "registration_id": "cmsfyjkvz09nt29osvgan7hup",
+          "verified_plan_revision": 6,
+          "searches_per_cycle": 10,
+          "discovery_state": "configured_and_verified"
+        },
+        "reddit": {
+          "external_id": "ruchika-lamina-gtm-reddit",
+          "registration_id": "cmsfyjl4t09nv29osoobs98xv",
+          "verified_run_id": "cmsfytpwo09ri29ospfe11ixs",
+          "persisted_posts": 25,
+          "discovery_state": "configured_and_verified"
+        }
+      },
+      "discovery_runner": {
+        "owner_email": "akhil@get-para.com",
+        "device_id": "cmrbtu0fw060l1ziqjfk9igca",
+        "extension_id": "memidhnoiniadgfomefhmcahjcekkddd",
+        "minimum_extension_version": "0.6.0"
+      },
+      "readiness": {
+        "linkedin_discovery": "ready",
+        "reddit_discovery": "ready",
+        "linkedin_comment_posting": "not_ready_profile_url_and_pairing_required",
+        "reddit_participation": "not_ready_profile_and_pairing_required",
+        "webhook_delivery": "test_receiver_only_real_destination_required",
+        "persona": "provisional_no_real_writing_samples"
+      },
+      "approval_policy": {
+        "read_only_inspection": "allowed_with_owner_key",
+        "mutations": "matching_operator_request_required",
+        "posting_commenting_voting_joining": "not_authorized_by_this_handoff"
+      }
+    }
   },
   "authentication": {
     "type": "http_bearer",

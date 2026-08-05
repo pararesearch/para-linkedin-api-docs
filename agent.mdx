@@ -6,9 +6,7 @@ keywords: ["agent contract", "LinkedIn API", "Reddit API", "webhook", "OpenAPI"]
 
 # PARA Social Research API agent contract
 
-This is the only narrative document an agent needs. The
-[live OpenAPI 3.1 contract](https://para-linkedin-api.onrender.com/openapi.json)
-is authoritative for exact schemas, methods, status codes, and response fields.
+This is the only narrative document an agent needs. The [live OpenAPI 3.1 contract](https://para-linkedin-api.onrender.com/openapi.json) is authoritative for exact schemas, methods, status codes, and response fields.
 
 ## Bootstrap
 
@@ -18,35 +16,30 @@ Credential environment variable: PARA_API_KEY
 Canonical guide: https://para-linkedin-api.mintlify.app/agent.md
 OpenAPI: https://para-linkedin-api.onrender.com/openapi.json
 Manifest: https://para-linkedin-api.mintlify.site/agent-manifest.json
+Ruchika / Lamina handoff: https://para-linkedin-api.mintlify.app/ruchika-lamina
+Ruchika / Lamina machine handoff: https://para-linkedin-api.mintlify.site/agent-manifest.json
 Readiness: https://para-linkedin-api.onrender.com/health/ready
 ```
 
-Load this document once, load OpenAPI for the operations you will call, and do
-not traverse the rest of the documentation site.
+Load this document once, load OpenAPI for the operations you will call, and do not traverse the rest of the documentation site.
 
 ## Runtime assignment
 
-Extension grants and comment personas are database-controlled. For Barada,
-LinkedIn and Reddit resolve to runner `akhil@get-para.com`, connector
-`memidhnoiniadgfomefhmcahjcekkddd` version `0.6.0+`, and Akhil's comment persona.
-No additional browser installation is required. Each status response is the
-authority for runner device, heartbeat, version, and effective persona.
+Extension grants and comment personas are database-controlled. For Barada, LinkedIn and Reddit resolve to runner `akhil@get-para.com`, connector `memidhnoiniadgfomefhmcahjcekkddd` version `0.6.0+`, and Akhil's comment persona.
+
+Ruchika's Lamina project uses the same discovery runner and connector, with Ruchika's own effective persona. See the [production handoff](/ruchika-lamina) for IDs, readiness, and checks. Discovery does not imply posting is paired.
+
+No browser installation is required for assigned discovery work. Each status response is authoritative for device, heartbeat, version, and persona.
 
 ## Non-negotiable invariants
 
-1. All resources are owner-scoped by the Bearer key. Never infer that a `404`
-   belongs to another owner.
-2. Collection is asynchronous and extension-only. Never scrape LinkedIn or
-   Reddit directly and never launch Chromium, Playwright, or a fixture uploader.
-3. Never print, log, persist in checkpoints, or return API keys, temporary
-   passwords, authorization headers, webhook secrets, or receiver tokens.
-4. Use `X-Request-ID` on every request and a stable `Idempotency-Key` on every
-   mutation declared idempotent by OpenAPI.
+1. All resources are owner-scoped by the Bearer key. Never infer that a `404` belongs to another owner.
+2. Collection is asynchronous and extension-only. Never scrape LinkedIn or Reddit directly and never launch Chromium, Playwright, or a fixture uploader.
+3. Never print, log, persist in checkpoints, or return API keys, temporary passwords, authorization headers, webhook secrets, or receiver tokens.
+4. Use `X-Request-ID` on every request and a stable `Idempotency-Key` on every mutation declared idempotent by OpenAPI.
 5. Match registrations by exact `external_id`; never select by similar names.
-6. Generated drafts are advisory. The public API never posts, comments, votes,
-   or submits a draft.
-7. A queue response is not completion. Completion is the requested terminal
-   run, immutable batch, or delivered webhook.
+6. Generated drafts are advisory. The public API never posts, comments, votes, or submits a draft.
+7. A queue response is not completion. Completion is the requested terminal run, immutable batch, or delivered webhook.
 8. `posts: []` is a successful completed batch.
 
 ## Required operator input
@@ -84,8 +77,7 @@ completion:
   accept_empty_batch: true
 ```
 
-Do not guess a missing webhook destination, business objective, subreddit,
-target user, approval, or completion deadline.
+Do not guess a missing webhook destination, business objective, subreddit, target user, approval, or completion deadline.
 
 ## Authentication and request policy
 
@@ -107,8 +99,7 @@ Scopes:
 | `deliveries:write` | Delivery replay |
 | `keys:manage` | Caller key lifecycle |
 
-Use cursor pagination. Treat timestamps as ISO-8601. Parse failures through
-`{error:{code,message,request_id,details}}`.
+Use cursor pagination. Treat timestamps as ISO-8601. Parse failures through `{error:{code,message,request_id,details}}`.
 
 ## Approval boundary
 
@@ -125,14 +116,11 @@ Use cursor pagination. Treat timestamps as ISO-8601. Parse failures through
 2. Load the required OpenAPI operations.
 3. List registrations with `limit=100`; follow cursors if needed.
 4. Reconcile by exact `external_id`.
-5. Patch only fields explicitly present in the handoff, or create once when
-   approved.
+5. Patch only fields explicitly present in the handoff, or create once when approved.
 6. Route any one-time `webhook_secret` directly to the approved secret store.
 7. Perform only approved lifecycle or run actions.
-8. Persist registration, plan, cycle, run, batch, delivery, request, and
-   idempotency IDs in a redacted checkpoint.
-9. Poll status with bounded backoff until the requested terminal condition or
-   deadline.
+8. Persist registration, plan, cycle, run, batch, delivery, request, and idempotency IDs in a redacted checkpoint.
+9. Poll status with bounded backoff until the requested terminal condition or deadline.
 10. Respect `delivery_time`; a manual run does not force immediate batching.
 11. Consume the immutable batch by signed webhook or exact batch polling.
 12. Return a redacted completion report.
@@ -152,9 +140,7 @@ Replace `{platform}` with `linkedin` or `reddit`.
 | Recovery | `POST .../{id}/deliveries/{delivery_id}/replay` |
 | Webhook | `POST .../{id}/webhook/test`, `/webhook/rotate-secret` |
 
-LinkedIn adds `GET/PATCH .../{id}/plan` and
-`POST .../{id}/plan/regenerate`. Reddit adds `GET .../{id}/posts` and
-`GET .../{id}/posts/{post_id}`.
+LinkedIn adds `GET/PATCH .../{id}/plan` and `POST .../{id}/plan/regenerate`. Reddit adds `GET .../{id}/posts` and `GET .../{id}/posts/{post_id}`.
 
 ## LinkedIn
 
@@ -183,61 +169,36 @@ Minimal compiler-native body:
 ### Compiler contract
 
 - The server generates exactly ten unique LinkedIn-compatible search plans.
-- Every query is non-empty, at most 120 characters, and has balanced quotes and
-  Boolean syntax.
-- The plan contains topics, queries, intents, post rubric, author/ICP rubric,
-  hard filters with provenance, prompts, thresholds, weights, assumptions, and
-  hashes.
-- Only structured constraints or unambiguous source language such as `only`,
-  `exclude`, or `must not` may become hard filters.
+- Every query is non-empty, at most 120 characters, and has balanced quotes and Boolean syntax.
+- The plan contains topics, queries, intents, post rubric, author/ICP rubric, hard filters with provenance, prompts, thresholds, weights, assumptions, and hashes.
+- Only structured constraints or unambiguous source language such as `only`, `exclude`, or `must not` may become hard filters.
 - Inferred preferences remain soft scoring signals.
-- Generated prompts are server-rendered; user text is quoted data and cannot
-  replace safety instructions.
-- Activation requires a ready plan, ten valid unique queries, topics, and a
-  public HTTPS webhook.
-- A successful activation, scheduled cycle, or manual run creates exactly ten
-  correlated extension runs.
-- `GET .../{id}/plan` returns the readable plan. Regenerate or override only
-  with mutation approval; each valid change creates an auditable revision.
-- A failed initial compilation leaves the registration draft with no tasks. A
-  failed recompilation preserves the previous active plan.
+- Generated prompts are server-rendered; user text is quoted data and cannot replace safety instructions.
+- Activation requires a ready plan, ten valid unique queries, topics, and a public HTTPS webhook.
+- A successful activation, scheduled cycle, or manual run creates exactly ten correlated extension runs.
+- `GET .../{id}/plan` returns the readable plan. Regenerate or override only with mutation approval; each valid change creates an auditable revision.
+- A failed initial compilation leaves the registration draft with no tasks. A failed recompilation preserves the previous active plan.
 
-Poll `GET .../{id}/status` until `compilation_status=READY`. For automatic
-activation also require `auto_activation_status=ACTIVATED`, an active plan
-revision, one cycle, and ten per-query runs. Do not call `/activate` or `/run`
-while compilation is pending.
+Poll `GET .../{id}/status` until `compilation_status=READY`. For automatic activation also require `auto_activation_status=ACTIVATED`, an active plan revision, one cycle, and ten per-query runs. Do not call `/activate` or `/run` while compilation is pending.
 
 ### Collection and relevance
 
-1. The database-assigned paired real Chrome extension claims each serial search
-   run.
-2. The extension expands and uploads post text, media, engagement text, URLs,
-   source query, cycle, plan revision, and request correlation.
-3. The server applies deterministic duplicate, time-window, empty-content, and
-   explicit-exclusion checks.
-4. OpenAI scores the compiled post rubric. Only first-pass matches receive
-   Parallel author enrichment.
-5. Parallel normalizes role, function, seniority, employer, company domain,
-   industry, company size, location, followers, experience, skills, sources,
-   freshness, and missing fields.
-6. The compiled author/ICP rubric scores available evidence. Missing evidence is
-   neutral `UNKNOWN` with score `0.5` and reduced coverage; it cannot hard-reject.
+1. The database-assigned paired real Chrome extension claims each serial search run.
+2. The extension expands and uploads post text, media, engagement text, URLs, source query, cycle, plan revision, and request correlation.
+3. The server applies deterministic duplicate, time-window, empty-content, and explicit-exclusion checks.
+4. OpenAI scores the compiled post rubric. Only first-pass matches receive Parallel author enrichment.
+5. Parallel normalizes role, function, seniority, employer, company domain, industry, company size, location, followers, experience, skills, sources, freshness, and missing fields.
+6. The compiled author/ICP rubric scores available evidence. Missing evidence is neutral `UNKNOWN` with score `0.5` and reduced coverage; it cannot hard-reject.
 7. Contradictory evidence may reject an explicit hard constraint.
 8. Final score is deterministic from persisted component scores and weights.
-9. Selection deduplicates queries and prior deliveries, applies author
-   diversity, and generates optional assigned-persona advisory drafts.
-10. The immutable batch preserves full content, provenance, both scoring
-    stages, evidence, enrichment coverage, plan revision, persona hash, and
-    draft status.
+9. Selection deduplicates queries and prior deliveries, applies author diversity, and generates optional assigned-persona advisory drafts.
+10. The immutable batch preserves full content, provenance, both scoring stages, evidence, enrichment coverage, plan revision, persona hash, and draft status.
 
-Fallback final weights are post `0.45`, author `0.25`, company `0.10`, geography
-`0.10`, followers `0.05`, and comment opportunity `0.05`; compiler weights are
-normalized to one. Default first/final thresholds are `0.45` and `0.55`.
+Fallback final weights are post `0.45`, author `0.25`, company `0.10`, geography `0.10`, followers `0.05`, and comment opportunity `0.05`; compiler weights are normalized to one. Default first/final thresholds are `0.45` and `0.55`.
 
 ## Reddit
 
-Reddit creation is always side-effect free. Activation requires at least one
-topic and a public HTTPS webhook.
+Reddit creation is always side-effect free. Activation requires at least one topic and a public HTTPS webhook.
 
 Minimal body:
 
@@ -255,25 +216,18 @@ Minimal body:
 }
 ```
 
-After approved creation, call `/activate`; call `/run` only when a separate run
-is approved. The paired extension collects canonical post data, expanded
-selftext, media, engagement, visible comments, URLs, Reddit fullnames, source
-provenance, and public author context.
+After approved creation, call `/activate`; call `/run` only when a separate run is approved. The paired extension collects canonical post data, expanded selftext, media, engagement, visible comments, URLs, Reddit fullnames, source provenance, and public author context.
 
 Reddit-specific rules:
 
 - Public author context is extension-only and cached for seven days.
 - Never call Parallel or attempt real-world identity resolution.
-- Initial relevance uses topics, context, terms, subreddit, full post text, and
-  top comments, with deterministic fallback.
-- Final scoring persists semantic relevance, topic/subreddit fit, recency,
-  comment opportunity, engagement, public author context, evidence, and weights.
+- Initial relevance uses topics, context, terms, subreddit, full post text, and top comments, with deterministic fallback.
+- Final scoring persists semantic relevance, topic/subreddit fit, recency, comment opportunity, engagement, public author context, evidence, and weights.
 - Post detail exposes all captured comments with cursor pagination.
-- Assigned-persona reply drafts are advisory; posting, commenting, and voting
-  remain outside the public API and require explicit human confirmation.
+- Assigned-persona reply drafts are advisory; posting, commenting, and voting remain outside the public API and require explicit human confirmation.
 
-Default final weights are semantic relevance `0.45`, topic/subreddit fit `0.15`,
-recency `0.10`, comment opportunity `0.15`, engagement `0.10`, and author `0.05`.
+Default final weights are semantic relevance `0.45`, topic/subreddit fit `0.15`, recency `0.10`, comment opportunity `0.15`, engagement `0.10`, and author `0.05`.
 
 ## Webhook contract
 
@@ -303,11 +257,7 @@ deduplicate by X-Webhook-Id
 persist raw body durably before returning 2xx
 ```
 
-Any `2xx` succeeds. Retries occur after 1 minute, 5 minutes, 30 minutes,
-2 hours, 6 hours, and 24 hours. A final failure is retained for explicit replay.
-Polling `GET .../batches/{batch_id}` returns the stored payload for recovery.
-The server creates at most one immutable batch per registration and local date,
-including empty batches, with downtime catch-up and prior-delivery deduplication.
+Any `2xx` succeeds. Retries occur after 1 minute, 5 minutes, 30 minutes, 2 hours, 6 hours, and 24 hours. A final failure is retained for explicit replay. Polling `GET .../batches/{batch_id}` returns the stored payload for recovery. The server creates at most one immutable batch per registration and local date, including empty batches, with downtime catch-up and prior-delivery deduplication.
 
 ## Errors and retries
 
@@ -321,8 +271,7 @@ including empty batches, with downtime catch-up and prior-delivery deduplication
 | `429` | Honor bounded `Retry-After`; reuse the same idempotency key |
 | `5xx` or transport failure | Bounded backoff; reuse the same idempotency key |
 
-Special conflicts include `plan_not_ready`, `plan_override_invalid`,
-`activation_blocked`, and `cycle_already_running`.
+Special conflicts include `plan_not_ready`, `plan_override_invalid`, `activation_blocked`, and `cycle_already_running`.
 
 ## Completion checkpoint
 
@@ -347,5 +296,4 @@ Return this shape without secrets or full post bodies:
 }
 ```
 
-Report partial failures explicitly. If the deadline expires, return the last
-known state, identifiers, next safe poll time, and required operator action.
+Report partial failures explicitly. If the deadline expires, return the last known state, identifiers, next safe poll time, and required operator action.

@@ -1,0 +1,129 @@
+---
+title: "Ruchika / Lamina production handoff"
+description: "Agent-first assignment, resource IDs, readiness boundaries, and verification workflow for Ruchika's Lamina GTM research project."
+keywords: ["Ruchika", "Lamina", "agent handoff", "LinkedIn", "Reddit"]
+---
+
+# Ruchika / Lamina production handoff
+
+Use this page only for the production assignment identified below. Read the [canonical agent contract](/agent) and the [live OpenAPI document](https://para-linkedin-api.onrender.com/openapi.json) before making any request.
+
+The operator supplies the API key out of band as `PARA_API_KEY`. This page does not contain a dashboard password, API key, webhook secret, posting-device token, or any other reusable credential.
+
+## Bootstrap
+
+| Resource | Value |
+| --- | --- |
+| Dashboard | `https://para-linkedin-scraper.onrender.com` |
+| Public API | `https://para-linkedin-api.onrender.com` |
+| API key environment variable | `PARA_API_KEY` |
+| Owner | `ruchika@getmason.io` |
+| Owner user ID | `cmsfyjk6009no29oslitfypz7` |
+| Project | `Lamina GTM Visibility` |
+| Project ID | `cmsfyjkni09nr29oso3rgz6bf` |
+| Machine handoff | `https://para-linkedin-api.mintlify.site/agent-manifest.json` at `named_handoffs.ruchika_lamina` |
+
+```bash
+export PARA_SOCIAL_API="https://para-linkedin-api.onrender.com"
+export PARA_API_KEY="set-this-through-the-approved-secret-channel"
+```
+
+Never echo either variable. The Bearer key is owner-scoped; a `404` must not be used to infer the existence of another owner's resources.
+
+## Assigned registrations
+
+| Platform | Name | External ID | Registration ID |
+| --- | --- | --- | --- |
+| LinkedIn | `Lamina GTM Visibility - LinkedIn` | `ruchika-lamina-gtm-linkedin` | `cmsfyjkvz09nt29osvgan7hup` |
+| Reddit | `Lamina GTM Visibility - Reddit` | `ruchika-lamina-gtm-reddit` | `cmsfyjl4t09nv29osoobs98xv` |
+
+Always reconcile by the exact external ID and then confirm the registration ID. Do not create a similarly named replacement.
+
+## Readiness boundary
+
+This snapshot was verified on `2026-08-05`. Live status responses are authoritative and may be newer.
+
+| Capability | State | Agent interpretation |
+| --- | --- | --- |
+| LinkedIn discovery | Configured and verified | Active compiled plan revision `6` with ten real-extension searches |
+| Reddit discovery | Configured and verified | Active registration; a real extension run completed and persisted `25` posts |
+| Shared discovery connector | Connected | Runner owner `akhil@get-para.com`; extension ID `memidhnoiniadgfomefhmcahjcekkddd`, version `0.6.0+` |
+| Comment persona | Provisional | Ruchika-specific GTM persona is built, but has no real writing samples yet |
+| LinkedIn comment posting | Not ready | Posting profile URL is unset, no posting device is paired, and the queue is empty |
+| Reddit participation | Not ready | No Reddit participation profile or participation device is paired |
+| Webhook delivery | Test-only | Registrations currently use a smoke receiver, not an operator production webhook |
+
+Discovery readiness does not authorize commenting, posting, voting, or joining. The public API manages research registrations and result delivery; it does not submit generated drafts.
+
+## Research intent
+
+Ruchika is a GTM operator for Lamina. Discovery should surface concrete conversations where she can contribute a useful, non-promotional perspective on:
+
+- AI product photography, catalog/PDP/A\+ imagery, and content at SKU scale;
+- virtual try-on, on-model imagery, fashion ecommerce, conversion, and returns;
+- paid-social creative testing, ad variants, fatigue, and production velocity;
+- short-form video, campaign localization, resizing, and distribution;
+- brand kits, product fidelity, creative evaluation, governance, and approvals;
+- Shopify, CMS, storage, publishing, and creative-operations workflows;
+- generative-media APIs, SDKs, MCP, AI agents, and multi-model orchestration;
+- production cost, build-versus-buy decisions, and measurable workflow ROI.
+
+Exclude generic AI news, engagement bait, hiring-only posts, giveaways, politics, crypto, unrelated text-only AI, and conversations with no meaningful creative-production, commerce, performance, workflow, or developer-platform connection.
+
+## Required inspection sequence
+
+Use a unique `X-Request-ID` for each request.
+
+```bash
+curl --fail-with-body "$PARA_SOCIAL_API/health/ready"
+
+curl --fail-with-body \
+  "$PARA_SOCIAL_API/v1/linkedin/registrations/cmsfyjkvz09nt29osvgan7hup/status" \
+  --header "Authorization: Bearer $PARA_API_KEY" \
+  --header "X-Request-ID: ruchika-linkedin-status-001"
+
+curl --fail-with-body \
+  "$PARA_SOCIAL_API/v1/linkedin/registrations/cmsfyjkvz09nt29osvgan7hup/plan" \
+  --header "Authorization: Bearer $PARA_API_KEY" \
+  --header "X-Request-ID: ruchika-linkedin-plan-001"
+
+curl --fail-with-body \
+  "$PARA_SOCIAL_API/v1/reddit/registrations/cmsfyjl4t09nv29osoobs98xv/status" \
+  --header "Authorization: Bearer $PARA_API_KEY" \
+  --header "X-Request-ID: ruchika-reddit-status-001"
+
+curl --fail-with-body \
+  "$PARA_SOCIAL_API/v1/reddit/registrations/cmsfyjl4t09nv29osoobs98xv/posts?limit=25" \
+  --header "Authorization: Bearer $PARA_API_KEY" \
+  --header "X-Request-ID: ruchika-reddit-posts-001"
+```
+
+For LinkedIn, require an active live plan with exactly ten unique searches. For Reddit, inspect the exact registration, latest run, extension events, and stored posts. A queued run is not completion.
+
+## Mutations and approvals
+
+Read-only health, registration, plan, status, post, batch, and delivery inspection is allowed when the operator provides the owner-scoped key.
+
+Every mutation requires a matching operator request. Use a stable `Idempotency-Key` exactly where OpenAPI declares it. In particular:
+
+- do not patch topics, queries, thresholds, cadence, or webhook destinations merely because a different value seems preferable;
+- do not activate, pause, restore, or request another run without matching task authorization;
+- do not archive, rotate a webhook secret, replay delivery, or manage API keys without explicit approval for that exact action;
+- do not enqueue or submit comments, posts, votes, or joins through browser automation under this handoff.
+
+The temporary smoke receiver is validation infrastructure. A real public HTTPS webhook URL must be supplied by the operator before production delivery is considered complete.
+
+## Completion report
+
+Return a redacted report containing:
+
+- owner, project, platform, external ID, and registration ID;
+- registration and compilation state plus active plan revision;
+- cycle, run, batch, delivery, request, and idempotency IDs involved;
+- collected, matched, selected, and delivered counts;
+- discovery runner device status and heartbeat age;
+- webhook state and whether polling recovery was used;
+- posting/participation readiness as a separate line item;
+- exact remaining operator inputs or approvals.
+
+Never include the API key, dashboard password, authorization header, webhook secret, device token, or full private payload in the report.
