@@ -32,13 +32,18 @@ never written to the idempotency table or application logs.
 | Scope | Allows |
 | --- | --- |
 | `registrations:read` | Read registrations and status |
-| `registrations:write` | Create, edit, archive, activate, pause, restore, run, and test webhooks |
+| `registrations:write` | Create, edit, archive, activate, pause, restore, run, test webhooks, and submit external draft revisions |
+| `publishing:write` | Explicitly approve an active external draft into the durable publishing queue |
 | `batches:read` | List and read immutable result batches |
 | `deliveries:read` | Inspect webhook deliveries and attempts |
 | `deliveries:write` | Replay dead-lettered deliveries |
 | `keys:manage` | Create, rotate, list, and revoke the caller's keys |
 
 Every resource lookup includes the authenticated `owner_user_id`. An identifier belonging to another owner returns `404`, which avoids confirming that the resource exists.
+
+A key with `publishing:write` authorizes a future platform action: queue approval
+can be claimed later by the assigned extension. Keep discovery-only keys free of
+this scope and require `confirm: true` on every public approval request.
 
 ## Create and rotate keys
 

@@ -1,6 +1,6 @@
 # PARA Social Automation
 
-> Public API contract for LinkedIn and Reddit discovery, external draft intake, human review, and approved extension publishing.
+> Public API contract for discovery, revisioned external drafts, explicit queue approval, and extension publishing.
 
 ## Canonical sources
 
@@ -18,15 +18,15 @@ GET /v1/me
   -> select project and platform registration
   -> GET /v1/{platform}/registrations/{registration_id}/posts
   -> POST /v1/{platform}/registrations/{registration_id}/drafts
-  -> human review in dashboard
-  -> dashboard confirmation
+  -> human review in dashboard or integrating system
+  -> dashboard confirmation OR POST /drafts/{draft_id}/queue
   -> durable publishing queue
   -> assigned extension publishes the approved snapshot
 ```
 
-External draft submission is review intake. It does not approve, enqueue for
-publishing, or perform a platform action. The public API exposes no approval or
-publishing operation.
+External draft submission is review intake and revision. It does not enqueue or
+perform a platform action. Queueing the active draft is a separate explicit
+approval and may lead to later extension publishing.
 
 ## Identity and resources
 
@@ -49,9 +49,10 @@ Never put credentials in URLs, bodies, logs, transcripts, or reports. Dashboard
 sessions and paired extension device tokens are separate credentials and cannot
 be derived from a public API key.
 
-External draft creation requires `registrations:write`, `X-Request-ID`, and
-`Idempotency-Key`. The same idempotency key and body returns the original draft;
-the same key with a different body returns `409`.
+External draft creation requires `registrations:write`; public queue approval
+requires `publishing:write`. Both require `X-Request-ID` and `Idempotency-Key`.
+The same idempotency key and body returns the original response; the same key
+with a different body returns `409`.
 
 ## Registration modes
 
@@ -98,14 +99,18 @@ POST to `/v1/linkedin/registrations/{id}/drafts` or
 ```
 
 A successful `201` response is a `READY` review draft. A later external
-submission for the same current matched post creates a new revision and marks
-the prior external revision `SUPERSEDED`. PARA-generated draft provenance is
-preserved. The newest active external draft is shown first in review.
+submission for the same current matched post changes the comment by creating a
+new revision and marking the prior revision `SUPERSEDED`. There is no draft
+`PATCH`; submit the replacement text with new request and idempotency keys and use
+the returned draft ID. PARA-generated provenance remains preserved.
 
-A dashboard reviewer can edit the text and confirm it. Confirmation snapshots
-the final text and source into the durable Postgres queue. Only the assigned
-extension can later claim an eligible approved item. Queue cancellation does not
-delete the draft. Only `POSTED` means the platform action completed.
+Queue the newest `READY` draft with
+`POST /v1/{platform}/registrations/{registration_id}/drafts/{draft_id}/queue`.
+Send `{"confirm":true}`; Reddit also requires `profile_id`. This snapshots the
+external draft text into the durable Postgres queue and records the approving API
+credential and request ID. A superseded draft returns `409`. The dashboard remains
+an alternative human-review path. Only the assigned extension can later claim an
+eligible item, and only `POSTED` means the platform action completed.
 
 ## Webhooks
 
