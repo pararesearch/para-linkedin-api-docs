@@ -59,6 +59,28 @@
       ]
     }
   },
+  "redirects": [
+    {
+      "source": "/skill.md",
+      "destination": "/agent"
+    },
+    {
+      "source": "/agent-manifest.json",
+      "destination": "/agent"
+    },
+    {
+      "source": "/agent-card.json",
+      "destination": "/agent"
+    },
+    {
+      "source": "/agents",
+      "destination": "/agent"
+    },
+    {
+      "source": "/agents/:slug*",
+      "destination": "/agent"
+    }
+  ],
   "footer": {
     "socials": {}
   }
