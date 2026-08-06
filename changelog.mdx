@@ -3,6 +3,22 @@ title: "Changelog"
 description: "Contract and behavior changes for the PARA Social Research API."
 ---
 
+## 2026-08-06 - API 1.3.0
+
+- Added owner and credential discovery through `/v1/me` and paginated project
+  discovery through `/v1/projects`.
+- Standardized current LinkedIn and Reddit post retrieval with normalized score,
+  status, stage, cursor, and current-revision behavior.
+- Added idempotent external draft intake for both platforms. Drafts enter human
+  review as revisions and never approve or publish through the public API.
+- Added `discovery_only` and `draft` registration modes while retaining
+  `draft_enabled` compatibility.
+- Projected active external drafts into dashboard review and preserved their
+  provenance when final edited text enters either durable publishing queue.
+- Documented exact raw-body webhook verification with a five-minute tolerance.
+- Consolidated the integration contract into `/agent`, `/agent.md`, `/llms.txt`,
+  and OpenAPI, with schema-validated examples for all public list surfaces.
+
 ## 2026-07-30
 
 - Added LinkedIn compiler-native registration creation through one detailed

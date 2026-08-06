@@ -12,21 +12,10 @@ The TypeScript core remains the single owner of task scheduling, Chrome-extensio
 
 ## Agent entrypoints
 
-Agents should begin with the curated
-[`llms.txt`](https://para-linkedin-api.mintlify.site/llms.txt), then read
-[Agent quickstart](/agents/quickstart) and [Agent handoff](/agents/handoff).
-Machine-readable capabilities and safety rules are available in
-[`agent-manifest.json`](/agent-manifest.json). The
+Begin with the [canonical integration guide](/agent), or use the concise
+[`llms.txt`](https://para-linkedin-api.mintlify.site/llms.txt) bootstrap. The
 [live OpenAPI document](https://para-linkedin-api.onrender.com/openapi.json) is
-the canonical request and response contract.
-
-Mintlify also exposes `/llms-full.txt`, `/.well-known/llms.txt`, an installable
-[`skill.md`](https://para-linkedin-api.mintlify.app/skill.md), SHA-256-backed
-[agent-skill discovery](https://para-linkedin-api.mintlify.app/.well-known/agent-skills/index.json),
-an [A2A agent card](https://para-linkedin-api.mintlify.app/.well-known/agent-card.json),
-and a Markdown representation of every page by appending `.md`. Human-facing
-pages use the `.mintlify.site` domain; generated machine discovery uses
-Mintlify's direct `.mintlify.app` origin.
+authoritative for exact request and response schemas.
 
 ```mermaid
 flowchart LR

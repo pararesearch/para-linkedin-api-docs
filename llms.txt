@@ -1,90 +1,115 @@
 # PARA Social Automation
 
-> Owner-scoped LinkedIn and Reddit research with persisted draft review and separately approved extension publishing.
+> Public API contract for LinkedIn and Reddit discovery, external draft intake, human review, and approved extension publishing.
 
-## Required read order
+## Canonical sources
 
-1. [PARA integration guide](https://para-linkedin-api.mintlify.app/agent.md)
-2. [Live OpenAPI 3.1](https://para-linkedin-api.onrender.com/openapi.json)
+1. [Integration guide](https://para-linkedin-api.mintlify.app/agent.md)
+2. [OpenAPI 3.1](https://para-linkedin-api.onrender.com/openapi.json)
 
-The integration guide contains the complete operating model, authentication
-surfaces, use cases, research lifecycle, automatic human-review intake, explicit
-publishing confirmation, queue states, and completion rules. OpenAPI is
-authoritative for exact request and response schemas. Do not crawl the rest of
-the site unless resolving a legacy link.
+Use the integration guide for lifecycle and safety rules. Use OpenAPI for exact
+schemas, parameters, response codes, and examples. These two resources are the
+complete integration contract.
 
-## Resource and identifier model
+## Complete flow
 
-`User -> Workspace -> Project -> Platform registration -> Run -> Batch/draft`
+```text
+GET /v1/me
+  -> select project and platform registration
+  -> GET /v1/{platform}/registrations/{registration_id}/posts
+  -> POST /v1/{platform}/registrations/{registration_id}/drafts
+  -> human review in dashboard
+  -> dashboard confirmation
+  -> durable publishing queue
+  -> assigned extension publishes the approved snapshot
+```
 
-- A workspace is the team and role boundary.
-- A project is one cross-platform business initiative and the master runtime
-  scope for connections, review, profiles, and publishing queues.
-- A registration is one platform-specific discovery configuration containing
-  topics, searches, sources, cadence, matching, webhook, and generation rules.
-- A project currently has at most one LinkedIn registration and one Reddit
-  registration; X uses one project-owned configuration.
-- A connection assignment selects the extension account for one project,
-  platform, and purpose. `DISCOVERY` and `POSTING` are separate.
-- `project_id` selects the parent project, a returned registration ID addresses
-  PARA's platform configuration, and caller-owned `external_id` reconciles it.
-  These identifiers are not interchangeable.
-- Registration creation without `project_id` creates an implicit personal
-  compatibility project. New multi-project integrations must resolve and send
-  the intended project ID.
-- An explicit project can activate only after an included registration and its
-  required discovery assignment are active. Pausing a project stops all of its
-  platform work; pausing a registration stops only that platform.
+External draft submission is review intake. It does not approve, enqueue for
+publishing, or perform a platform action. The public API exposes no approval or
+publishing operation.
 
-## Authentication routing
+## Identity and resources
 
-- Dashboard login uses email and password at
-  `POST https://para-linkedin-scraper.onrender.com/api/auth/login`. Its returned
-  access token is valid only for dashboard `/api/*` workspace, project, review,
-  and publishing operations. Use the refresh token only at `/api/auth/refresh`.
-- If `user.mustChangePassword` is true, complete
-  `/api/auth/change-password` before other dashboard operations. Password
-  recovery starts at `/api/auth/forgot-password`.
-- The initial owner-scoped public API key is supplied in the integration
-  handoff. Read it from `PARA_API_KEY` and send it as `Authorization: Bearer` only
-  to `https://para-linkedin-api.onrender.com/v1/*`.
-- A public API key selects the owner and scopes, not a project. It cannot be
-  exchanged for a dashboard token or used on publishing or extension endpoints.
-- A key with `keys:manage` may use `/v1/api-keys`; creation and rotation return
-  plaintext once. Never print, persist in a transcript, or place credentials in
-  URLs, request bodies, logs, checkpoints, browser storage, or final reports.
+`User -> Workspace -> Project -> Platform registration -> Current posts/drafts`
 
-## Agent directives
+- Call `GET /v1/me` first. It returns the API-key owner, safe credential
+  metadata, projects, and LinkedIn and Reddit registrations.
+- A project is the cross-platform business scope. A registration is one
+  platform-specific discovery configuration inside a project.
+- A public API key selects its owner and scopes, not a project.
+- Use `GET /v1/projects` with `registrations:read` for paginated project state.
+- New integrations should send an existing `project_id`. Omitting it keeps the
+  legacy implicit compatibility-project behavior.
+- Never invent IDs. Use returned project, registration, and post IDs exactly.
 
-- Read the API key only from `PARA_API_KEY`; never print or persist it.
-- Never invent resource IDs, business inputs, webhook URLs, subreddits, target
-  users, or approvals.
-- Resolve the workspace and project before mutating a registration or queue.
-- Preserve an explicitly supplied `project_id`; do not silently trigger the
-  implicit-project fallback.
-- Reconcile registrations by exact `external_id`.
-- Topics-only legacy creation is side-effect free.
-- LinkedIn `use_case` creation may auto-activate exactly ten real-extension searches
-  after successful compilation and webhook validation.
-- Inspect `/plan`, require ten unique searches, and wait for terminal cycle
-  state before claiming completion.
-- LinkedIn author enrichment is first-pass-only; unavailable evidence is
-  neutral `UNKNOWN`.
-- Reddit author context is extension-only; never call Parallel for Reddit.
-- Verify webhook HMACs against the raw body and deduplicate by
-  `X-Webhook-Id`.
-- Require explicit operator approval for archive, secret rotation, delivery
-  replay, and API-key lifecycle.
-- Ready generated drafts are persisted and automatically surfaced in the human
-  review queue; generation alone never performs a platform action.
-- An explicit dashboard confirmation creates a durable publishing queue item.
-  The paired extension may execute only that approved snapshot later.
-- The public API key cannot call dashboard publishing or extension device
-  endpoints. With public API access alone, stop at review-ready.
+## Authentication
 
-## Machine contracts
+Send the owner API key only as `Authorization: Bearer $PARA_API_KEY` to `/v1/*`.
+Never put credentials in URLs, bodies, logs, transcripts, or reports. Dashboard
+sessions and paired extension device tokens are separate credentials and cannot
+be derived from a public API key.
 
-- [Agent manifest](https://para-linkedin-api.mintlify.site/agent-manifest.json)
-- [Installable skill](https://para-linkedin-api.mintlify.app/skill.md)
-- [A2A agent card](https://para-linkedin-api.mintlify.app/.well-known/agent-card.json)
-- [Readiness](https://para-linkedin-api.onrender.com/health/ready)
+External draft creation requires `registrations:write`, `X-Request-ID`, and
+`Idempotency-Key`. The same idempotency key and body returns the original draft;
+the same key with a different body returns `409`.
+
+## Registration modes
+
+- `mode: discovery_only` equals `draft_enabled: false`: collect, match, enrich,
+  batch, and deliver without PARA draft generation.
+- `mode: draft` equals `draft_enabled: true`: preserve PARA generation.
+- Supplying one field derives the other. Conflicting fields return `422`.
+- Omitting both defaults to `draft`. External drafts work in either mode.
+
+## Normalized current posts
+
+Both platforms expose `GET /v1/{platform}/registrations/{id}/posts`:
+
+```json
+{
+  "items": [{
+    "post": {"id": "post-id", "url": "https://..."},
+    "relevance": {
+      "initial": {"status": "MATCH", "score": 0.68},
+      "final": {"status": "MATCH", "score": 0.82}
+    },
+    "draft": {"id": null, "source": "generated", "comment": null},
+    "score": 0.82,
+    "status": "MATCH",
+    "score_stage": "final"
+  }],
+  "next_cursor": null
+}
+```
+
+`score` and `status` prefer final relevance when `final.score` exists and
+otherwise use initial relevance. If neither score exists, `score` is `null` and
+sorts after scored items. `score_stage` is `final` or `initial`. Results contain
+only the current matching revision and use an opaque cursor. `/batches` remains
+the immutable historical-delivery API.
+
+## External drafts and review
+
+POST to `/v1/linkedin/registrations/{id}/drafts` or
+`/v1/reddit/registrations/{id}/drafts`:
+
+```json
+{"post_id":"post-id","comment_text":"Review-ready text"}
+```
+
+A successful `201` response is a `READY` review draft. A later external
+submission for the same current matched post creates a new revision and marks
+the prior external revision `SUPERSEDED`. PARA-generated draft provenance is
+preserved. The newest active external draft is shown first in review.
+
+A dashboard reviewer can edit the text and confirm it. Confirmation snapshots
+the final text and source into the durable Postgres queue. Only the assigned
+extension can later claim an eligible approved item. Queue cancellation does not
+delete the draft. Only `POSTED` means the platform action completed.
+
+## Webhooks
+
+Verify `X-Webhook-Signature` as
+`v1=hex(HMAC_SHA256(secret, UTF8(timestamp + ".") || raw_body_bytes))`. Reject a
+timestamp more than 300 seconds from the receiver clock, compare in constant
+time, and durably deduplicate `X-Webhook-Id`. Never verify re-serialized JSON.
