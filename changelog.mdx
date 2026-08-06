@@ -3,6 +3,17 @@ title: "Changelog"
 description: "Contract and behavior changes for the PARA Social Research API."
 ---
 
+## 2026-08-06 - API 1.4.0
+
+- Added `publishing:write` and idempotent public approval endpoints for queueing
+  the newest `READY` LinkedIn or Reddit external draft.
+- Required `confirm: true`, recorded the approving API credential and request ID,
+  and retained all existing profile assignment, identity, deduplication, pacing,
+  lease, retry, and extension safeguards.
+- Clarified that changing external comment text creates a new revision through
+  `POST /drafts`; queue approval snapshots that revision and does not publish
+  synchronously.
+
 ## 2026-08-06 - API 1.3.0
 
 - Added owner and credential discovery through `/v1/me` and paginated project
